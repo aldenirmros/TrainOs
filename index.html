@@ -423,6 +423,157 @@
     background: rgba(200,241,53,.05);
   }
 
+  /* Botão criar treino — destaque lime */
+  .btn-sidebar-treino {
+    flex: 1;
+    background: rgba(200,241,53,.1);
+    border: 1px solid rgba(200,241,53,.3);
+    border-radius: 8px;
+    padding: 9px 8px;
+    color: #c8f135;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: .06em;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: center;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .btn-sidebar-treino:hover {
+    background: rgba(200,241,53,.2);
+    border-color: rgba(200,241,53,.5);
+  }
+
+  /* Classificação pills */
+  .classif-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .classif-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 14px;
+    border-radius: 99px;
+    border: 1px solid #1e1e2e;
+    background: #16161f;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #8888aa;
+    transition: all .2s;
+    user-select: none;
+  }
+  .classif-pill:hover { border-color: rgba(200,241,53,.4); color: #e8e8f0; }
+  .classif-pill.selected {
+    background: rgba(200,241,53,.12);
+    border-color: rgba(200,241,53,.5);
+    color: #c8f135;
+  }
+  .classif-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Seleção de alunos */
+  .aluno-select-list {
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid #1e1e2e;
+    border-radius: 10px;
+    background: #0a0a0f;
+  }
+  .aluno-select-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(30,30,46,.6);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .aluno-select-item:last-child { border-bottom: none; }
+  .aluno-select-item:hover { background: rgba(255,255,255,.03); }
+  .aluno-select-item.selected { background: rgba(200,241,53,.07); }
+  .aluno-select-item input[type="checkbox"] {
+    accent-color: #c8f135;
+    width: 15px; height: 15px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .aluno-select-name { font-size: 13px; font-weight: 600; color: #e8e8f0; }
+  .aluno-select-user { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; }
+
+  .aluno-select-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .aluno-count-badge {
+    background: rgba(200,241,53,.12);
+    border: 1px solid rgba(200,241,53,.3);
+    color: #c8f135;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 99px;
+  }
+
+  /* ── Tags de datas selecionadas ── */
+  .data-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(200,241,53,.1);
+    border: 1px solid rgba(200,241,53,.3);
+    color: #c8f135;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 99px;
+    cursor: default;
+    white-space: nowrap;
+  }
+  .data-tag-remove {
+    background: none; border: none;
+    color: rgba(200,241,53,.6);
+    cursor: pointer; font-size: 13px;
+    line-height: 1; padding: 0;
+    transition: color .15s;
+  }
+  .data-tag-remove:hover { color: #f87171; }
+
+  /* ── Célula do calendário ── */
+  .cal-cell {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all .15s;
+    user-select: none;
+  }
+  .cal-cell:hover:not(.cal-empty):not(.cal-header) {
+    border-color: rgba(200,241,53,.4);
+    color: #e8e8f0;
+  }
+  .cal-cell.cal-header {
+    color: #4a4a6a; font-size: 10px; cursor: default;
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+  .cal-cell.cal-empty { cursor: default; }
+  .cal-cell.cal-selected {
+    background: rgba(200,241,53,.15);
+    border-color: rgba(200,241,53,.4);
+    color: #c8f135;
+  }
+  .cal-cell.cal-today {
+    border-color: rgba(200,241,53,.3);
+    color: #e8e8f0;
+    font-weight: 600;
+  }
+  .cal-cell.cal-past { opacity: .35; cursor: not-allowed; }
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
+    padding: 3px 9px; border-radius: 99px;
+    border: 1px solid; font-weight: 500;
+    white-space: nowrap;
+  }
+
   .sidebar-list { flex: 1; overflow-y: auto; padding: 8px; }
   .aluno-item {
     display: flex; align-items: center; justify-content: space-between;
@@ -919,6 +1070,166 @@
 <div id="printArea"></div>
 
 <!-- ═══════════════════════════════════════════════
+     MODAL: CRIAR TREINO EM LOTE
+═══════════════════════════════════════════════ -->
+<div id="modalCriarTreino" class="modal-overlay hidden">
+  <div class="modal-box modal-box-wide">
+    <div class="modal-header">
+      <div class="modal-title">Criar <span>Treino</span></div>
+      <button class="modal-close" onclick="fecharModal('modalCriarTreino')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Bloco 1: Classificação -->
+      <div class="form-block">
+        <div class="form-block-title">Classificação do Treino</div>
+        <div class="classif-grid" id="classifGrid">
+          <!-- gerado via JS -->
+        </div>
+        <div style="margin-top:12px;display:flex;align-items:center;gap:10px;">
+          <input id="classifCustomInput" class="form-input" type="text"
+            placeholder="Ou digite uma classificação personalizada..."
+            style="flex:1;" oninput="syncClassifCustom(this.value)"/>
+        </div>
+      </div>
+
+      <!-- Bloco 2: Conteúdo do treino -->
+      <div class="form-block">
+        <div class="form-block-title">Conteúdo do Treino</div>
+        <div class="form-grid-2">
+          <div class="form-field-wrap form-grid-full">
+            <div class="form-label">Título do treino</div>
+            <input id="treinoTitulo" class="form-input" type="text"
+              placeholder="Ex: Intervalado 5×1000m — Ritmo de Prova"/>
+          </div>
+          <div class="form-field-wrap form-grid-full">
+            <div class="form-label">Descrição detalhada</div>
+            <textarea id="treinoDescricao" class="form-input form-textarea"
+              style="min-height:140px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;"
+              placeholder="Ex:&#10;Aquecimento: 15min trot leve&#10;Principal: 5×1000m c/ 90s descanso — ritmo 4:45/km&#10;Volta calma: 10min + alongamento"></textarea>
+          </div>
+          <div class="form-field-wrap">
+            <div class="form-label">Volume / Distância</div>
+            <input id="treinoVolume" class="form-input" type="text"
+              placeholder="Ex: 12 km · 60 min"/>
+          </div>
+          <div class="form-field-wrap">
+            <div class="form-label">Zona de intensidade</div>
+            <select id="treinoIntensidade" class="form-input form-select">
+              <option value="">— opcional —</option>
+              <option value="Z1 — Regenerativo">Z1 — Regenerativo</option>
+              <option value="Z2 — Aeróbico base">Z2 — Aeróbico base</option>
+              <option value="Z3 — Aeróbico moderado">Z3 — Aeróbico moderado</option>
+              <option value="Z4 — Limiar">Z4 — Limiar</option>
+              <option value="Z5 — VO2max">Z5 — VO2max</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bloco 3: Datas -->
+      <div class="form-block">
+        <div class="form-block-title">Datas do Treino</div>
+
+        <!-- Adicionar data -->
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px;">
+          <div class="form-field-wrap">
+            <div class="form-label">Adicionar data</div>
+            <input id="treinoDataInput" class="form-input" type="date" style="max-width:200px;"/>
+          </div>
+          <button class="btn-admin" style="padding:10px 18px;flex-shrink:0;" onclick="adicionarData()">＋ Adicionar</button>
+          <button class="btn-secondary" style="padding:10px 14px;flex-shrink:0;font-size:12px;" onclick="abrirPickerSemana()">📅 Semana</button>
+          <button class="btn-secondary" style="padding:10px 14px;flex-shrink:0;font-size:12px;" onclick="abrirPickerMes()">📅 Mês</button>
+        </div>
+
+        <!-- Mini calendário de semana -->
+        <div id="pickerSemana" class="hidden" style="margin-bottom:14px;">
+          <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+            <span>Selecionar dias da semana recorrentes</span>
+            <button onclick="$('pickerSemana').classList.add('hidden')" style="background:none;border:none;color:#8888aa;cursor:pointer;font-size:14px;">✕</button>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+            <label class="check-item" style="font-size:11px;"><input type="checkbox" name="ps_dia" value="1"/> Seg</label>
+            <label class="check-item" style="font-size:11px;"><input type="checkbox" name="ps_dia" value="2"/> Ter</label>
+            <label class="check-item" style="font-size:11px;"><input type="checkbox" name="ps_dia" value="3"/> Qua</label>
+            <label class="check-item" style="font-size:11px;"><input type="checkbox" name="ps_dia" value="4"/> Qui</label>
+            <label class="check-item" style="font-size:11px;"><input type="checkbox" name="ps_dia" value="5"/> Sex</label>
+            <label class="check-item" style="font-size:11px;"><input type="checkbox" name="ps_dia" value="6"/> Sáb</label>
+            <label class="check-item" style="font-size:11px;"><input type="checkbox" name="ps_dia" value="0"/> Dom</label>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+            <div class="form-field-wrap">
+              <div class="form-label">De</div>
+              <input id="ps_inicio" class="form-input" type="date" style="max-width:160px;"/>
+            </div>
+            <div class="form-field-wrap">
+              <div class="form-label">Até</div>
+              <input id="ps_fim" class="form-input" type="date" style="max-width:160px;"/>
+            </div>
+            <button class="btn-admin" style="padding:10px 16px;" onclick="adicionarDiasSemana()">Adicionar datas</button>
+          </div>
+        </div>
+
+        <!-- Mini picker de mês -->
+        <div id="pickerMes" class="hidden" style="margin-bottom:14px;">
+          <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+            <span id="pickerMesLabel">mês</span>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button onclick="navegarMesCalendario(-1)" style="background:#0a0a0f;border:1px solid #1e1e2e;border-radius:6px;color:#8888aa;cursor:pointer;padding:3px 10px;">◀</button>
+              <button onclick="navegarMesCalendario(1)"  style="background:#0a0a0f;border:1px solid #1e1e2e;border-radius:6px;color:#8888aa;cursor:pointer;padding:3px 10px;">▶</button>
+              <button onclick="$('pickerMes').classList.add('hidden')" style="background:none;border:none;color:#8888aa;cursor:pointer;font-size:14px;margin-left:6px;">✕</button>
+            </div>
+          </div>
+          <div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:320px;"></div>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn-secondary" style="font-size:11px;padding:6px 12px;" onclick="selecionarTodosMes()">Todos os dias</button>
+            <button class="btn-secondary" style="font-size:11px;padding:6px 12px;" onclick="limparCalendario()">Limpar mês</button>
+            <button class="btn-admin" style="padding:8px 16px;font-size:12px;" onclick="confirmarCalendario()">✓ Confirmar</button>
+          </div>
+        </div>
+
+        <!-- Tags das datas selecionadas -->
+        <div id="datasTagsWrap" style="min-height:40px;">
+          <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+            <span id="datasLabel">Nenhuma data selecionada</span>
+            <button id="btnLimparDatas" class="hidden" onclick="limparTodasDatas()"
+              style="background:none;border:none;color:#f87171;cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace;">✕ Limpar todas</button>
+          </div>
+          <div id="datasTags" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        </div>
+      </div>
+
+      <!-- Bloco 4: Seleção de alunos -->
+      <div class="form-block">
+        <div class="form-block-title">Selecionar Alunos</div>
+        <div class="aluno-select-header">
+          <input id="treinoBuscaAluno" class="form-input" type="text"
+            placeholder="Buscar aluno..." style="max-width:260px;"
+            oninput="filtrarAlunosModal(this.value)"/>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="aluno-count-badge" id="countSelecionados">0 selecionados</span>
+            <button class="btn-secondary" style="font-size:11px;padding:6px 12px;"
+              onclick="selecionarTodosAlunos(true)">Todos</button>
+            <button class="btn-secondary" style="font-size:11px;padding:6px 12px;"
+              onclick="selecionarTodosAlunos(false)">Nenhum</button>
+          </div>
+        </div>
+        <div class="aluno-select-list" id="alunoSelectList">
+          <!-- gerado via JS -->
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fecharModal('modalCriarTreino')">Cancelar</button>
+      <button class="btn-admin" id="btnConfCriarTreino" onclick="criarTreinoLote()">
+        ＋ Criar e Enviar Treino
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
      MODAL: CRIAR USUÁRIO
 ═══════════════════════════════════════════════ -->
 <div id="modalCriarUsuario" class="modal-overlay hidden">
@@ -1413,9 +1724,12 @@
         </div>
 
         <!-- Action buttons -->
-        <div class="sidebar-actions">
-          <button class="btn-sidebar-action" onclick="abrirModalCriarUsuario()">＋ Usuário</button>
-          <button class="btn-sidebar-action" onclick="abrirModalCriarAluno()">＋ Aluno</button>
+        <div class="sidebar-actions" style="flex-direction:column;gap:8px;">
+          <button class="btn-sidebar-treino" onclick="abrirModalCriarTreino()">＋ Criar Treino</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-sidebar-action" onclick="abrirModalCriarUsuario()">＋ Usuário</button>
+            <button class="btn-sidebar-action" onclick="abrirModalCriarAluno()">＋ Aluno</button>
+          </div>
         </div>
 
         <div class="sidebar-list" id="sidebarList">
@@ -1821,18 +2135,32 @@ function renderAdminMain(aluno) {
   const f   = aluno.ficha || {};
   const hoj = hoje();
 
-  const histRows = (aluno.treinos || []).slice(0, 30).map(t => {
+  const histRows = (aluno.treinos || []).slice(0, 50).map(t => {
     const s = String(t.status || "").trim().toLowerCase();
     const statusPill = s === "concluído" || s === "concluido"
       ? `<span class="status-pill status-concluido">${t.status}</span>`
       : `<span class="status-pill status-pendente">Pendente</span>`;
+
+    // Extrai classificação: do campo t.classificacao ou do prefixo [TIPO] na descrição
+    let classif = t.classificacao || "";
+    if (!classif) {
+      const match = String(t.descricao_treino || "").match(/^\[([^\]]+)\]/);
+      if (match) classif = match[1];
+    }
+
+    // Descrição sem o prefixo [CLASSIF] para exibição limpa
+    const descLimpa = String(t.descricao_treino || "")
+      .replace(/^\[[^\]]+\]\s*[^\n]*\n?/, "")
+      .substring(0, 90);
+
     return `<tr>
-      <td>${formatDate(t.data_treino)}</td>
-      <td style="max-width:220px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8888aa;">${escHtml(t.descricao_treino||"").substring(0,80)}${(t.descricao_treino||"").length>80?"…":""}</td>
+      <td style="white-space:nowrap;">${formatDate(t.data_treino)}</td>
+      <td>${classif ? classifBadgeHTML(classif) : "<span style='color:#4a4a6a;font-size:11px;'>—</span>"}</td>
+      <td style="max-width:200px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8888aa;line-height:1.5;">${escHtml(descLimpa)}${descLimpa.length >= 90 ? "…" : ""}</td>
       <td>${statusPill}</td>
-      <td style="font-size:12px;color:#8888aa;">${escHtml(t.feedback_aluno||"—")}</td>
+      <td style="font-size:12px;color:#8888aa;font-family:'JetBrains Mono',monospace;">${escHtml(t.feedback_aluno || "—")}</td>
     </tr>`;
-  }).join("") || `<tr><td colspan="4" style="text-align:center;color:#4a4a6a;padding:24px;font-family:'JetBrains Mono',monospace;font-size:12px;">Nenhum treino ainda.</td></tr>`;
+  }).join("") || `<tr><td colspan="5" style="text-align:center;color:#4a4a6a;padding:24px;font-family:'JetBrains Mono',monospace;font-size:12px;">Nenhum treino ainda.</td></tr>`;
 
   el.innerHTML = `
     <button class="mobile-back-btn" onclick="voltarSidebar()">← Voltar</button>
@@ -1902,7 +2230,7 @@ function renderAdminMain(aluno) {
       <div style="overflow-x:auto;">
         <table class="hist-table">
           <thead>
-            <tr><th>Data</th><th>Treino</th><th>Status</th><th>Feedback</th></tr>
+            <tr><th>Data</th><th>Classif.</th><th>Treino</th><th>Status</th><th>Feedback</th></tr>
           </thead>
           <tbody>${histRows}</tbody>
         </table>
@@ -2271,7 +2599,7 @@ function fecharModal(id) {
 
 // Fechar modal clicando no overlay
 document.addEventListener("click", e => {
-  ["modalCriarUsuario","modalCriarAluno","modalAnamnese","modalConfigMarca"].forEach(id => {
+  ["modalCriarUsuario","modalCriarAluno","modalAnamnese","modalConfigMarca","modalCriarTreino"].forEach(id => {
     const modal = $(id);
     if (modal && !modal.classList.contains("hidden") && e.target === modal) {
       fecharModal(id);
@@ -2786,6 +3114,449 @@ function gerarTreinosPDF(nomeAluno, treinos) {
 
 // Carrega marca ao iniciar
 document.addEventListener("DOMContentLoaded", () => { carregarMarca(); });
+
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO: CRIAR TREINO EM LOTE
+// ══════════════════════════════════════════════════════════════
+
+// Definição das classificações com cor associada
+const CLASSIFICACOES = [
+  { id: "rodagem",      label: "Rodagem",       cor: "#38d9f5", bg: "rgba(56,217,245,.12)",  border: "rgba(56,217,245,.35)"  },
+  { id: "intervalado",  label: "Intervalado",   cor: "#f5a623", bg: "rgba(245,166,35,.12)",  border: "rgba(245,166,35,.35)"  },
+  { id: "longo",        label: "Longo",         cor: "#c8f135", bg: "rgba(200,241,53,.12)",  border: "rgba(200,241,53,.35)"  },
+  { id: "recuperacao",  label: "Recuperação",   cor: "#a78bfa", bg: "rgba(167,139,250,.12)", border: "rgba(167,139,250,.35)" },
+  { id: "forca",        label: "Força",         cor: "#f87171", bg: "rgba(248,113,113,.12)", border: "rgba(248,113,113,.35)" },
+  { id: "progressivo",  label: "Progressivo",   cor: "#fb923c", bg: "rgba(251,146,60,.12)",  border: "rgba(251,146,60,.35)"  },
+  { id: "fartlek",      label: "Fartlek",       cor: "#34d399", bg: "rgba(52,211,153,.12)",  border: "rgba(52,211,153,.35)"  },
+  { id: "tempo_run",    label: "Tempo Run",     cor: "#60a5fa", bg: "rgba(96,165,250,.12)",  border: "rgba(96,165,250,.35)"  },
+  { id: "teste",        label: "Teste / Aval.", cor: "#e879f9", bg: "rgba(232,121,249,.12)", border: "rgba(232,121,249,.35)" },
+  { id: "outro",        label: "Outro",         cor: "#8888aa", bg: "rgba(136,136,170,.1)",  border: "rgba(136,136,170,.3)"  },
+];
+
+let classifSelecionada = null; // id da classificação selecionada
+let alunosSelecionados = new Set(); // ids dos alunos marcados
+
+// ── Renderiza os pills de classificação ──────────────────────
+function buildClassifGrid() {
+  const grid = $("classifGrid");
+  if (!grid) return;
+  grid.innerHTML = CLASSIFICACOES.map(c => `
+    <div class="classif-pill ${classifSelecionada === c.id ? "selected" : ""}"
+         id="cpill_${c.id}"
+         data-id="${c.id}"
+         onclick="selecionarClassif('${c.id}')"
+         style="${classifSelecionada === c.id
+           ? `background:${c.bg};border-color:${c.border};color:${c.cor};`
+           : ""}">
+      <span class="classif-dot"
+        style="background:${c.cor};box-shadow:0 0 6px ${c.cor}55;"></span>
+      ${escHtml(c.label)}
+    </div>
+  `).join("");
+}
+
+function selecionarClassif(id) {
+  classifSelecionada = id;
+  $("classifCustomInput").value = ""; // limpa campo livre ao escolher pill
+  buildClassifGrid();
+}
+
+// Sincroniza: ao digitar no campo livre, desmarca pill
+function syncClassifCustom(val) {
+  if (val.trim()) {
+    classifSelecionada = null;
+    buildClassifGrid();
+  }
+}
+
+// Retorna a classificação final (pill ou texto livre)
+function getClassifFinal() {
+  const custom = ($("classifCustomInput")?.value || "").trim();
+  if (custom) return custom;
+  if (classifSelecionada) {
+    const c = CLASSIFICACOES.find(x => x.id === classifSelecionada);
+    return c ? c.label : classifSelecionada;
+  }
+  return "";
+}
+
+// Retorna cor da classificação para uso no PDF/UI
+function getClassifCor(label) {
+  const c = CLASSIFICACOES.find(x =>
+    x.label.toLowerCase() === String(label || "").toLowerCase() ||
+    x.id    .toLowerCase() === String(label || "").toLowerCase()
+  );
+  return c || { cor: "#8888aa", bg: "rgba(136,136,170,.1)", border: "rgba(136,136,170,.3)" };
+}
+
+// ── Renderiza lista de alunos no modal ───────────────────────
+function buildAlunoSelectList(filtro) {
+  const list = $("alunoSelectList");
+  if (!list) return;
+
+  const todos = state.todosAlunos || [];
+  const q = (filtro || "").toLowerCase();
+  const filtrados = q
+    ? todos.filter(a =>
+        (a.nome    || "").toLowerCase().includes(q) ||
+        (a.usuario || "").toLowerCase().includes(q))
+    : todos;
+
+  if (!filtrados.length) {
+    list.innerHTML = `<div style="padding:20px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#4a4a6a;">Nenhum aluno encontrado.</div>`;
+    return;
+  }
+
+  list.innerHTML = filtrados.map(a => {
+    const sel = alunosSelecionados.has(String(a.id_aluno));
+    return `
+      <div class="aluno-select-item ${sel ? "selected" : ""}"
+           id="asel_${a.id_aluno}"
+           onclick="toggleAlunoSelect('${a.id_aluno}')">
+        <input type="checkbox" ${sel ? "checked" : ""}
+               onclick="event.stopPropagation();toggleAlunoSelect('${a.id_aluno}')"/>
+        <div>
+          <div class="aluno-select-name">${escHtml(a.nome || a.usuario)}</div>
+          <div class="aluno-select-user">@${escHtml(a.usuario)}</div>
+        </div>
+      </div>`;
+  }).join("");
+
+  atualizarCountSelecionados();
+}
+
+function toggleAlunoSelect(id) {
+  const sid = String(id);
+  if (alunosSelecionados.has(sid)) alunosSelecionados.delete(sid);
+  else alunosSelecionados.add(sid);
+
+  // Atualiza visualmente só o item tocado (evita re-render completo)
+  const item = $(`asel_${sid}`);
+  if (item) {
+    const cb = item.querySelector("input[type='checkbox']");
+    if (alunosSelecionados.has(sid)) {
+      item.classList.add("selected");
+      if (cb) cb.checked = true;
+    } else {
+      item.classList.remove("selected");
+      if (cb) cb.checked = false;
+    }
+  }
+  atualizarCountSelecionados();
+}
+
+function selecionarTodosAlunos(marcar) {
+  const todos = state.todosAlunos || [];
+  if (marcar) todos.forEach(a => alunosSelecionados.add(String(a.id_aluno)));
+  else alunosSelecionados.clear();
+  buildAlunoSelectList($("treinoBuscaAluno")?.value || "");
+}
+
+function filtrarAlunosModal(q) {
+  buildAlunoSelectList(q);
+}
+
+function atualizarCountSelecionados() {
+  const badge = $("countSelecionados");
+  if (badge) badge.textContent = `${alunosSelecionados.size} selecionado${alunosSelecionados.size !== 1 ? "s" : ""}`;
+}
+
+// ── Estado multi-datas ───────────────────────────────────────
+let datasSelecionadas = new Set(); // Set de strings "YYYY-MM-DD"
+let calMesAtual = new Date();      // mês exibido no picker de mês
+let calSelTemp  = new Set();       // seleção temporária no calendário
+
+// ── Abre o modal ─────────────────────────────────────────────
+function abrirModalCriarTreino() {
+  classifSelecionada = null;
+  alunosSelecionados = new Set();
+  datasSelecionadas  = new Set();
+  calSelTemp         = new Set();
+
+  setVal("classifCustomInput", "");
+  setVal("treinoTitulo",       "");
+  setVal("treinoDescricao",    "");
+  setVal("treinoVolume",       "");
+  setVal("treinoIntensidade",  "");
+  setVal("treinoBuscaAluno",   "");
+  setVal("treinoDataInput",    hoje());
+  setVal("ps_inicio", hoje());
+  setVal("ps_fim",    hoje());
+
+  // Desmarca dias da semana
+  document.querySelectorAll("[name='ps_dia']").forEach(cb => cb.checked = false);
+
+  // Fecha subpickers
+  $("pickerSemana")?.classList.add("hidden");
+  $("pickerMes")?.classList.add("hidden");
+
+  renderDatasTags();
+  buildClassifGrid();
+  buildAlunoSelectList();
+  $("modalCriarTreino").classList.remove("hidden");
+}
+
+// ── Adicionar data avulsa ────────────────────────────────────
+function adicionarData() {
+  const val = $("treinoDataInput")?.value;
+  if (!val) { showToast("Selecione uma data."); return; }
+  datasSelecionadas.add(val);
+  renderDatasTags();
+}
+
+// ── Picker de semana recorrente ──────────────────────────────
+function abrirPickerSemana() {
+  $("pickerMes").classList.add("hidden");
+  $("pickerSemana").classList.toggle("hidden");
+}
+
+function adicionarDiasSemana() {
+  const dias = [...document.querySelectorAll("[name='ps_dia']:checked")].map(cb => parseInt(cb.value));
+  if (!dias.length) { showToast("Selecione ao menos um dia da semana."); return; }
+
+  const inicio = new Date($("ps_inicio").value + "T12:00:00");
+  const fim    = new Date($("ps_fim").value    + "T12:00:00");
+  if (isNaN(inicio) || isNaN(fim) || inicio > fim) {
+    showToast("Intervalo de datas inválido."); return;
+  }
+
+  let adicionados = 0;
+  const cur = new Date(inicio);
+  while (cur <= fim) {
+    const dow = cur.getDay(); // 0=Dom … 6=Sab
+    if (dias.includes(dow)) {
+      datasSelecionadas.add(dataStr(cur));
+      adicionados++;
+    }
+    cur.setDate(cur.getDate() + 1);
+  }
+
+  renderDatasTags();
+  $("pickerSemana").classList.add("hidden");
+  showToast(`✓ ${adicionados} datas adicionadas.`);
+}
+
+// ── Picker de calendário mensal ──────────────────────────────
+function abrirPickerMes() {
+  $("pickerSemana").classList.add("hidden");
+  calMesAtual = new Date();
+  calSelTemp  = new Set([...datasSelecionadas]);
+  renderCalendario();
+  $("pickerMes").classList.remove("hidden");
+}
+
+function navegarMesCalendario(delta) {
+  calMesAtual = new Date(calMesAtual.getFullYear(), calMesAtual.getMonth() + delta, 1);
+  renderCalendario();
+}
+
+function renderCalendario() {
+  const grid  = $("calGrid");
+  const label = $("pickerMesLabel");
+  if (!grid) return;
+
+  const ano = calMesAtual.getFullYear();
+  const mes = calMesAtual.getMonth();
+  const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+                 "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+  label.textContent = `${MESES[mes]} ${ano}`;
+
+  const hj = hoje();
+  const diasSem = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+
+  // Cabeçalho de dias
+  let html = diasSem.map(d =>
+    `<div class="cal-cell cal-header">${d}</div>`
+  ).join("");
+
+  // Primeiro dia do mês (0=Dom)
+  const primeiro = new Date(ano, mes, 1).getDay();
+  for (let i = 0; i < primeiro; i++) html += `<div class="cal-cell cal-empty"></div>`;
+
+  const totalDias = new Date(ano, mes + 1, 0).getDate();
+  for (let d = 1; d <= totalDias; d++) {
+    const ds  = `${ano}-${String(mes+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const sel = calSelTemp.has(ds);
+    const isHj = ds === hj;
+    html += `<div class="cal-cell ${sel ? "cal-selected" : ""} ${isHj ? "cal-today" : ""}"
+      onclick="toggleCalDia('${ds}')" title="${ds}">${d}</div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function toggleCalDia(ds) {
+  if (calSelTemp.has(ds)) calSelTemp.delete(ds);
+  else calSelTemp.add(ds);
+  renderCalendario();
+}
+
+function selecionarTodosMes() {
+  const ano = calMesAtual.getFullYear();
+  const mes = calMesAtual.getMonth();
+  const totalDias = new Date(ano, mes + 1, 0).getDate();
+  for (let d = 1; d <= totalDias; d++) {
+    const ds = `${ano}-${String(mes+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    calSelTemp.add(ds);
+  }
+  renderCalendario();
+}
+
+function limparCalendario() {
+  const ano = calMesAtual.getFullYear();
+  const mes = calMesAtual.getMonth();
+  const totalDias = new Date(ano, mes + 1, 0).getDate();
+  for (let d = 1; d <= totalDias; d++) {
+    const ds = `${ano}-${String(mes+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    calSelTemp.delete(ds);
+  }
+  renderCalendario();
+}
+
+function confirmarCalendario() {
+  calSelTemp.forEach(ds => datasSelecionadas.add(ds));
+  renderDatasTags();
+  $("pickerMes").classList.add("hidden");
+  showToast(`✓ ${calSelTemp.size} datas confirmadas.`);
+}
+
+// ── Render tags ──────────────────────────────────────────────
+function renderDatasTags() {
+  const wrap   = $("datasTags");
+  const label  = $("datasLabel");
+  const btnLmp = $("btnLimparDatas");
+  if (!wrap) return;
+
+  const sorted = [...datasSelecionadas].sort();
+
+  if (!sorted.length) {
+    label.textContent = "Nenhuma data selecionada";
+    btnLmp.classList.add("hidden");
+    wrap.innerHTML = "";
+    return;
+  }
+
+  label.textContent = `${sorted.length} data${sorted.length !== 1 ? "s" : ""} selecionada${sorted.length !== 1 ? "s" : ""}`;
+  btnLmp.classList.remove("hidden");
+
+  wrap.innerHTML = sorted.map(ds => `
+    <span class="data-tag">
+      ${formatDate(ds)}
+      <button class="data-tag-remove" title="Remover" onclick="removerData('${ds}')">×</button>
+    </span>
+  `).join("");
+}
+
+function removerData(ds) {
+  datasSelecionadas.delete(ds);
+  renderDatasTags();
+}
+
+function limparTodasDatas() {
+  datasSelecionadas.clear();
+  renderDatasTags();
+}
+
+// Helper formata YYYY-MM-DD → Date string local sem offset
+function dataStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+// ── Cria e envia o treino em lote (multi-datas) ──────────────
+async function criarTreinoLote() {
+  const classif     = getClassifFinal();
+  const titulo      = ($("treinoTitulo")?.value     || "").trim();
+  const descricao   = ($("treinoDescricao")?.value  || "").trim();
+  const volume      = ($("treinoVolume")?.value      || "").trim();
+  const intensidade = ($("treinoIntensidade")?.value || "").trim();
+  const datas       = [...datasSelecionadas].sort();
+
+  if (!classif)              { showToast("Selecione ou digite uma classificação."); return; }
+  if (!descricao)            { showToast("Descreva o treino antes de enviar.");     return; }
+  if (!datas.length)         { showToast("Adicione ao menos uma data.");            return; }
+  if (!alunosSelecionados.size) { showToast("Selecione ao menos um aluno.");        return; }
+
+  // Monta descrição completa com metadados no topo
+  const partes = [];
+  if (titulo)      partes.push(`[${classif.toUpperCase()}] ${titulo}`);
+  else             partes.push(`[${classif.toUpperCase()}]`);
+  if (intensidade) partes.push(`Zona: ${intensidade}`);
+  if (volume)      partes.push(`Volume: ${volume}`);
+  partes.push("", descricao);
+  const descricaoFinal = partes.join("\n").trim();
+
+  $("btnConfCriarTreino").disabled = true;
+  $("btnConfCriarTreino").textContent = "Enviando...";
+
+  const payload = {
+    action:           "criarTreinoLote",
+    classificacao:    classif,
+    titulo,
+    descricao_treino: descricaoFinal,
+    volume,
+    intensidade,
+    datas_treino:     datas,          // ← array de datas
+    ids_alunos:       [...alunosSelecionados],
+  };
+
+  const res = await callAPI(payload, "enviando treinos...");
+
+  $("btnConfCriarTreino").disabled = false;
+  $("btnConfCriarTreino").textContent = "＋ Criar e Enviar Treino";
+
+  if (!res.ok) { showToast("Erro: " + (res.erro || "tente novamente.")); return; }
+
+  const total = res.criados || (alunosSelecionados.size * datas.length);
+  showToast(`✓ ${total} treino${total !== 1 ? "s" : ""} criado${total !== 1 ? "s" : ""}!`);
+  fecharModal("modalCriarTreino");
+
+  // Atualiza estado local
+  const hjStr = hoje();
+  alunosSelecionados.forEach(id => {
+    const idx = state.todosAlunos.findIndex(a => String(a.id_aluno) === id);
+    if (idx < 0) return;
+    state.todosAlunos[idx].treinos = state.todosAlunos[idx].treinos || [];
+
+    datas.forEach((dt, di) => {
+      const novoTreino = {
+        id_treino:        (res.ids_criados?.[id]?.[dt]) || gerarIdLocal(),
+        id_aluno:         id,
+        data_treino:      dt,
+        descricao_treino: descricaoFinal,
+        classificacao:    classif,
+        feedback_aluno:   "",
+        status:           "Pendente",
+      };
+      state.todosAlunos[idx].treinos.unshift(novoTreino);
+      if (dt === hjStr) state.todosAlunos[idx].statusHoje = "Pendente";
+    });
+
+    // Reordena por data desc
+    state.todosAlunos[idx].treinos.sort((a, b) =>
+      a.data_treino > b.data_treino ? -1 : 1);
+  });
+
+  if (state.alunoAdmin && alunosSelecionados.has(String(state.alunoAdmin.id_aluno))) {
+    renderAdminMain(state.alunoAdmin);
+  }
+  renderSidebar(state.todosAlunos);
+}
+
+function gerarIdLocal() {
+  return "T" + Date.now() + Math.floor(Math.random() * 1000);
+}
+
+// ── Badge de classificação para exibição no histórico ────────
+function classifBadgeHTML(classif) {
+  if (!classif) return "";
+  const c = getClassifCor(classif);
+  return `<span class="classif-badge"
+    style="color:${c.cor};background:${c.bg};border-color:${c.border};">
+    <span style="width:6px;height:6px;border-radius:50%;background:${c.cor};display:inline-block;"></span>
+    ${escHtml(classif)}
+  </span>`;
+}
+
 </script>
 </body>
 </html>
