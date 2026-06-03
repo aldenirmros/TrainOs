@@ -5,13 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>TrainOS · Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<!-- PDF export lib -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
     theme: {
       extend: {
-        fontFamily: { syne: ['Syne','sans-serif'], mono: ['DM Mono','monospace'] },
+        fontFamily: { syne: ['Plus Jakarta Sans','sans-serif'], mono: ['JetBrains Mono','monospace'] },
         colors: {
           bg:     '#0a0a0f',
           surface:'#111118',
@@ -35,7 +38,7 @@
   body {
     background: #0a0a0f;
     color: #e8e8f0;
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     min-height: 100dvh;
     overflow-x: hidden;
   }
@@ -91,7 +94,7 @@
     animation: spin .7s linear infinite;
   }
   .loader-text {
-    font-family: 'DM Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
     color: #8888aa;
     letter-spacing: .1em;
@@ -129,7 +132,7 @@
   }
   .logo-mark {
     font-size: 13px;
-    font-family: 'DM Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     color: #c8f135;
     letter-spacing: .25em;
     text-transform: uppercase;
@@ -146,7 +149,7 @@
 
   .field-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
   .field-label {
-    font-size: 11px; font-family: 'DM Mono', monospace;
+    font-size: 11px; font-family: 'JetBrains Mono', monospace;
     color: #8888aa; letter-spacing: .12em; text-transform: uppercase;
     margin-bottom: 4px;
   }
@@ -158,7 +161,7 @@
     padding: 14px 16px;
     color: #e8e8f0;
     font-size: 15px;
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     outline: none;
     transition: border-color .2s, box-shadow .2s;
   }
@@ -170,7 +173,7 @@
     width: 100%;
     background: #c8f135;
     color: #0a0a0f;
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 700;
     font-size: 15px;
     border: none;
@@ -192,7 +195,7 @@
     padding: 10px 14px;
     font-size: 13px;
     color: #f87171;
-    font-family: 'DM Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     text-align: center;
   }
 
@@ -207,10 +210,10 @@
     height: 60px;
   }
   .topbar-logo { font-size: 16px; font-weight: 800; color: #c8f135; letter-spacing: .04em; }
-  .topbar-user { font-size: 12px; font-family: 'DM Mono', monospace; color: #8888aa; }
+  .topbar-user { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: #8888aa; }
   .btn-logout {
     font-size: 12px;
-    font-family: 'DM Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     color: #8888aa;
     background: none; border: 1px solid #1e1e2e;
     border-radius: 8px; padding: 6px 12px;
@@ -235,7 +238,7 @@
     gap: 16px;
   }
   .summary-card-full { grid-column: 1/-1; }
-  .stat-label { font-size: 10px; font-family: 'DM Mono', monospace; color: #8888aa; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; }
+  .stat-label { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: #8888aa; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; }
   .stat-value { font-size: 22px; font-weight: 700; color: #e8e8f0; }
   .stat-value-sm { font-size: 14px; font-weight: 600; color: #e8e8f0; line-height: 1.4; }
 
@@ -250,7 +253,7 @@
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 14px;
   }
-  .week-nav-title { font-size: 13px; font-family: 'DM Mono', monospace; color: #8888aa; letter-spacing: .1em; text-transform: uppercase; }
+  .week-nav-title { font-size: 13px; font-family: 'JetBrains Mono', monospace; color: #8888aa; letter-spacing: .1em; text-transform: uppercase; }
   .nav-arrows { display: flex; gap: 8px; }
   .btn-arrow {
     width: 32px; height: 32px;
@@ -291,7 +294,7 @@
     background: #c8f135;
   }
   .day-pill.active.has-treino::after { background: #0a0a0f; }
-  .dp-weekday { font-size: 10px; font-family: 'DM Mono', monospace; color: #4a4a6a; letter-spacing: .06em; margin-bottom: 4px; }
+  .dp-weekday { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: #4a4a6a; letter-spacing: .06em; margin-bottom: 4px; }
   .dp-num { font-size: 16px; font-weight: 700; color: #e8e8f0; }
 
   /* Treino card */
@@ -302,9 +305,9 @@
     padding: 20px;
   }
   .treino-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; gap: 12px; }
-  .treino-date { font-size: 11px; font-family: 'DM Mono', monospace; color: #8888aa; letter-spacing: .1em; }
+  .treino-date { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; letter-spacing: .1em; }
   .status-pill {
-    font-size: 11px; font-family: 'DM Mono', monospace;
+    font-size: 11px; font-family: 'JetBrains Mono', monospace;
     padding: 4px 10px; border-radius: 99px;
     white-space: nowrap; font-weight: 500;
     letter-spacing: .06em;
@@ -320,11 +323,11 @@
     border-radius: 10px; padding: 14px;
     border: 1px solid #1e1e2e;
     margin-bottom: 16px;
-    font-family: 'DM Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
-  .treino-empty { font-size: 14px; color: #4a4a6a; font-family: 'DM Mono', monospace; text-align: center; padding: 32px 0; }
+  .treino-empty { font-size: 14px; color: #4a4a6a; font-family: 'JetBrains Mono', monospace; text-align: center; padding: 32px 0; }
 
-  .feedback-label { font-size: 11px; font-family: 'DM Mono', monospace; color: #8888aa; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+  .feedback-label { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
   .feedback-textarea {
     width: 100%;
     background: #0a0a0f;
@@ -333,7 +336,7 @@
     padding: 12px 14px;
     color: #e8e8f0;
     font-size: 14px;
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     outline: none;
     resize: vertical;
     min-height: 90px;
@@ -344,7 +347,7 @@
 
   .btn-send {
     background: #c8f135; color: #0a0a0f;
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 14px;
     border: none; border-radius: 10px; padding: 13px 24px;
     cursor: pointer; transition: opacity .2s; width: 100%;
   }
@@ -356,7 +359,7 @@
     border: 1px solid rgba(200,241,53,.2);
     border-radius: 10px; padding: 14px;
   }
-  .feedback-given-label { font-size: 10px; font-family: 'DM Mono', monospace; color: #c8f135; letter-spacing: .1em; margin-bottom: 6px; }
+  .feedback-given-label { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: #c8f135; letter-spacing: .1em; margin-bottom: 6px; }
   .feedback-given-text { font-size: 13px; color: #e8e8f0; line-height: 1.6; }
 
   /* ── Admin Panel ── */
@@ -379,7 +382,7 @@
     padding: 20px 16px 12px;
     border-bottom: 1px solid #1e1e2e;
   }
-  .sidebar-title { font-size: 11px; font-family: 'DM Mono', monospace; color: #8888aa; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 12px; }
+  .sidebar-title { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 12px; }
   .sidebar-search {
     width: 100%;
     background: #0a0a0f;
@@ -388,7 +391,7 @@
     padding: 9px 12px;
     color: #e8e8f0;
     font-size: 13px;
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     outline: none;
   }
   .sidebar-search:focus { border-color: rgba(200,241,53,.4); }
@@ -407,7 +410,7 @@
     padding: 9px 8px;
     color: #8888aa;
     font-size: 11px;
-    font-family: 'DM Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     letter-spacing: .06em;
     cursor: pointer;
     transition: all .2s;
@@ -432,10 +435,10 @@
   .aluno-item:hover { background: rgba(255,255,255,.04); }
   .aluno-item.active { background: rgba(200,241,53,.1); }
   .aluno-name { font-size: 14px; font-weight: 600; color: #e8e8f0; }
-  .aluno-user { font-size: 11px; font-family: 'DM Mono', monospace; color: #8888aa; }
-  .badge-concluido { font-size: 9px; font-family: 'DM Mono', monospace; background: rgba(200,241,53,.15); color: #c8f135; border: 1px solid rgba(200,241,53,.3); padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
-  .badge-pendente  { font-size: 9px; font-family: 'DM Mono', monospace; background: rgba(245,166,35,.1); color: #f5a623; border: 1px solid rgba(245,166,35,.3); padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
-  .badge-semtreino { font-size: 9px; font-family: 'DM Mono', monospace; background: rgba(74,74,106,.1); color: #4a4a6a; border: 1px solid rgba(74,74,106,.3); padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
+  .aluno-user { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; }
+  .badge-concluido { font-size: 9px; font-family: 'JetBrains Mono', monospace; background: rgba(200,241,53,.15); color: #c8f135; border: 1px solid rgba(200,241,53,.3); padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
+  .badge-pendente  { font-size: 9px; font-family: 'JetBrains Mono', monospace; background: rgba(245,166,35,.1); color: #f5a623; border: 1px solid rgba(245,166,35,.3); padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
+  .badge-semtreino { font-size: 9px; font-family: 'JetBrains Mono', monospace; background: rgba(74,74,106,.1); color: #4a4a6a; border: 1px solid rgba(74,74,106,.3); padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
 
   /* Main content */
   .admin-main {
@@ -446,7 +449,7 @@
   }
 
   .section-title {
-    font-size: 11px; font-family: 'DM Mono', monospace;
+    font-size: 11px; font-family: 'JetBrains Mono', monospace;
     color: #8888aa; letter-spacing: .14em; text-transform: uppercase;
     margin-bottom: 14px;
     display: flex; align-items: center; gap: 8px;
@@ -485,7 +488,7 @@
     padding: 11px 13px;
     color: #e8e8f0;
     font-size: 13px;
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     outline: none;
     transition: border-color .2s;
   }
@@ -499,7 +502,7 @@
     padding: 12px 13px;
     color: #e8e8f0;
     font-size: 13px;
-    font-family: 'DM Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     outline: none;
     resize: vertical;
     min-height: 120px;
@@ -510,7 +513,7 @@
 
   .btn-admin {
     background: #c8f135; color: #0a0a0f;
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13px;
     border: none; border-radius: 8px; padding: 12px 20px;
     cursor: pointer; transition: opacity .2s;
   }
@@ -519,7 +522,7 @@
 
   .btn-secondary {
     background: transparent; color: #8888aa;
-    font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 13px;
     border: 1px solid #1e1e2e; border-radius: 8px; padding: 11px 20px;
     cursor: pointer; transition: all .2s;
   }
@@ -528,7 +531,7 @@
   /* Histórico table */
   .hist-table { width: 100%; border-collapse: collapse; font-size: 13px; }
   .hist-table th {
-    font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500;
     letter-spacing: .1em; text-transform: uppercase; color: #8888aa;
     text-align: left; padding: 8px 12px;
     border-bottom: 1px solid #1e1e2e;
@@ -548,7 +551,7 @@
   .mobile-back-btn {
     display: none;
     align-items: center; gap: 8px;
-    font-size: 13px; font-family: 'DM Mono', monospace;
+    font-size: 13px; font-family: 'JetBrains Mono', monospace;
     color: #8888aa; background: none; border: none; cursor: pointer;
     margin-bottom: 16px; padding: 0;
   }
@@ -561,13 +564,13 @@
     color: #4a4a6a; text-align: center;
   }
   .empty-state-icon { font-size: 36px; opacity: .4; }
-  .empty-state-text { font-size: 13px; font-family: 'DM Mono', monospace; }
+  .empty-state-text { font-size: 13px; font-family: 'JetBrains Mono', monospace; }
 
   /* Success toast */
   .toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
     background: #c8f135; color: #0a0a0f;
-    font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500;
     padding: 12px 24px; border-radius: 99px;
     z-index: 9998; white-space: nowrap;
     animation: fadeUp .3s cubic-bezier(.16,1,.3,1);
@@ -639,7 +642,7 @@
     padding: 18px;
   }
   .form-block-title {
-    font-size: 10px; font-family: 'DM Mono', monospace;
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
     color: #c8f135; letter-spacing: .18em; text-transform: uppercase;
     margin-bottom: 14px;
     display: flex; align-items: center; gap: 8px;
@@ -652,7 +655,7 @@
 
   .form-field-wrap { display: flex; flex-direction: column; gap: 5px; }
   .form-label {
-    font-size: 10px; font-family: 'DM Mono', monospace;
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
     color: #8888aa; letter-spacing: .12em; text-transform: uppercase;
   }
   .form-input {
@@ -662,7 +665,7 @@
     padding: 10px 13px;
     color: #e8e8f0;
     font-size: 13px;
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     outline: none;
     transition: border-color .2s;
     width: 100%;
@@ -692,7 +695,7 @@
     cursor: pointer;
     transition: all .15s;
     font-size: 12px;
-    font-family: 'DM Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     color: #8888aa;
     user-select: none;
   }
@@ -709,7 +712,7 @@
     display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;
   }
   .simnao-question {
-    font-size: 12px; color: #8888aa; font-family: 'DM Mono', monospace;
+    font-size: 12px; color: #8888aa; font-family: 'JetBrains Mono', monospace;
     flex: 1; min-width: 200px; padding-top: 2px;
   }
   .simnao-opts { display: flex; gap: 6px; flex-shrink: 0; }
@@ -720,7 +723,7 @@
     border-radius: 6px;
     padding: 5px 11px;
     cursor: pointer;
-    font-size: 12px; font-family: 'DM Mono', monospace; color: #8888aa;
+    font-size: 12px; font-family: 'JetBrains Mono', monospace; color: #8888aa;
     transition: all .15s;
   }
   .simnao-opts label:hover { border-color: rgba(200,241,53,.3); }
@@ -741,7 +744,7 @@
     display: flex; align-items: center; gap: 10px;
     padding: 8px 0;
   }
-  .corrida-item label { font-size: 12px; font-family: 'DM Mono', monospace; color: #8888aa; min-width: 60px; }
+  .corrida-item label { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: #8888aa; min-width: 60px; }
   .corrida-item input[type="checkbox"] { accent-color: #c8f135; }
   .corrida-time {
     flex: 1;
@@ -751,7 +754,7 @@
     padding: 7px 10px;
     color: #e8e8f0;
     font-size: 12px;
-    font-family: 'DM Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     outline: none;
     max-width: 120px;
   }
@@ -762,7 +765,7 @@
     background: rgba(200,241,53,.1);
     border: 1px solid rgba(200,241,53,.3);
     color: #c8f135;
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13px;
     border-radius: 10px; padding: 12px 20px;
     cursor: pointer; transition: all .2s;
     display: flex; align-items: center; gap: 8px;
@@ -775,12 +778,55 @@
     background: rgba(56,217,245,.08);
     border: 1px solid rgba(56,217,245,.25);
     color: #38d9f5;
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 12px;
     border-radius: 8px; padding: 10px 16px;
     cursor: pointer; transition: all .2s;
     white-space: nowrap;
   }
   .btn-edit-ficha:hover { background: rgba(56,217,245,.14); }
+
+  /* ── Botões export PDF ── */
+  .btn-export {
+    background: rgba(245,166,35,.08);
+    border: 1px solid rgba(245,166,35,.25);
+    color: #f5a623;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 12px;
+    border-radius: 8px; padding: 10px 14px;
+    cursor: pointer; transition: all .2s;
+    white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-export:hover { background: rgba(245,166,35,.16); }
+
+  /* ── Config marca (topbar) ── */
+  .btn-config {
+    font-size: 15px;
+    background: none; border: 1px solid #1e1e2e;
+    border-radius: 8px; padding: 6px 10px;
+    color: #8888aa; cursor: pointer; transition: all .2s;
+    line-height: 1;
+  }
+  .btn-config:hover { border-color: rgba(200,241,53,.4); color: #c8f135; }
+
+  .topbar-logo-wrap { display: flex; align-items: center; gap: 10px; }
+  .topbar-logo-img {
+    height: 30px; width: auto; max-width: 140px;
+    border-radius: 5px; object-fit: contain;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body * { visibility: hidden; }
+    #printArea, #printArea * { visibility: visible; }
+    #printArea {
+      position: absolute; top: 0; left: 0; width: 100%;
+      display: block !important;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #111; background: #fff;
+      padding: 32px;
+    }
+  }
+  #printArea { display: none; }
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
@@ -810,6 +856,67 @@
   <div class="spinner"></div>
   <div class="loader-text" id="loaderText">carregando...</div>
 </div>
+
+<!-- ═══════════════════════════════════════════════
+     MODAL: CONFIGURAR MARCA
+═══════════════════════════════════════════════ -->
+<div id="modalConfigMarca" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-header">
+      <div class="modal-title">Configurar <span>Marca</span></div>
+      <button class="modal-close" onclick="fecharModal('modalConfigMarca')">✕</button>
+    </div>
+    <div class="modal-body" style="gap:16px;">
+
+      <div class="form-block">
+        <div class="form-block-title">Nome / Texto da Logo</div>
+        <div class="form-field-wrap">
+          <div class="form-label">Texto exibido na barra superior</div>
+          <input id="cfgLogoTexto" class="form-input" type="text" placeholder="Ex: Studio Sátila · TrainOS"/>
+        </div>
+      </div>
+
+      <div class="form-block">
+        <div class="form-block-title">Logomarca (Imagem)</div>
+        <div class="form-field-wrap">
+          <div class="form-label">Enviar imagem (PNG, JPG, SVG — recomendado fundo transparente)</div>
+          <input id="cfgLogoFile" type="file" accept="image/*"
+            style="background:#16161f;border:1px solid #1e1e2e;border-radius:8px;padding:10px;color:#8888aa;font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;width:100%;"
+            onchange="previewLogo(this)"/>
+        </div>
+        <div id="cfgLogoPreview" style="margin-top:12px;display:none;text-align:center;">
+          <img id="cfgLogoPreviewImg" style="max-height:60px;border-radius:8px;border:1px solid #1e1e2e;padding:6px;background:#0a0a0f;"/>
+          <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#8888aa;margin-top:6px;">Pré-visualização</div>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="btn-secondary" style="font-size:11px;padding:7px 14px;" onclick="removerLogo()">✕ Remover imagem</button>
+        </div>
+      </div>
+
+      <div class="form-block">
+        <div class="form-block-title">Informações do PDF exportado</div>
+        <div class="form-grid-2">
+          <div class="form-field-wrap form-grid-full">
+            <div class="form-label">Nome do personal / empresa (aparece no PDF)</div>
+            <input id="cfgPdfNome" class="form-input" type="text" placeholder="Ex: Marcelo Sátila Personal"/>
+          </div>
+          <div class="form-field-wrap form-grid-full">
+            <div class="form-label">Contato / site (rodapé do PDF)</div>
+            <input id="cfgPdfContato" class="form-input" type="text" placeholder="Ex: @marcelo.satila · (11) 9xxxx-xxxx"/>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fecharModal('modalConfigMarca')">Cancelar</button>
+      <button class="btn-admin" onclick="salvarConfigMarca()">💾 Salvar Configurações</button>
+    </div>
+  </div>
+</div>
+
+<!-- Área oculta para impressão / PDF -->
+<div id="printArea"></div>
 
 <!-- ═══════════════════════════════════════════════
      MODAL: CRIAR USUÁRIO
@@ -1222,9 +1329,13 @@
 
   <!-- TOP BAR -->
   <header class="topbar">
-    <div class="topbar-logo">TrainOS</div>
-    <div style="display:flex;align-items:center;gap:12px;">
+    <div class="topbar-logo-wrap">
+      <img id="topbarLogoImg" class="topbar-logo-img hidden" alt="Logo"/>
+      <div class="topbar-logo" id="topbarLogoText">TrainOS</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
       <span class="topbar-user" id="topbarUser"></span>
+      <button class="btn-config" id="btnConfigMarca" onclick="abrirConfigMarca()" title="Configurar marca">⚙</button>
       <button class="btn-logout" onclick="handleLogout()">↩ Sair</button>
     </div>
   </header>
@@ -1258,9 +1369,12 @@
       </div>
 
       <!-- Botão ficha cadastral (aluno) -->
-      <div class="anim-fadeup anim-delay-1">
-        <button class="btn-ficha-aluno" onclick="abrirFichaAluno()">
+      <div class="anim-fadeup anim-delay-1" style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn-ficha-aluno" style="flex:1;" onclick="abrirFichaAluno()">
           📋 Preencher / Atualizar Ficha Cadastral
+        </button>
+        <button class="btn-export" style="flex-shrink:0;" onclick="exportarMeusTreinosPDF()">
+          ⬇ Exportar Treinos PDF
         </button>
       </div>
 
@@ -1329,7 +1443,7 @@
 // ══════════════════════════════════════════════════════════════
 //  ⚙️  CONFIGURAÇÃO — cole aqui a URL do seu Web App do Google
 // ══════════════════════════════════════════════════════════════
-const GAS_URL = "https://script.google.com/macros/s/AKfycbw26eFZDgric21G66CtXQ64gZ9zy9TBSdDR63CjWoHsDS9nMEeeA0I7-6Aq44_eoM2Z3Q/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxADk-SUnNFDmcrrhclg0dxxkwxJ9TacvE5fwMUGoY_u1PSanbYKzpzABQXGwGQWXwl1Q/exec";
 // ══════════════════════════════════════════════════════════════
 
 // ── STATE ──────────────────────────────────────────────────────
@@ -1714,19 +1828,23 @@ function renderAdminMain(aluno) {
       : `<span class="status-pill status-pendente">Pendente</span>`;
     return `<tr>
       <td>${formatDate(t.data_treino)}</td>
-      <td style="max-width:220px;font-family:'DM Mono',monospace;font-size:12px;color:#8888aa;">${escHtml(t.descricao_treino||"").substring(0,80)}${(t.descricao_treino||"").length>80?"…":""}</td>
+      <td style="max-width:220px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8888aa;">${escHtml(t.descricao_treino||"").substring(0,80)}${(t.descricao_treino||"").length>80?"…":""}</td>
       <td>${statusPill}</td>
       <td style="font-size:12px;color:#8888aa;">${escHtml(t.feedback_aluno||"—")}</td>
     </tr>`;
-  }).join("") || `<tr><td colspan="4" style="text-align:center;color:#4a4a6a;padding:24px;font-family:'DM Mono',monospace;font-size:12px;">Nenhum treino ainda.</td></tr>`;
+  }).join("") || `<tr><td colspan="4" style="text-align:center;color:#4a4a6a;padding:24px;font-family:'JetBrains Mono',monospace;font-size:12px;">Nenhum treino ainda.</td></tr>`;
 
   el.innerHTML = `
     <button class="mobile-back-btn" onclick="voltarSidebar()">← Voltar</button>
 
     <div>
-      <div class="section-title" style="justify-content:space-between;">
+      <div class="section-title" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <span>Dados Pessoais</span>
-        <button class="btn-edit-ficha" onclick="abrirFichaAdmin('${aluno.id_aluno}')">📋 Editar Ficha Cadastral</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-export" onclick="exportarFichaPDF('${aluno.id_aluno}')">⬇ Exportar Ficha PDF</button>
+          <button class="btn-export" onclick="exportarTreinosPDF('${aluno.id_aluno}')">⬇ Exportar Treinos PDF</button>
+          <button class="btn-edit-ficha" onclick="abrirFichaAdmin('${aluno.id_aluno}')">📋 Editar Ficha Cadastral</button>
+        </div>
       </div>
       <div class="info-grid">
         ${infoBlock("Nome",        f.nome         || aluno.nome || "—")}
@@ -2153,7 +2271,7 @@ function fecharModal(id) {
 
 // Fechar modal clicando no overlay
 document.addEventListener("click", e => {
-  ["modalCriarUsuario","modalCriarAluno","modalAnamnese"].forEach(id => {
+  ["modalCriarUsuario","modalCriarAluno","modalAnamnese","modalConfigMarca"].forEach(id => {
     const modal = $(id);
     if (modal && !modal.classList.contains("hidden") && e.target === modal) {
       fecharModal(id);
@@ -2181,6 +2299,493 @@ function escHtml(str) {
     .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
+
+// ══════════════════════════════════════════════════════════════
+//  CONFIGURAÇÃO DE MARCA
+// ══════════════════════════════════════════════════════════════
+const MARCA_KEY = "trainOS_marca";
+
+function carregarMarca() {
+  try {
+    const m = JSON.parse(localStorage.getItem(MARCA_KEY) || "{}");
+    aplicarMarca(m);
+  } catch { /* silencioso */ }
+}
+
+function aplicarMarca(m) {
+  const logoText = $("topbarLogoText");
+  const logoImg  = $("topbarLogoImg");
+
+  if (m.logoBase64) {
+    logoImg.src = m.logoBase64;
+    logoImg.classList.remove("hidden");
+    logoText.classList.add("hidden");
+  } else {
+    logoImg.classList.add("hidden");
+    logoText.classList.remove("hidden");
+    logoText.textContent = m.logoTexto || "TrainOS";
+  }
+}
+
+function abrirConfigMarca() {
+  try {
+    const m = JSON.parse(localStorage.getItem(MARCA_KEY) || "{}");
+    setVal("cfgLogoTexto",   m.logoTexto  || "");
+    setVal("cfgPdfNome",     m.pdfNome    || "");
+    setVal("cfgPdfContato",  m.pdfContato || "");
+
+    const prev = $("cfgLogoPreview");
+    const prevImg = $("cfgLogoPreviewImg");
+    if (m.logoBase64) {
+      prevImg.src = m.logoBase64;
+      prev.style.display = "block";
+    } else {
+      prev.style.display = "none";
+    }
+  } catch { /* silencioso */ }
+
+  $("modalConfigMarca").classList.remove("hidden");
+}
+
+function previewLogo(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const prev = $("cfgLogoPreview");
+    const prevImg = $("cfgLogoPreviewImg");
+    prevImg.src = e.target.result;
+    prev.style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+
+function removerLogo() {
+  try {
+    const m = JSON.parse(localStorage.getItem(MARCA_KEY) || "{}");
+    delete m.logoBase64;
+    localStorage.setItem(MARCA_KEY, JSON.stringify(m));
+  } catch { /* silencioso */ }
+  $("cfgLogoFile").value = "";
+  $("cfgLogoPreview").style.display = "none";
+  $("cfgLogoPreviewImg").src = "";
+}
+
+function salvarConfigMarca() {
+  const file = $("cfgLogoFile").files[0];
+
+  const salvar = (base64) => {
+    const m = {
+      logoTexto:  getVal("cfgLogoTexto")  || "TrainOS",
+      pdfNome:    getVal("cfgPdfNome"),
+      pdfContato: getVal("cfgPdfContato"),
+    };
+    if (base64) m.logoBase64 = base64;
+    else {
+      // mantém base64 existente se não enviou novo arquivo
+      try {
+        const prev = JSON.parse(localStorage.getItem(MARCA_KEY) || "{}");
+        if (prev.logoBase64) m.logoBase64 = prev.logoBase64;
+      } catch { /* silencioso */ }
+    }
+    localStorage.setItem(MARCA_KEY, JSON.stringify(m));
+    aplicarMarca(m);
+    fecharModal("modalConfigMarca");
+    showToast("✓ Configurações de marca salvas!");
+  };
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => salvar(e.target.result);
+    reader.readAsDataURL(file);
+  } else {
+    salvar(null);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  EXPORTAÇÃO PDF — helpers compartilhados
+// ══════════════════════════════════════════════════════════════
+function getMarca() {
+  try { return JSON.parse(localStorage.getItem(MARCA_KEY) || "{}"); }
+  catch { return {}; }
+}
+
+function novoPDF() {
+  const { jsPDF } = window.jspdf;
+  return new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+}
+
+// Adiciona cabeçalho e rodapé padrão em cada página
+function pdfHeader(doc, titulo) {
+  const m       = getMarca();
+  const W       = doc.internal.pageSize.getWidth();
+  const H       = doc.internal.pageSize.getHeight();
+  const pages   = doc.internal.getNumberOfPages();
+
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
+
+    // Faixa de cabeçalho
+    doc.setFillColor(10, 10, 15);
+    doc.rect(0, 0, W, 18, "F");
+
+    // Logo ou texto
+    if (m.logoBase64) {
+      try { doc.addImage(m.logoBase64, "PNG", 8, 3, 0, 12); }
+      catch { /* fallback para texto */ pdfLogoTexto(doc, m); }
+    } else {
+      pdfLogoTexto(doc, m);
+    }
+
+    // Título da página
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(9);
+    doc.setTextColor(200, 241, 53);
+    doc.text(titulo, W / 2, 11, { align: "center" });
+
+    // Número de página
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(7);
+    doc.setTextColor(136, 136, 170);
+    doc.text(`Pág. ${i} / ${pages}`, W - 8, 11, { align: "right" });
+
+    // Linha separadora
+    doc.setDrawColor(30, 30, 46);
+    doc.line(0, 18, W, 18);
+
+    // Rodapé
+    doc.setFillColor(10, 10, 15);
+    doc.rect(0, H - 10, W, 10, "F");
+    doc.setFontSize(7);
+    doc.setTextColor(74, 74, 106);
+    const contato = m.pdfContato || "";
+    const nome    = m.pdfNome    || "TrainOS";
+    doc.text(`${nome}  ·  ${contato}`, W / 2, H - 4, { align: "center" });
+  }
+}
+
+function pdfLogoTexto(doc, m) {
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(10);
+  doc.setTextColor(200, 241, 53);
+  doc.text(m.logoTexto || "TrainOS", 8, 11);
+}
+
+// Adiciona um bloco de label + valor
+function pdfField(doc, label, valor, x, y, w) {
+  const W = w || 90;
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(7);
+  doc.setTextColor(136, 136, 170);
+  doc.text(String(label).toUpperCase(), x, y);
+  doc.setFont("helvetica","normal");
+  doc.setFontSize(9);
+  doc.setTextColor(30, 30, 40);
+  const linhas = doc.splitTextToSize(String(valor || "—"), W - 2);
+  doc.text(linhas, x, y + 4);
+  return y + 4 + (linhas.length * 4);
+}
+
+// Verifica espaço e adiciona página se necessário
+function checkPage(doc, y, needed) {
+  const H = doc.internal.pageSize.getHeight();
+  if (y + (needed || 10) > H - 14) {
+    doc.addPage();
+    return 24;
+  }
+  return y;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  EXPORTAR FICHA CADASTRAL (ADMIN)
+// ══════════════════════════════════════════════════════════════
+function exportarFichaPDF(id_aluno) {
+  const aluno = state.todosAlunos.find(a => String(a.id_aluno) === String(id_aluno));
+  if (!aluno) { showToast("Aluno não encontrado."); return; }
+
+  const f  = aluno.ficha || {};
+  const doc = novoPDF();
+  const W   = doc.internal.pageSize.getWidth();
+  let y = 24;
+
+  const cor_titulo = [10, 10, 15];
+  const cor_bg     = [22, 22, 31];
+
+  // Função de seção
+  const secao = (titulo) => {
+    y = checkPage(doc, y, 14);
+    doc.setFillColor(...cor_bg);
+    doc.rect(10, y - 4, W - 20, 8, "F");
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(8);
+    doc.setTextColor(200, 241, 53);
+    doc.text(titulo.toUpperCase(), 13, y + 1);
+    y += 8;
+  };
+
+  // ── Cabeçalho do aluno ──
+  doc.setFillColor(...cor_bg);
+  doc.rect(10, y - 4, W - 20, 14, "F");
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(14);
+  doc.setTextColor(30, 30, 40);
+  doc.text(escHtml(f.nome || aluno.nome || aluno.usuario), 14, y + 4);
+  doc.setFont("helvetica","normal");
+  doc.setFontSize(8);
+  doc.setTextColor(136, 136, 170);
+  doc.text(`@${aluno.usuario}  ·  Ficha Cadastral Completa`, 14, y + 9);
+  y += 20;
+
+  // ── Dados Básicos ──
+  secao("Dados Básicos");
+  const grid2 = (items) => {
+    const cx = W / 2 - 5;
+    items.forEach(([l, v], i) => {
+      const col = i % 2 === 0 ? 12 : cx;
+      if (i % 2 === 0 && i > 0) y += 2;
+      const ny = pdfField(doc, l, v, col, y, 85);
+      if (i % 2 === 1) y = ny;
+    });
+    if (items.length % 2 === 1) y = pdfField(doc, items[items.length-1][0], items[items.length-1][1], 12, y - 2, 85);
+    y += 4;
+  };
+
+  // Linha a linha para controle de altura
+  const campos = [
+    ["Nome",           f.nome        || "—"],
+    ["E-mail",         f.email       || "—"],
+    ["Nascimento",     f.nascimento  || f.data_nascimento || "—"],
+    ["Telefone",       f.telefone    || "—"],
+    ["Idade",          f.idade ? f.idade + " anos" : "—"],
+    ["Peso / Altura",  (f.peso && f.altura) ? `${f.peso} kg · ${f.altura} m` : "—"],
+    ["Trabalho",       f.trabalho    || "—"],
+  ];
+  campos.forEach(([l, v]) => {
+    y = checkPage(doc, y, 10);
+    y = pdfField(doc, l, v, 12, y, W - 24) + 2;
+  });
+  y += 4;
+
+  // ── Histórico de Corrida ──
+  secao("Histórico de Corrida");
+  const corridaItems = [
+    ["Provas",              f.provas         || "—"],
+    ["Tempo 5K",            f.tempo_5k       || "—"],
+    ["Tempo 10K",           f.tempo_10k      || "—"],
+    ["Tempo 21K",           f.tempo_21k      || "—"],
+    ["Tempo 42K",           f.tempo_42k      || "—"],
+    ["Tempo TAF",           f.tempo_taf      || "—"],
+    ["Tempo de prática",    f.tempo_corrida  || "—"],
+    ["Maior km semanal",    f.maior_km       || "—"],
+    ["Treino atual",        f.treino_atual   || "—"],
+    ["Prova alvo",          f.prova_alvo     || "—"],
+    ["Academia",            f.academia       || "—"],
+  ];
+  corridaItems.forEach(([l, v]) => {
+    y = checkPage(doc, y, 10);
+    y = pdfField(doc, l, v, 12, y, W - 24) + 2;
+  });
+  y += 4;
+
+  // ── Saúde ──
+  secao("Saúde e Patologias");
+  [
+    ["Patologias",        f.patologias || "—"],
+    ["Detalhes",          f.patologia_outros_desc || "—"],
+    ["Tabagismo",         f.tabagismo  || "—"],
+  ].forEach(([l, v]) => {
+    y = checkPage(doc, y, 10);
+    y = pdfField(doc, l, v, 12, y, W - 24) + 2;
+  });
+  y += 4;
+
+  // ── Questões adicionais ──
+  secao("Questões de Saúde Adicionais");
+  const LABELS_Q = {
+    doenca_grave:"Doença grave", hospitalizacao:"Hospitalização/Cirurgia",
+    medicacoes_regulares:"Medicações regulares", medicamentos_peso:"Medicamentos peso/desempenho",
+    alergias:"Alergias", desmaio_pos_exercicio:"Desmaios pós-exercício",
+    dor_peito:"Dor no peito", palpitacao:"Palpitações", sopro_cardiaco:"Sopro cardíaco",
+    hist_morte_subita:"Hist. morte súbita fam.", cardiomiopatia_fam:"Cardiomiopatia fam.",
+    doenca_viral:"Doença viral (últ. mês)", restricao_medica:"Restrição médica",
+    convulsao:"Convulsão", dor_cabeca:"Dores de cabeça fortes",
+    formigamento:"Formigamento/dormência", aperto_nervo:"Sensação de aperto nervoso",
+    sint_respiratorios:"Sint. respiratórios", asma:"Asma",
+    alergias_temporarias:"Alergias temporárias", equipamentos_suporte:"Equipamentos suporte",
+    distensao_muscular:"Distensão muscular", ossos_quebrados:"Ossos/luxação",
+    dor_articulacoes:"Dores articulações/tendões",
+  };
+  Object.entries(LABELS_Q).forEach(([key, label]) => {
+    const resp = f["aq_" + key] || "—";
+    const qual = f["aqd_" + key] ? ` — ${f["aqd_" + key]}` : "";
+    y = checkPage(doc, y, 8);
+    y = pdfField(doc, label, resp + qual, 12, y, W - 24) + 2;
+  });
+  y += 4;
+
+  // ── Atividade Física ──
+  secao("Atividade Física e Objetivos");
+  [
+    ["Tempo de prática",     f.tempo_pratica || "—"],
+    ["Hist. atividades",     f.historico_atividades || "—"],
+    ["Atividades atuais",    f.atividades_atuais || "—"],
+    ["Horas semanais",       f.horas_semanais || "—"],
+    ["Tempo diário",         f.tempo_diario || "—"],
+    ["Dias disponíveis",     f.dias_disponiveis || "—"],
+    ["Objetivos",            f.objetivos || "—"],
+  ].forEach(([l, v]) => {
+    y = checkPage(doc, y, 10);
+    y = pdfField(doc, l, v, 12, y, W - 24) + 2;
+  });
+  y += 4;
+
+  // ── Alimentação ──
+  secao("Alimentação");
+  [
+    ["Alimentação adequada",  f.alim_adequada  || "—"],
+    ["Descrição",             f.alim_desc      || "—"],
+    ["Nutricionista",         f.nutricionista  || "—"],
+    ["Suplementação",         f.suplementacao  || "—"],
+    ["Suplementos",           f.suplementos_desc || "—"],
+  ].forEach(([l, v]) => {
+    y = checkPage(doc, y, 10);
+    y = pdfField(doc, l, v, 12, y, W - 24) + 2;
+  });
+  y += 4;
+
+  // ── Feminino ──
+  if (f.menarca || f.intervalo_ciclo || f.ultima_menstruacao) {
+    secao("Específico para Mulheres");
+    [
+      ["Menarca",               f.menarca            || "—"],
+      ["Intervalo ciclo",       f.intervalo_ciclo    || "—"],
+      ["Maior intervalo/ano",   f.maior_intervalo    || "—"],
+      ["Última menstruação",    f.ultima_menstruacao || "—"],
+    ].forEach(([l, v]) => {
+      y = checkPage(doc, y, 10);
+      y = pdfField(doc, l, v, 12, y, W - 24) + 2;
+    });
+    y += 4;
+  }
+
+  // ── Observações ──
+  if (f.observacoes) {
+    secao("Observações");
+    y = checkPage(doc, y, 12);
+    y = pdfField(doc, "Observações gerais", f.observacoes, 12, y, W - 24) + 2;
+  }
+
+  pdfHeader(doc, "Ficha Cadastral");
+  const nomeArq = (f.nome || aluno.usuario || "aluno").replace(/\s+/g,"_");
+  doc.save(`Ficha_${nomeArq}.pdf`);
+  showToast("✓ PDF da ficha gerado!");
+}
+
+// ══════════════════════════════════════════════════════════════
+//  EXPORTAR TREINOS (ADMIN → aluno específico)
+// ══════════════════════════════════════════════════════════════
+function exportarTreinosPDF(id_aluno) {
+  const aluno = state.todosAlunos.find(a => String(a.id_aluno) === String(id_aluno));
+  if (!aluno) { showToast("Aluno não encontrado."); return; }
+  gerarTreinosPDF(aluno.nome || aluno.usuario, aluno.treinos || []);
+}
+
+// ── EXPORTAR TREINOS (ALUNO — próprios treinos)
+function exportarMeusTreinosPDF() {
+  const nome   = state.aluno.nome || state.usuario.nome || state.usuario.usuario;
+  gerarTreinosPDF(nome, state.treinos || []);
+}
+
+function gerarTreinosPDF(nomeAluno, treinos) {
+  if (!treinos.length) { showToast("Nenhum treino para exportar."); return; }
+
+  const doc = novoPDF();
+  const W   = doc.internal.pageSize.getWidth();
+  let y = 24;
+
+  // Título
+  doc.setFillColor(16, 16, 31);
+  doc.rect(10, y - 4, W - 20, 14, "F");
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(13);
+  doc.setTextColor(30, 30, 40);
+  doc.text(escHtml(nomeAluno), 14, y + 4);
+  doc.setFont("helvetica","normal");
+  doc.setFontSize(8);
+  doc.setTextColor(136, 136, 170);
+  doc.text("Histórico Completo de Treinos", 14, y + 9);
+  y += 22;
+
+  const statusCor = (s) => {
+    const sl = String(s || "").toLowerCase();
+    if (sl === "concluído" || sl === "concluido") return [200, 241, 53];
+    if (sl === "pendente") return [245, 166, 35];
+    return [74, 74, 106];
+  };
+
+  treinos.forEach((t, idx) => {
+    // Estima altura necessária
+    const descLinhas = doc.splitTextToSize(String(t.descricao_treino || "—"), W - 32);
+    const fbLinhas   = doc.splitTextToSize(String(t.feedback_aluno   || ""), W - 32);
+    const altNec = 14 + (descLinhas.length * 4.5) + (t.feedback_aluno ? 4 + (fbLinhas.length * 4) : 0) + 6;
+
+    y = checkPage(doc, y, altNec);
+
+    // Card background
+    doc.setFillColor(22, 22, 31);
+    doc.roundedRect(10, y - 2, W - 20, altNec - 2, 2, 2, "F");
+
+    // Data
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(8);
+    doc.setTextColor(136, 136, 170);
+    doc.text(formatDate(t.data_treino), 14, y + 4);
+
+    // Status pill
+    const [r, g, b] = statusCor(t.status);
+    const status = String(t.status || "Pendente");
+    doc.setFontSize(7);
+    doc.setTextColor(r, g, b);
+    doc.text(status, W - 14, y + 4, { align: "right" });
+
+    // Linha separadora leve
+    doc.setDrawColor(30, 30, 46);
+    doc.line(14, y + 6, W - 14, y + 6);
+    y += 9;
+
+    // Descrição
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(50, 50, 70);
+    doc.text(descLinhas, 14, y);
+    y += descLinhas.length * 4.5 + 2;
+
+    // Feedback
+    if (t.feedback_aluno) {
+      doc.setFont("helvetica","bold");
+      doc.setFontSize(7);
+      doc.setTextColor(200, 241, 53);
+      doc.text("✓ FEEDBACK DO ALUNO", 14, y);
+      y += 4;
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(8);
+      doc.setTextColor(80, 80, 100);
+      doc.text(fbLinhas, 14, y);
+      y += fbLinhas.length * 4;
+    }
+
+    y += 8;
+  });
+
+  pdfHeader(doc, `Treinos — ${escHtml(nomeAluno)}`);
+  const nomeArq = nomeAluno.replace(/\s+/g,"_");
+  doc.save(`Treinos_${nomeArq}.pdf`);
+  showToast("✓ PDF de treinos gerado!");
+}
+
+// Carrega marca ao iniciar
+document.addEventListener("DOMContentLoaded", () => { carregarMarca(); });
 </script>
 </body>
 </html>
