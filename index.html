@@ -1479,7 +1479,7 @@
       <span id="mhLogoText">TrainOS</span>
     </div>
     <div class="mh-actions">
-      <button class="mh-btn" id="mhBtnConfig" onclick="abrirConfigMarca()" title="Configurar marca">⚙</button>
+      <button class="mh-btn" id="mhBtnConfig" style="display:none;" onclick="abrirConfigMarca()" title="Configurar marca">⚙</button>
       <button class="mh-btn" onclick="handleLogout()" title="Sair">↩</button>
     </div>
   </div>
@@ -1623,6 +1623,8 @@
   <div class="mob-page" id="mobPagePerfil">
     <div class="mob-content">
       <div class="mob-content-inner">
+
+        <!-- Conta -->
         <div class="mob-section-title">Conta</div>
         <div class="mob-info-tile full" style="display:flex;align-items:center;gap:14px;">
           <div style="width:52px;height:52px;border-radius:14px;background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#c8f135;flex-shrink:0;" id="m_perfilAvatar">?</div>
@@ -1633,24 +1635,57 @@
           </div>
         </div>
 
-        <div class="mob-section-title" style="margin-top:4px;">Configurações</div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="mob-aluno-item" style="cursor:pointer;" onclick="abrirConfigMarca()">
-            <span style="font-size:20px;">⚙</span>
+        <!-- Bloco exclusivo ADMIN -->
+        <div id="m_adminOnlySection" style="display:none;">
+
+          <div class="mob-section-title" style="margin-top:4px;">Marca &amp; Aparência</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+
+            <!-- Personalizar marca -->
+            <button class="mob-aluno-item" style="cursor:pointer;" onclick="abrirConfigMarca()">
+              <span style="font-size:20px;">🎨</span>
+              <div class="mob-aluno-info">
+                <div class="mob-aluno-name">Personalizar marca</div>
+                <div class="mob-aluno-user">Logo, nome e informações do PDF</div>
+              </div>
+              <span class="mob-aluno-arrow">›</span>
+            </button>
+
+            <!-- Tema de cores -->
+            <button class="mob-aluno-item" style="cursor:pointer;" onclick="abrirTemasCores()">
+              <span style="font-size:20px;">🖌</span>
+              <div class="mob-aluno-info">
+                <div class="mob-aluno-name">Tema de cores</div>
+                <div class="mob-aluno-user" id="m_temaAtualLabel">Lime — padrão</div>
+              </div>
+              <span class="mob-aluno-arrow">›</span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Tema de cores também no desktop (botão na topbar já existe) -->
+        <!-- Para aluno mobile: só aparência básica, sem config de marca -->
+        <div id="m_alunoOnlySection" style="display:none;">
+          <div class="mob-section-title" style="margin-top:4px;">Aparência</div>
+          <button class="mob-aluno-item" style="cursor:pointer;" onclick="abrirTemasCores()">
+            <span style="font-size:20px;">🖌</span>
             <div class="mob-aluno-info">
-              <div class="mob-aluno-name">Personalizar marca</div>
-              <div class="mob-aluno-user">Logo, nome e informações do PDF</div>
+              <div class="mob-aluno-name">Tema de cores</div>
+              <div class="mob-aluno-user" id="m_temaAtualLabelAluno">Lime — padrão</div>
             </div>
             <span class="mob-aluno-arrow">›</span>
           </button>
         </div>
 
+        <!-- Sessão -->
         <div class="mob-section-title" style="margin-top:4px;">Sessão</div>
         <button class="mob-btn-full"
           style="background:rgba(248,113,113,.08);color:#f87171;border:1px solid rgba(248,113,113,.2);font-size:15px;"
           onclick="handleLogout()">
           ↩ Sair da conta
         </button>
+
       </div>
     </div>
   </div>
@@ -1882,6 +1917,70 @@
       <button class="btn-admin" id="btnConfCriarTreino" onclick="criarTreinoLote()">
         ＋ Criar e Enviar Treino
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MODAL: TEMAS DE CORES
+═══════════════════════════════════════════════ -->
+<div id="modalTemasCores" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-header">
+      <div class="modal-title">Tema de <span>Cores</span></div>
+      <button class="modal-close" onclick="fecharModal('modalTemasCores')">✕</button>
+    </div>
+    <div class="modal-body" style="gap:20px;">
+
+      <!-- Temas predefinidos -->
+      <div class="form-block">
+        <div class="form-block-title">Temas Predefinidos</div>
+        <div id="temaGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <!-- gerado via JS -->
+        </div>
+      </div>
+
+      <!-- Cor personalizada -->
+      <div class="form-block">
+        <div class="form-block-title">Cor Personalizada</div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          <div class="form-field-wrap" style="flex:1;">
+            <div class="form-label">Cor de destaque (hex)</div>
+            <input id="temaCorHex" class="form-input" type="text"
+              placeholder="#c8f135" maxlength="7"
+              oninput="previewCorCustom(this.value)"/>
+          </div>
+          <div>
+            <div class="form-label">Picker</div>
+            <input id="temaCorPicker" type="color" value="#c8f135"
+              oninput="syncColorPicker(this.value)"
+              style="width:48px;height:40px;border:1px solid #1e1e2e;border-radius:8px;background:#16161f;cursor:pointer;padding:3px;"/>
+          </div>
+          <div id="temaPreviewDot" style="width:48px;height:48px;border-radius:12px;border:2px solid rgba(255,255,255,.1);transition:background .2s;"></div>
+        </div>
+      </div>
+
+      <!-- Preview ao vivo -->
+      <div class="form-block" id="temaPreviewBlock">
+        <div class="form-block-title">Preview</div>
+        <div id="temaPreviewCard" style="background:#0a0a0f;border-radius:12px;padding:16px;border:1px solid #1e1e2e;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div id="pv_badge" style="padding:5px 14px;border-radius:99px;font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:600;">Treino Ativo</div>
+            <div id="pv_dot" style="width:8px;height:8px;border-radius:50%;"></div>
+          </div>
+          <div id="pv_title" style="font-size:16px;font-weight:700;color:#e8e8f0;margin-bottom:4px;">Intervalado 5×1000m</div>
+          <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:#8888aa;">Z4 · 12 km · Pendente</div>
+          <div id="pv_bar" style="margin-top:12px;height:3px;border-radius:99px;width:60%;"></div>
+          <div id="pv_btn" style="margin-top:12px;border-radius:10px;padding:10px;text-align:center;font-weight:700;font-size:13px;color:#0a0a0f;">
+            Enviar Feedback
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fecharModal('modalTemasCores')">Cancelar</button>
+      <button class="btn-admin" id="btnAplicarTema" onclick="aplicarESalvarTema()">✓ Aplicar Tema</button>
     </div>
   </div>
 </div>
@@ -2304,6 +2403,7 @@
     <div style="display:flex;align-items:center;gap:8px;">
       <span class="topbar-user" id="topbarUser"></span>
       <button class="btn-config" id="btnConfigMarca" onclick="abrirConfigMarca()" title="Configurar marca">⚙</button>
+      <button class="btn-config" id="btnTemasCores" onclick="abrirTemasCores()" title="Tema de cores" style="display:none;">🖌</button>
       <button class="btn-logout" onclick="handleLogout()">↩ Sair</button>
     </div>
   </header>
@@ -3256,7 +3356,7 @@ function fecharModal(id) {
 
 // Fechar modal clicando no overlay
 document.addEventListener("click", e => {
-  ["modalCriarUsuario","modalCriarAluno","modalAnamnese","modalConfigMarca","modalCriarTreino"].forEach(id => {
+  ["modalCriarUsuario","modalCriarAluno","modalAnamnese","modalConfigMarca","modalCriarTreino","modalTemasCores"].forEach(id => {
     const modal = $(id);
     if (modal && !modal.classList.contains("hidden") && e.target === modal) {
       fecharModal(id);
@@ -4176,6 +4276,288 @@ window.addEventListener("resize", () => {
     $("mobShell").style.display = "none";
   }
 });
+
+// ══════════════════════════════════════════════════════════════
+//  CONTROLE DE VISIBILIDADE POR TIPO DE USUÁRIO
+// ══════════════════════════════════════════════════════════════
+function aplicarVisibilidadePorTipo(tipo) {
+  const isAdmin = tipo === "admin";
+
+  // Topbar desktop: config de marca e tema só para admin
+  const btnMarca = $("btnConfigMarca");
+  const btnTema  = $("btnTemasCores");
+  if (btnMarca) btnMarca.style.display = isAdmin ? "" : "none";
+  if (btnTema)  btnTema.style.display  = isAdmin ? "" : "none";
+
+  // Mobile header: ⚙ só para admin
+  const mhCfg = $("mhBtnConfig");
+  if (mhCfg) mhCfg.style.display = isAdmin ? "flex" : "none";
+
+  // Perfil mobile: seções exclusivas
+  const adminSec = $("m_adminOnlySection");
+  const alunoSec = $("m_alunoOnlySection");
+  if (adminSec) adminSec.style.display = isAdmin ? "block" : "none";
+  if (alunoSec) alunoSec.style.display = isAdmin ? "none"  : "block";
+}
+
+// ══════════════════════════════════════════════════════════════
+//  SISTEMA DE TEMAS DE CORES
+// ══════════════════════════════════════════════════════════════
+const TEMA_KEY = "trainOS_tema";
+
+const TEMAS_PREDEFINIDOS = [
+  { id: "lime",     nome: "Lime",      sub: "Padrão",          cor: "#c8f135", dark: "#8fb20e" },
+  { id: "cyan",     nome: "Ciano",     sub: "Tecnológico",     cor: "#38d9f5", dark: "#1aa8bf" },
+  { id: "violet",   nome: "Violeta",   sub: "Criativo",        cor: "#a78bfa", dark: "#7c5ce0" },
+  { id: "amber",    nome: "Âmbar",     sub: "Energético",      cor: "#f5a623", dark: "#c07d0d" },
+  { id: "rose",     nome: "Rosa",      sub: "Vibrante",        cor: "#f472b6", dark: "#c0318b" },
+  { id: "emerald",  nome: "Esmeralda", sub: "Natural",         cor: "#34d399", dark: "#0fa86b" },
+  { id: "orange",   nome: "Laranja",   sub: "Intenso",         cor: "#fb923c", dark: "#c55f0d" },
+  { id: "sky",      nome: "Sky",       sub: "Clean",           cor: "#38bdf8", dark: "#0986c5" },
+];
+
+let temaAtualCor   = "#c8f135"; // cor viva em uso no preview
+let temaAtualId    = "lime";
+
+// ── Carrega e aplica o tema salvo ────────────────────────────
+function carregarTema() {
+  try {
+    const t = JSON.parse(localStorage.getItem(TEMA_KEY) || "{}");
+    if (t.cor) aplicarTemaGlobal(t.cor, t.dark || escurecer(t.cor), false);
+    temaAtualId  = t.id  || "lime";
+    temaAtualCor = t.cor || "#c8f135";
+  } catch { /* silencioso */ }
+}
+
+// ── Aplica o tema na DOM via CSS variables ────────────────────
+function aplicarTemaGlobal(cor, dark, salvar) {
+  const r  = hexToRgb(cor);
+  const rd = hexToRgb(dark || escurecer(cor));
+  if (!r) return;
+
+  const root = document.documentElement;
+  root.style.setProperty("--tema-cor",       cor);
+  root.style.setProperty("--tema-dark",      dark || escurecer(cor));
+  root.style.setProperty("--tema-rgb",       `${r.r},${r.g},${r.b}`);
+  root.style.setProperty("--tema-rgb-dark",  `${rd.r},${rd.g},${rd.b}`);
+
+  // Recolore dinamicamente todos os elementos que usam a cor lime hardcoded
+  // via injection de um <style> tag de override
+  let styleEl = $("temaOverrideStyle");
+  if (!styleEl) {
+    styleEl = document.createElement("style");
+    styleEl.id = "temaOverrideStyle";
+    document.head.appendChild(styleEl);
+  }
+
+  styleEl.textContent = `
+    /* ── Tema dinâmico: ${cor} ── */
+    .topbar-logo, .logo-mark, .login-title span, .modal-title span,
+    .form-block-title, .mob-hero::before,
+    .section-title, .mob-section-title { color: ${cor} !important; }
+
+    .btn-primary { background: ${cor} !important; }
+    .btn-admin   { background: ${cor} !important; }
+    .mob-btn-full:not([style]) { background: ${cor} !important; }
+
+    .day-pill.active  { background: ${cor} !important; border-color: ${cor} !important; }
+    .mob-day-pill.active { background: ${cor} !important; border-color: ${cor} !important; }
+    .day-pill.has-treino::after   { background: ${cor} !important; }
+    .mob-day-pill.has-treino::after { background: ${cor} !important; }
+
+    .btn-arrow:hover   { border-color: ${cor} !important; color: ${cor} !important; }
+    .mob-week-btn:active { border-color: ${cor} !important; color: ${cor} !important; }
+
+    .sidebar-search:focus  { border-color: rgba(${r.r},${r.g},${r.b},.4) !important; }
+    .field-input:focus     { border-color: ${cor} !important; box-shadow: 0 0 0 3px rgba(${r.r},${r.g},${r.b},.12) !important; }
+    .form-input:focus      { border-color: ${cor} !important; box-shadow: 0 0 0 2px rgba(${r.r},${r.g},${r.b},.08) !important; }
+
+    .classif-pill.selected { background: rgba(${r.r},${r.g},${r.b},.12) !important; border-color: rgba(${r.r},${r.g},${r.b},.5) !important; color: ${cor} !important; }
+
+    .data-tag { background: rgba(${r.r},${r.g},${r.b},.1) !important; border-color: rgba(${r.r},${r.g},${r.b},.3) !important; color: ${cor} !important; }
+    .aluno-count-badge { background: rgba(${r.r},${r.g},${r.b},.12) !important; border-color: rgba(${r.r},${r.g},${r.b},.3) !important; color: ${cor} !important; }
+
+    .btn-ficha-aluno { background: rgba(${r.r},${r.g},${r.b},.1) !important; border-color: rgba(${r.r},${r.g},${r.b},.3) !important; color: ${cor} !important; }
+    .status-concluido { background: rgba(${r.r},${r.g},${r.b},.1) !important; border-color: rgba(${r.r},${r.g},${r.b},.25) !important; color: ${cor} !important; }
+
+    .spinner { border-top-color: ${cor} !important; }
+    .toast { background: ${cor} !important; box-shadow: 0 8px 32px rgba(${r.r},${r.g},${r.b},.3) !important; }
+
+    .bn-item.active .bn-label { color: ${cor} !important; }
+    .mob-fab { background: ${cor} !important; box-shadow: 0 4px 20px rgba(${r.r},${r.g},${r.b},.4) !important; }
+    .mob-quick-btn.lime { border-color: rgba(${r.r},${r.g},${r.b},.3) !important; background: rgba(${r.r},${r.g},${r.b},.06) !important; }
+    .mob-action-btn.lime { background: rgba(${r.r},${r.g},${r.b},.1) !important; border-color: rgba(${r.r},${r.g},${r.b},.3) !important; color: ${cor} !important; }
+    .mob-info-tile .mob-tile-val { } /* mantém branco */
+    #m_perfilAvatar { background: rgba(${r.r},${r.g},${r.b},.1) !important; border-color: rgba(${r.r},${r.g},${r.b},.2) !important; color: ${cor} !important; }
+    .mob-aluno-avatar { background: rgba(${r.r},${r.g},${r.b},.1) !important; border-color: rgba(${r.r},${r.g},${r.b},.2) !important; color: ${cor} !important; }
+    .btn-sidebar-treino { background: rgba(${r.r},${r.g},${r.b},.1) !important; border-color: rgba(${r.r},${r.g},${r.b},.3) !important; color: ${cor} !important; }
+    .btn-config:hover, .mh-btn:active { color: ${cor} !important; border-color: rgba(${r.r},${r.g},${r.b},.4) !important; }
+    .login-card::before, .modal-box::before {
+      background: linear-gradient(90deg, transparent, rgba(${r.r},${r.g},${r.b},.4), transparent) !important;
+    }
+    .cal-cell.cal-selected { background: rgba(${r.r},${r.g},${r.b},.15) !important; border-color: rgba(${r.r},${r.g},${r.b},.4) !important; color: ${cor} !important; }
+    .cal-cell:hover:not(.cal-empty):not(.cal-header) { border-color: rgba(${r.r},${r.g},${r.b},.4) !important; }
+    .aluno-item.active { background: rgba(${r.r},${r.g},${r.b},.1) !important; }
+    .mob-aluno-item:active { background: rgba(${r.r},${r.g},${r.b},.06) !important; }
+    .badge-concluido { background: rgba(${r.r},${r.g},${r.b},.15) !important; color: ${cor} !important; border-color: rgba(${r.r},${r.g},${r.b},.3) !important; }
+    .feedback-given { background: rgba(${r.r},${r.g},${r.b},.06) !important; border-color: rgba(${r.r},${r.g},${r.b},.2) !important; }
+    .feedback-given-label { color: ${cor} !important; }
+    .mob-hist-fb { border-color: rgba(${r.r},${r.g},${r.b},.15) !important; background: rgba(${r.r},${r.g},${r.b},.06) !important; color: ${cor} !important; }
+  `;
+
+  if (salvar) {
+    const t = JSON.parse(localStorage.getItem(TEMA_KEY) || "{}");
+    t.cor = cor; t.dark = dark || escurecer(cor);
+    localStorage.setItem(TEMA_KEY, JSON.stringify(t));
+  }
+}
+
+// ── Abre o modal de temas ─────────────────────────────────────
+function abrirTemasCores() {
+  buildTemaGrid();
+  setVal("temaCorHex", temaAtualCor);
+  $("temaCorPicker").value = temaAtualCor;
+  atualizarPreviewTema(temaAtualCor);
+  $("modalTemasCores").classList.remove("hidden");
+}
+
+// ── Constrói grid de temas predefinidos ──────────────────────
+function buildTemaGrid() {
+  const grid = $("temaGrid");
+  if (!grid) return;
+  grid.innerHTML = TEMAS_PREDEFINIDOS.map(t => `
+    <div onclick="selecionarTemaPredefinido('${t.id}','${t.cor}','${t.dark}')"
+      style="
+        background:${temaAtualId === t.id ? `rgba(${hexToRgb(t.cor)?.r||200},${hexToRgb(t.cor)?.g||241},${hexToRgb(t.cor)?.b||53},.12)` : '#0a0a0f'};
+        border: 2px solid ${temaAtualId === t.id ? t.cor : '#1e1e2e'};
+        border-radius:12px; padding:12px; cursor:pointer;
+        display:flex; align-items:center; gap:10px;
+        transition:all .2s;
+      "
+      onmouseover="this.style.borderColor='${t.cor}'"
+      onmouseout="this.style.borderColor='${temaAtualId===t.id ? t.cor : '#1e1e2e'}'"
+    >
+      <div style="width:32px;height:32px;border-radius:10px;background:${t.cor};
+        box-shadow:0 0 12px ${t.cor}55;flex-shrink:0;"></div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#e8e8f0;">${t.nome}</div>
+        <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8888aa;">${t.sub}</div>
+      </div>
+      ${temaAtualId === t.id ? `<span style="margin-left:auto;color:${t.cor};font-size:14px;">✓</span>` : ""}
+    </div>
+  `).join("");
+}
+
+function selecionarTemaPredefinido(id, cor, dark) {
+  temaAtualId  = id;
+  temaAtualCor = cor;
+  setVal("temaCorHex", cor);
+  $("temaCorPicker").value = cor;
+  atualizarPreviewTema(cor);
+  buildTemaGrid();
+}
+
+function previewCorCustom(hex) {
+  if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+    temaAtualId  = "custom";
+    temaAtualCor = hex;
+    $("temaCorPicker").value = hex;
+    atualizarPreviewTema(hex);
+    buildTemaGrid();
+  }
+}
+
+function syncColorPicker(hex) {
+  temaAtualId  = "custom";
+  temaAtualCor = hex;
+  setVal("temaCorHex", hex);
+  atualizarPreviewTema(hex);
+  buildTemaGrid();
+}
+
+function atualizarPreviewTema(cor) {
+  const r = hexToRgb(cor);
+  if (!r) return;
+  const dot  = $("temaPreviewDot");
+  const pvBadge = $("pv_badge");
+  const pvDot   = $("pv_dot");
+  const pvBar   = $("pv_bar");
+  const pvBtn   = $("pv_btn");
+  if (dot)     dot.style.background = cor;
+  if (pvBadge) { pvBadge.style.background = `rgba(${r.r},${r.g},${r.b},.15)`; pvBadge.style.color = cor; pvBadge.style.border = `1px solid rgba(${r.r},${r.g},${r.b},.4)`; }
+  if (pvDot)   { pvDot.style.background = cor; pvDot.style.boxShadow = `0 0 8px ${cor}`; }
+  if (pvBar)   pvBar.style.background = `linear-gradient(90deg, ${cor}, ${cor}44)`;
+  if (pvBtn)   { pvBtn.style.background = cor; pvBtn.style.color = "#0a0a0f"; }
+
+  // Atualiza label de tema atual
+  const t = TEMAS_PREDEFINIDOS.find(x => x.id === temaAtualId);
+  const label = t ? `${t.nome} — ${t.sub}` : `Personalizado — ${cor}`;
+  ["m_temaAtualLabel","m_temaAtualLabelAluno"].forEach(id => setText(id, label));
+}
+
+function aplicarESalvarTema() {
+  const cor  = temaAtualCor;
+  const t    = TEMAS_PREDEFINIDOS.find(x => x.id === temaAtualId);
+  const dark = t ? t.dark : escurecer(cor);
+
+  // Salva ID também
+  const saved = JSON.parse(localStorage.getItem(TEMA_KEY) || "{}");
+  saved.id = temaAtualId;
+  localStorage.setItem(TEMA_KEY, JSON.stringify(saved));
+
+  aplicarTemaGlobal(cor, dark, true);
+  fecharModal("modalTemasCores");
+  showToast("✓ Tema aplicado!");
+
+  // Atualiza label
+  const label = t ? `${t.nome} — ${t.sub}` : `Personalizado — ${cor}`;
+  ["m_temaAtualLabel","m_temaAtualLabelAluno"].forEach(id => setText(id, label));
+}
+
+// ── Utilitários de cor ────────────────────────────────────────
+function hexToRgb(hex) {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return m ? { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) } : null;
+}
+
+function escurecer(hex, fator) {
+  const r = hexToRgb(hex);
+  if (!r) return hex;
+  fator = fator || 0.65;
+  const rr = Math.round(r.r * fator);
+  const gg = Math.round(r.g * fator);
+  const bb = Math.round(r.b * fator);
+  return `#${rr.toString(16).padStart(2,"0")}${gg.toString(16).padStart(2,"0")}${bb.toString(16).padStart(2,"0")}`;
+}
+
+// ── Patching do initMobile para aplicar visibilidade por tipo ─
+const _origInitMobile = initMobile;
+initMobile = function(tipo) {
+  _origInitMobile.apply(this, arguments);
+  aplicarVisibilidadePorTipo(tipo);
+};
+
+// ── Carrega tema ao iniciar (junto com marca) ─────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  carregarTema();
+  // Atualiza label do tema no perfil
+  try {
+    const t = JSON.parse(localStorage.getItem(TEMA_KEY) || "{}");
+    const td = TEMAS_PREDEFINIDOS.find(x => x.id === (t.id || "lime"));
+    const label = td ? `${td.nome} — ${td.sub}` : (t.cor ? `Personalizado — ${t.cor}` : "Lime — Padrão");
+    ["m_temaAtualLabel","m_temaAtualLabelAluno"].forEach(id => setText(id, label));
+    temaAtualId  = t.id  || "lime";
+    temaAtualCor = t.cor || "#c8f135";
+  } catch { /* silencioso */ }
+});
+
+// Hook no showScreen para aplicar visibilidade logo após login
+const _origShowScreen = showScreen;
+showScreen = function(name) {
+  _origShowScreen.apply(this, arguments);
+  if (state.usuario) aplicarVisibilidadePorTipo(state.usuario.tipo);
+};
+
 
 
 // ══════════════════════════════════════════════════════════════
