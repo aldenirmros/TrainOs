@@ -2,7 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#0a0a0f"/>
 <title>TrainOS · Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -979,26 +982,680 @@
   }
   #printArea { display: none; }
 
-  /* ── Responsive ── */
-  @media (max-width: 768px) {
-    .admin-sidebar { width: 100%; border-right: none; border-bottom: 1px solid #1e1e2e; }
-    .admin-layout  { flex-direction: column; }
-    .admin-main    { padding: 16px; }
-    .form-row      { grid-template-columns: 1fr; }
-    .mobile-back-btn { display: flex; }
-    .admin-sidebar.mobile-hidden { display: none; }
-    .admin-main.mobile-hidden    { display: none; }
-    .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
-    .modal-box { margin-top: 0; }
+  /* ══════════════════════════════════════════════
+     MOBILE — Design System (app-first)
+  ══════════════════════════════════════════════ */
+
+  /* ── Bottom Navigation Bar ── */
+  .bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 200;
+    background: rgba(10,10,15,.96);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-top: 1px solid rgba(30,30,46,.8);
+    padding: 8px 0 max(env(safe-area-inset-bottom), 8px);
+    display: none; /* shown via JS on mobile */
   }
+  .bottom-nav-inner {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .bn-item {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 3px; padding: 4px 16px;
+    background: none; border: none; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: all .2s;
+    min-width: 60px;
+    position: relative;
+  }
+  .bn-icon {
+    font-size: 20px; line-height: 1;
+    transition: transform .2s;
+  }
+  .bn-label {
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
+    letter-spacing: .04em; color: #4a4a6a;
+    transition: color .2s;
+    text-transform: uppercase;
+  }
+  .bn-item.active .bn-label { color: #c8f135; }
+  .bn-item.active .bn-icon  { transform: translateY(-2px); }
+  .bn-item:active            { transform: scale(.92); }
+  .bn-dot {
+    position: absolute; top: 2px; right: 14px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #c8f135;
+    box-shadow: 0 0 6px #c8f135;
+  }
+
+  /* ── Mobile Header (replaces topbar on mobile) ── */
+  .mobile-header {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,10,15,.95);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-bottom: 1px solid rgba(30,30,46,.7);
+    padding: env(safe-area-inset-top) 0 0;
+  }
+  .mobile-header-inner {
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px;
+  }
+  .mh-logo {
+    font-size: 17px; font-weight: 800; color: #c8f135;
+    letter-spacing: .03em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .mh-logo img { height: 26px; border-radius: 4px; }
+  .mh-actions { display: flex; gap: 6px; }
+  .mh-btn {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(30,30,46,.8);
+    border-radius: 10px;
+    color: #8888aa; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: all .2s;
+  }
+  .mh-btn:active { background: rgba(200,241,53,.1); color: #c8f135; transform: scale(.92); }
+
+  /* ── Mobile Page Shell ── */
+  .mob-page {
+    display: none;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+  .mob-page.active { display: flex; }
+
+  /* Content area with safe insets */
+  .mob-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: calc(56px + env(safe-area-inset-top)) 0
+             calc(72px + env(safe-area-inset-bottom));
+  }
+  .mob-content-inner {
+    padding: 16px;
+    display: flex; flex-direction: column;
+    gap: 12px;
+    max-width: 100%;
+  }
+
+  /* ── Mobile Section Header ── */
+  .mob-section-title {
+    font-size: 11px; font-family: 'JetBrains Mono', monospace;
+    color: #8888aa; letter-spacing: .14em; text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .mob-section-title::after { content:''; flex:1; height:1px; background:#1e1e2e; }
+
+  /* ── Hero Card (aluno) ── */
+  .mob-hero {
+    background: linear-gradient(135deg, #16161f 0%, #111118 100%);
+    border: 1px solid #1e1e2e;
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .mob-hero::before {
+    content: '';
+    position: absolute; top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,241,53,.12), transparent 70%);
+    pointer-events: none;
+  }
+  .mob-hero-name {
+    font-size: 22px; font-weight: 800; color: #e8e8f0;
+    margin-bottom: 4px;
+  }
+  .mob-hero-sub {
+    font-size: 12px; font-family: 'JetBrains Mono', monospace;
+    color: #8888aa; margin-bottom: 16px;
+  }
+  .mob-hero-stats {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+  .mob-hero-stat { text-align: center; }
+  .mob-hero-stat-val {
+    font-size: 16px; font-weight: 700; color: #e8e8f0;
+    margin-bottom: 2px;
+  }
+  .mob-hero-stat-lbl {
+    font-size: 9px; font-family: 'JetBrains Mono', monospace;
+    color: #4a4a6a; letter-spacing: .08em; text-transform: uppercase;
+  }
+  .mob-hero-divider {
+    width: 1px; background: #1e1e2e; align-self: stretch;
+  }
+
+  /* ── Quick actions row ── */
+  .mob-quick-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .mob-quick-btn {
+    background: #16161f;
+    border: 1px solid #1e1e2e;
+    border-radius: 14px;
+    padding: 14px 12px;
+    display: flex; flex-direction: column;
+    align-items: flex-start; gap: 6px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: all .2s;
+    text-align: left;
+  }
+  .mob-quick-btn:active { transform: scale(.97); }
+  .mob-quick-btn.lime  { border-color: rgba(200,241,53,.3); background: rgba(200,241,53,.06); }
+  .mob-quick-btn.amber { border-color: rgba(245,166,35,.3); background: rgba(245,166,35,.06); }
+  .mob-quick-icon { font-size: 22px; }
+  .mob-quick-label {
+    font-size: 12px; font-weight: 700; color: #e8e8f0;
+    line-height: 1.3;
+  }
+  .mob-quick-sub {
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
+    color: #8888aa;
+  }
+
+  /* ── Week strip mobile ── */
+  .mob-week-card {
+    background: #16161f;
+    border: 1px solid #1e1e2e;
+    border-radius: 16px;
+    padding: 14px 14px 10px;
+  }
+  .mob-week-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .mob-week-range {
+    font-size: 11px; font-family: 'JetBrains Mono', monospace;
+    color: #8888aa;
+  }
+  .mob-week-nav { display: flex; gap: 6px; }
+  .mob-week-btn {
+    width: 28px; height: 28px;
+    background: #0a0a0f; border: 1px solid #1e1e2e;
+    border-radius: 8px; color: #e8e8f0; font-size: 12px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    transition: all .15s;
+  }
+  .mob-week-btn:active { border-color: #c8f135; color: #c8f135; }
+
+  /* ── Day pill mobile (wider touch targets) ── */
+  .mob-day-strip {
+    display: flex; gap: 6px; overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .mob-day-strip::-webkit-scrollbar { display: none; }
+  .mob-day-pill {
+    flex: 0 0 auto;
+    min-width: 44px;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 8px 8px 6px;
+    border-radius: 12px;
+    border: 1px solid #1e1e2e;
+    cursor: pointer;
+    scroll-snap-align: start;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    transition: all .15s;
+    background: #0a0a0f;
+  }
+  .mob-day-pill.active      { background: #c8f135; border-color: #c8f135; }
+  .mob-day-pill.has-treino::after {
+    content: ''; position: absolute; bottom: 4px;
+    width: 4px; height: 4px; border-radius: 50%; background: #c8f135;
+  }
+  .mob-day-pill.active.has-treino::after { background: #0a0a0f; }
+  .mob-dp-wd  { font-size: 9px; font-family: 'JetBrains Mono', monospace; color: #4a4a6a; letter-spacing: .06em; margin-bottom: 4px; }
+  .mob-dp-num { font-size: 15px; font-weight: 700; color: #e8e8f0; }
+  .mob-day-pill.active .mob-dp-wd,
+  .mob-day-pill.active .mob-dp-num { color: #0a0a0f; }
+
+  /* ── Treino card mobile ── */
+  .mob-treino-card {
+    background: #16161f;
+    border: 1px solid #1e1e2e;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .mob-treino-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid #1e1e2e;
+  }
+  .mob-treino-date {
+    font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa;
+  }
+  .mob-treino-body {
+    padding: 14px 16px;
+    font-size: 13px; color: #8888aa;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.75; white-space: pre-wrap;
+    background: rgba(0,0,0,.2);
+  }
+  .mob-treino-footer { padding: 12px 16px; }
+  .mob-feedback-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .mob-feedback-ta {
+    width: 100%;
+    background: #0a0a0f;
+    border: 1px solid #1e1e2e;
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #e8e8f0; font-size: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    resize: none; min-height: 80px;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .mob-feedback-ta:focus { border-color: #c8f135; }
+  .mob-btn-full {
+    width: 100%; background: #c8f135; color: #0a0a0f;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800;
+    font-size: 15px; border: none; border-radius: 12px;
+    padding: 15px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity .2s, transform .1s;
+  }
+  .mob-btn-full:active { transform: scale(.98); opacity: .88; }
+
+  /* ── Admin mobile: alunos list ── */
+  .mob-aluno-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    background: #16161f;
+    border: 1px solid #1e1e2e;
+    border-radius: 14px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: all .15s;
+  }
+  .mob-aluno-item:active { transform: scale(.98); }
+  .mob-aluno-avatar {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: rgba(200,241,53,.1);
+    border: 1px solid rgba(200,241,53,.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; color: #c8f135;
+    flex-shrink: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .mob-aluno-info { flex: 1; min-width: 0; }
+  .mob-aluno-name { font-size: 14px; font-weight: 700; color: #e8e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mob-aluno-user { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; }
+  .mob-aluno-arrow { color: #4a4a6a; font-size: 14px; }
+
+  /* ── Admin mobile: detalhe do aluno ── */
+  .mob-detail-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 0 16px;
+    border-bottom: 1px solid #1e1e2e;
+    margin-bottom: 16px;
+  }
+  .mob-back-btn {
+    width: 36px; height: 36px;
+    background: #16161f; border: 1px solid #1e1e2e;
+    border-radius: 10px; color: #e8e8f0; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+    transition: all .15s;
+  }
+  .mob-back-btn:active { background: rgba(200,241,53,.1); border-color: rgba(200,241,53,.3); }
+  .mob-detail-name { font-size: 16px; font-weight: 800; color: #e8e8f0; }
+  .mob-detail-user { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; }
+
+  /* ── Admin action buttons strip ── */
+  .mob-action-strip {
+    display: flex; gap: 8px; overflow-x: auto;
+    padding-bottom: 4px; scrollbar-width: none;
+  }
+  .mob-action-strip::-webkit-scrollbar { display: none; }
+  .mob-action-btn {
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 12px; font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; border: 1px solid;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+    transition: all .15s;
+  }
+  .mob-action-btn:active { transform: scale(.95); }
+  .mob-action-btn.lime  { background: rgba(200,241,53,.1); border-color: rgba(200,241,53,.3); color: #c8f135; }
+  .mob-action-btn.cyan  { background: rgba(56,217,245,.08); border-color: rgba(56,217,245,.25); color: #38d9f5; }
+  .mob-action-btn.amber { background: rgba(245,166,35,.08); border-color: rgba(245,166,35,.25); color: #f5a623; }
+
+  /* ── Info tiles mobile ── */
+  .mob-info-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .mob-info-tile {
+    background: #16161f; border: 1px solid #1e1e2e;
+    border-radius: 12px; padding: 12px;
+  }
+  .mob-info-tile.full { grid-column: 1/-1; }
+  .mob-tile-lbl { font-size: 9px; font-family: 'JetBrains Mono', monospace; color: #8888aa; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
+  .mob-tile-val { font-size: 13px; font-weight: 600; color: #e8e8f0; line-height: 1.4; }
+
+  /* ── Treino form mobile ── */
+  .mob-form-card {
+    background: #16161f; border: 1px solid #1e1e2e;
+    border-radius: 16px; padding: 16px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
+  /* ── Hist list mobile (cards, não table) ── */
+  .mob-hist-card {
+    background: #0a0a0f; border: 1px solid #1e1e2e;
+    border-radius: 12px; padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .mob-hist-top {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .mob-hist-date {
+    font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa;
+  }
+  .mob-hist-desc {
+    font-size: 12px; font-family: 'JetBrains Mono', monospace;
+    color: #8888aa; line-height: 1.5;
+  }
+  .mob-hist-fb {
+    font-size: 12px; color: #c8f135;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 6px 10px; background: rgba(200,241,53,.06);
+    border-radius: 8px; border: 1px solid rgba(200,241,53,.15);
+    line-height: 1.5;
+  }
+
+  /* ── Floating Action Button (admin) ── */
+  .mob-fab {
+    position: fixed;
+    bottom: calc(72px + env(safe-area-inset-bottom) + 12px);
+    right: 16px;
+    z-index: 150;
+    width: 52px; height: 52px;
+    border-radius: 16px;
+    background: #c8f135;
+    color: #0a0a0f;
+    font-size: 24px; font-weight: 800;
+    border: none; cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(200,241,53,.4);
+    -webkit-tap-highlight-color: transparent;
+    transition: all .2s;
+  }
+  .mob-fab:active { transform: scale(.92); }
+
+  /* ── Modal mobile overrides ── */
+  @media (max-width: 600px) {
+    .modal-overlay {
+      align-items: flex-end;
+      padding: 0;
+    }
+    .modal-box {
+      border-radius: 24px 24px 0 0;
+      max-width: 100%;
+      width: 100%;
+      max-height: 92dvh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 0;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .modal-box::before { left: 40%; right: 40%; } /* drag handle hint */
+    .modal-body { padding: 16px 20px; gap: 14px; }
+    .modal-footer { padding: 12px 20px calc(16px + env(safe-area-inset-bottom)); }
+    .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+    .check-grid { gap: 6px; }
+    .check-item { padding: 8px 10px; }
+    .simnao-row { flex-direction: column; gap: 6px; }
+    .classif-grid { gap: 6px; }
+    .classif-pill { padding: 8px 12px; font-size: 12px; }
+    .aluno-select-list { max-height: 200px; }
+  }
+
+  /* ── Main media query: show/hide mobile vs desktop ── */
+  @media (max-width: 768px) {
+    /* Hide desktop elements */
+    .topbar        { display: none !important; }
+    .admin-layout  { display: none !important; }
+    #panelAluno .student-layout { display: none !important; }
+
+    /* Show mobile elements */
+    .mobile-header { display: block; }
+    .bottom-nav    { display: block; }
+    .mob-fab       { display: flex; }
+
+    /* Full-height app shell */
+    body { overflow: hidden; }
+    #screenApp { height: 100dvh; overflow: hidden; }
+  }
+
   @media (min-width: 769px) {
-    .admin-layout { flex-direction: row; }
+    /* Hide mobile elements on desktop */
+    .mobile-header    { display: none !important; }
+    .bottom-nav       { display: none !important; }
+    .mob-fab          { display: none !important; }
+    .mob-page         { display: none !important; }
+    .admin-layout     { display: flex !important; flex-direction: row; }
     .admin-sidebar.mobile-hidden { display: flex !important; }
     .admin-main.mobile-hidden    { display: flex !important; }
   }
 </style>
 </head>
 <body>
+
+<!-- ═══════════════════════════════════════════════
+     MOBILE HEADER
+═══════════════════════════════════════════════ -->
+<header class="mobile-header" id="mobileHeader">
+  <div class="mobile-header-inner">
+    <div class="mh-logo">
+      <img id="mhLogoImg" style="display:none;" alt="Logo"/>
+      <span id="mhLogoText">TrainOS</span>
+    </div>
+    <div class="mh-actions">
+      <button class="mh-btn" id="mhBtnConfig" onclick="abrirConfigMarca()" title="Configurar marca">⚙</button>
+      <button class="mh-btn" onclick="handleLogout()" title="Sair">↩</button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════
+     MOBILE BOTTOM NAV
+═══════════════════════════════════════════════ -->
+<nav class="bottom-nav" id="bottomNav">
+  <div class="bottom-nav-inner">
+    <button class="bn-item active" id="bnHome" onclick="mobNav('home')">
+      <span class="bn-icon">🏃</span>
+      <span class="bn-label">Treinos</span>
+    </button>
+    <button class="bn-item" id="bnFicha" onclick="mobNav('ficha')">
+      <span class="bn-icon">📋</span>
+      <span class="bn-label">Ficha</span>
+    </button>
+    <button class="bn-item" id="bnAlunos" onclick="mobNav('alunos')" style="display:none;">
+      <span class="bn-icon">👥</span>
+      <span class="bn-label">Alunos</span>
+    </button>
+    <button class="bn-item" id="bnPerfil" onclick="mobNav('perfil')">
+      <span class="bn-icon">👤</span>
+      <span class="bn-label">Perfil</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
+     FAB — Admin: Criar Treino
+═══════════════════════════════════════════════ -->
+<button class="mob-fab" id="mobFab" onclick="abrirModalCriarTreino()" title="Criar Treino">＋</button>
+
+<!-- ═══════════════════════════════════════════════
+     MOBILE PAGES SHELL
+═══════════════════════════════════════════════ -->
+<div id="mobShell" style="display:none;">
+
+  <!-- ── PAGE: Treinos (aluno) ── -->
+  <div class="mob-page" id="mobPageHome">
+    <div class="mob-content">
+      <div class="mob-content-inner">
+
+        <!-- Hero -->
+        <div class="mob-hero">
+          <div class="mob-hero-name" id="m_alunoNome">—</div>
+          <div class="mob-hero-sub" id="m_alunoSub">Carregando...</div>
+          <div class="mob-hero-stats">
+            <div class="mob-hero-stat">
+              <div class="mob-hero-stat-val" id="m_alunoPeso">—</div>
+              <div class="mob-hero-stat-lbl">Peso</div>
+            </div>
+            <div class="mob-hero-divider"></div>
+            <div class="mob-hero-stat">
+              <div class="mob-hero-stat-val" id="m_alunoAltura">—</div>
+              <div class="mob-hero-stat-lbl">Altura</div>
+            </div>
+            <div class="mob-hero-divider"></div>
+            <div class="mob-hero-stat">
+              <div class="mob-hero-stat-val" id="m_alunoNivel">—</div>
+              <div class="mob-hero-stat-lbl">Nível</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana -->
+        <div class="mob-week-card">
+          <div class="mob-week-header">
+            <span class="mob-week-range" id="m_weekLabel">—</span>
+            <div class="mob-week-nav">
+              <button class="mob-week-btn" onclick="navegarSemana(-1)">←</button>
+              <button class="mob-week-btn" id="m_btnNext" onclick="navegarSemana(1)">→</button>
+            </div>
+          </div>
+          <div class="mob-day-strip" id="m_daysStrip"></div>
+        </div>
+
+        <!-- Treino do dia -->
+        <div class="mob-treino-card" id="m_treinoCard">
+          <div class="mob-treino-body" style="color:#4a4a6a;font-size:13px;padding:20px;text-align:center;">
+            Selecione um dia acima
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: Ficha Cadastral (aluno) ── -->
+  <div class="mob-page" id="mobPageFicha">
+    <div class="mob-content">
+      <div class="mob-content-inner">
+        <div class="mob-section-title">Ficha Cadastral</div>
+        <button class="mob-btn-full" style="background:rgba(200,241,53,.1);color:#c8f135;border:1px solid rgba(200,241,53,.3);font-size:14px;"
+          onclick="abrirFichaAluno()">
+          📋 Preencher / Atualizar Ficha
+        </button>
+        <button class="mob-btn-full" style="background:rgba(245,166,35,.08);color:#f5a623;border:1px solid rgba(245,166,35,.25);font-size:14px;margin-top:8px;"
+          onclick="exportarMeusTreinosPDF()">
+          ⬇ Exportar Treinos em PDF
+        </button>
+        <div class="mob-section-title" style="margin-top:8px;">Objetivo</div>
+        <div class="mob-info-tile full">
+          <div class="mob-tile-lbl">Objetivo com o treino</div>
+          <div class="mob-tile-val" id="m_alunoObjetivo">—</div>
+        </div>
+        <div class="mob-section-title">Próxima Prova</div>
+        <div class="mob-info-tile full">
+          <div class="mob-tile-lbl">Data alvo</div>
+          <div class="mob-tile-val" id="m_alunoProva">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: Alunos (admin) ── -->
+  <div class="mob-page" id="mobPageAlunos">
+    <div class="mob-content">
+      <div class="mob-content-inner">
+        <input class="form-input" type="text" placeholder="🔍  Buscar aluno..."
+          style="font-size:14px;" oninput="mobFiltrarAlunos(this.value)" id="m_searchAluno"/>
+        <div id="m_alunoList" style="display:flex;flex-direction:column;gap:8px;">
+          <div style="padding:20px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#4a4a6a;">
+            Carregando...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: Detalhe do aluno (admin) ── -->
+  <div class="mob-page" id="mobPageAlunoDetalhe">
+    <div class="mob-content">
+      <div class="mob-content-inner" id="m_alunoDetalhe">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: Perfil ── -->
+  <div class="mob-page" id="mobPagePerfil">
+    <div class="mob-content">
+      <div class="mob-content-inner">
+        <div class="mob-section-title">Conta</div>
+        <div class="mob-info-tile full" style="display:flex;align-items:center;gap:14px;">
+          <div style="width:52px;height:52px;border-radius:14px;background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#c8f135;flex-shrink:0;" id="m_perfilAvatar">?</div>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:#e8e8f0;" id="m_perfilNome">—</div>
+            <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#8888aa;" id="m_perfilUser">@—</div>
+            <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#c8f135;margin-top:2px;text-transform:uppercase;letter-spacing:.08em;" id="m_perfilTipo">—</div>
+          </div>
+        </div>
+
+        <div class="mob-section-title" style="margin-top:4px;">Configurações</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="mob-aluno-item" style="cursor:pointer;" onclick="abrirConfigMarca()">
+            <span style="font-size:20px;">⚙</span>
+            <div class="mob-aluno-info">
+              <div class="mob-aluno-name">Personalizar marca</div>
+              <div class="mob-aluno-user">Logo, nome e informações do PDF</div>
+            </div>
+            <span class="mob-aluno-arrow">›</span>
+          </button>
+        </div>
+
+        <div class="mob-section-title" style="margin-top:4px;">Sessão</div>
+        <button class="mob-btn-full"
+          style="background:rgba(248,113,113,.08);color:#f87171;border:1px solid rgba(248,113,113,.2);font-size:15px;"
+          onclick="handleLogout()">
+          ↩ Sair da conta
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /#mobShell -->
 
 <!-- ═══════════════════════════════════════════════
      GLOBAL LOADER
@@ -3114,6 +3771,412 @@ function gerarTreinosPDF(nomeAluno, treinos) {
 
 // Carrega marca ao iniciar
 document.addEventListener("DOMContentLoaded", () => { carregarMarca(); });
+
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO MOBILE
+// ══════════════════════════════════════════════════════════════
+
+const IS_MOBILE = () => window.innerWidth <= 768;
+
+// ── Navegação por tabs ───────────────────────────────────────
+let mobCurrentPage = "home";
+
+function mobNav(page) {
+  if (!IS_MOBILE()) return;
+
+  // Esconde todas as pages
+  document.querySelectorAll(".mob-page").forEach(p => p.classList.remove("active"));
+
+  // Atualiza bottom nav
+  document.querySelectorAll(".bn-item").forEach(b => b.classList.remove("active"));
+
+  mobCurrentPage = page;
+
+  const pageMap = {
+    home:         "mobPageHome",
+    ficha:        "mobPageFicha",
+    alunos:       "mobPageAlunos",
+    alunoDetalhe: "mobPageAlunoDetalhe",
+    perfil:       "mobPagePerfil",
+  };
+  const bnMap = {
+    home:  "bnHome",
+    ficha: "bnFicha",
+    alunos:"bnAlunos",
+    perfil:"bnPerfil",
+  };
+
+  const pageEl = $(pageMap[page]);
+  if (pageEl) pageEl.classList.add("active");
+
+  const bnEl = bnMap[page] ? $(bnMap[page]) : null;
+  if (bnEl) bnEl.classList.add("active");
+}
+
+// ── Inicialização mobile ─────────────────────────────────────
+function initMobile(tipo) {
+  if (!IS_MOBILE()) return;
+
+  $("mobShell").style.display = "block";
+
+  // Atualiza header logo
+  const m = getMarca();
+  const mhImg  = $("mhLogoImg");
+  const mhText = $("mhLogoText");
+  if (m.logoBase64) {
+    mhImg.src = m.logoBase64; mhImg.style.display = "block";
+    mhText.style.display = "none";
+  } else {
+    mhText.textContent = m.logoTexto || "TrainOS";
+    mhText.style.display = "block"; mhImg.style.display = "none";
+  }
+
+  if (tipo === "admin") {
+    // Mostra aba alunos, esconde ficha, muda ícone home
+    $("bnAlunos").style.display = "flex";
+    $("bnFicha").style.display  = "none";
+    $("bnHome").style.display   = "none";
+    $("mobFab").style.display   = "flex";
+    mobNav("alunos");
+  } else {
+    $("bnAlunos").style.display = "none";
+    $("mobFab").style.display   = "none";
+    mobNav("home");
+  }
+}
+
+// ── Sync dados do aluno para UI mobile ───────────────────────
+function mobSyncAluno() {
+  const f = state.aluno || {};
+  const nome = f.nome || state.usuario?.nome || "—";
+  setText("m_alunoNome",    nome);
+  setText("m_alunoSub",     f.objetivo ? f.objetivo.substring(0,60) + (f.objetivo.length > 60 ? "…" : "") : "Bem-vindo ao TrainOS");
+  setText("m_alunoPeso",    f.peso   ? f.peso + " kg"  : "—");
+  setText("m_alunoAltura",  f.altura ? f.altura + " m" : "—");
+  setText("m_alunoNivel",   f.nivel_condicionamento || "—");
+  setText("m_alunoObjetivo",f.objetivo || "—");
+  setText("m_alunoProva",   f.proxima_prova ? formatDate(f.proxima_prova) : "—");
+
+  // Perfil
+  const u = state.usuario || {};
+  setText("m_perfilNome", u.nome || nome);
+  setText("m_perfilUser", "@" + (u.usuario || "—"));
+  setText("m_perfilTipo", u.tipo === "admin" ? "Administrador" : "Aluno");
+  const av = $("m_perfilAvatar");
+  if (av) av.textContent = (u.nome || u.usuario || "?").charAt(0).toUpperCase();
+}
+
+// ── Render week strip mobile ─────────────────────────────────
+function mobRenderWeek() {
+  if (!IS_MOBILE()) return;
+  const days  = getWeekDays(state.semanaOffset);
+  const strip = $("m_daysStrip");
+  const label = $("m_weekLabel");
+  if (!strip) return;
+
+  const treinosDates = new Set(state.treinos.map(t => t.data_treino));
+  strip.innerHTML = "";
+
+  days.forEach((date, i) => {
+    const [, m, d] = date.split("-");
+    const pill = document.createElement("div");
+    pill.className = "mob-day-pill" +
+      (treinosDates.has(date) ? " has-treino" : "") +
+      (date === state.diaSelecionado ? " active" : "");
+    pill.innerHTML = `<span class="mob-dp-wd">${WEEKDAY_LABELS[i]}</span><span class="mob-dp-num">${parseInt(d)}</span>`;
+    pill.onclick = () => mobSelecionarDia(date);
+    strip.appendChild(pill);
+  });
+
+  if (label) label.textContent = formatDate(days[0]) + " – " + formatDate(days[6]);
+
+  const btnNext = $("m_btnNext");
+  if (btnNext) btnNext.disabled = state.semanaOffset >= 2;
+}
+
+function mobSelecionarDia(date) {
+  state.diaSelecionado = date;
+  mobRenderWeek();
+  const treino = state.treinos.find(t => t.data_treino === date) || null;
+  mobRenderTreino(treino, date);
+}
+
+function mobRenderTreino(treino, date) {
+  const card = $("m_treinoCard");
+  if (!card) return;
+
+  if (!treino) {
+    card.innerHTML = `<div class="mob-treino-body" style="color:#4a4a6a;text-align:center;padding:24px;">Nenhum treino para este dia.</div>`;
+    return;
+  }
+
+  const s = String(treino.status || "").trim().toLowerCase();
+  const isPending = s !== "concluído" && s !== "concluido";
+  const statusClass = isPending ? "status-pendente" : "status-concluido";
+
+  let footer = "";
+  if (!isPending && treino.feedback_aluno) {
+    footer = `<div class="mob-treino-footer">
+      <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#c8f135;letter-spacing:.1em;margin-bottom:6px;">✓ SEU FEEDBACK</div>
+      <div class="mob-hist-fb">${escHtml(treino.feedback_aluno)}</div>
+    </div>`;
+  } else if (isPending) {
+    footer = `<div class="mob-treino-footer">
+      <div class="mob-feedback-wrap">
+        <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;">Como foi o treino?</div>
+        <textarea class="mob-feedback-ta" id="m_feedbackInput" rows="3"
+          placeholder="Descreva sua performance, sensações..."></textarea>
+        <button class="mob-btn-full" id="m_btnFeedback" onclick="mobEnviarFeedback('${treino.id_treino}')">
+          Enviar Feedback
+        </button>
+      </div>
+    </div>`;
+  }
+
+  // Extrai classificação
+  let classif = treino.classificacao || "";
+  if (!classif) {
+    const match = String(treino.descricao_treino || "").match(/^\[([^\]]+)\]/);
+    if (match) classif = match[1];
+  }
+  const descLimpa = String(treino.descricao_treino || "")
+    .replace(/^\[[^\]]+\]\s*[^\n]*\n?/, "");
+
+  card.innerHTML = `
+    <div class="mob-treino-header">
+      <div>
+        <div class="mob-treino-date">${formatDate(date || treino.data_treino)}</div>
+        ${classif ? classifBadgeHTML(classif) : ""}
+      </div>
+      <span class="status-pill ${statusClass}">${treino.status || "Pendente"}</span>
+    </div>
+    <div class="mob-treino-body">${escHtml(descLimpa || treino.descricao_treino || "—")}</div>
+    ${footer}
+  `;
+}
+
+async function mobEnviarFeedback(id_treino) {
+  const feedback = $("m_feedbackInput")?.value?.trim();
+  if (!feedback) { showToast("Escreva seu feedback!"); return; }
+  const btn = $("m_btnFeedback");
+  if (btn) btn.disabled = true;
+
+  const res = await callAPI({ action: "enviarFeedback", id_treino, feedback_aluno: feedback });
+  if (!res.ok) { showToast("Erro: " + (res.erro || "tente novamente.")); if (btn) btn.disabled = false; return; }
+
+  showToast("✓ Feedback enviado!");
+  const idx = state.treinos.findIndex(t => t.id_treino === id_treino);
+  if (idx >= 0) { state.treinos[idx].status = "Concluído"; state.treinos[idx].feedback_aluno = feedback; }
+  mobRenderTreino(state.treinos[idx], state.diaSelecionado);
+  mobRenderWeek();
+}
+
+// ── Admin: lista de alunos mobile ────────────────────────────
+function mobRenderAlunos(lista) {
+  const el = $("m_alunoList");
+  if (!el) return;
+
+  if (!lista.length) {
+    el.innerHTML = `<div style="padding:20px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#4a4a6a;">Nenhum aluno.</div>`;
+    return;
+  }
+
+  el.innerHTML = lista.map(a => {
+    const inicial = (a.nome || a.usuario || "?").charAt(0).toUpperCase();
+    const s = String(a.statusHoje || "").toLowerCase();
+    const statusHTML = s === "concluído" || s === "concluido"
+      ? `<span class="badge-concluido">✓ hoje</span>`
+      : s === "pendente"
+        ? `<span class="badge-pendente">pendente</span>`
+        : `<span class="badge-semtreino">sem treino</span>`;
+    return `<div class="mob-aluno-item" onclick="mobVerAluno('${a.id_aluno}')">
+      <div class="mob-aluno-avatar">${escHtml(inicial)}</div>
+      <div class="mob-aluno-info">
+        <div class="mob-aluno-name">${escHtml(a.nome || a.usuario)}</div>
+        <div class="mob-aluno-user">@${escHtml(a.usuario)} &nbsp; ${statusHTML}</div>
+      </div>
+      <span class="mob-aluno-arrow">›</span>
+    </div>`;
+  }).join("");
+}
+
+function mobFiltrarAlunos(q) {
+  const lista = (state.todosAlunos || []).filter(a =>
+    (a.nome    || "").toLowerCase().includes(q.toLowerCase()) ||
+    (a.usuario || "").toLowerCase().includes(q.toLowerCase())
+  );
+  mobRenderAlunos(lista);
+}
+
+// ── Admin: detalhe do aluno mobile ───────────────────────────
+function mobVerAluno(id_aluno) {
+  const aluno = state.todosAlunos.find(a => String(a.id_aluno) === String(id_aluno));
+  if (!aluno) return;
+  state.alunoAdmin = aluno;
+
+  const f   = aluno.ficha || {};
+  const hj  = hoje();
+
+  const histHTML = (aluno.treinos || []).slice(0, 20).map(t => {
+    const s = String(t.status || "").trim().toLowerCase();
+    const ok = s === "concluído" || s === "concluido";
+    let classif = t.classificacao || "";
+    if (!classif) { const m = String(t.descricao_treino || "").match(/^\[([^\]]+)\]/); if (m) classif = m[1]; }
+    const descLimpa = String(t.descricao_treino || "").replace(/^\[[^\]]+\]\s*[^\n]*\n?/, "").substring(0, 100);
+    return `<div class="mob-hist-card">
+      <div class="mob-hist-top">
+        <span class="mob-hist-date">${formatDate(t.data_treino)}</span>
+        <span class="status-pill ${ok ? "status-concluido" : "status-pendente"}">${t.status || "Pendente"}</span>
+      </div>
+      ${classif ? classifBadgeHTML(classif) : ""}
+      <div class="mob-hist-desc">${escHtml(descLimpa)}${descLimpa.length >= 100 ? "…" : ""}</div>
+      ${t.feedback_aluno ? `<div class="mob-hist-fb">✓ ${escHtml(t.feedback_aluno)}</div>` : ""}
+    </div>`;
+  }).join("") || `<div style="padding:16px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#4a4a6a;">Nenhum treino ainda.</div>`;
+
+  $("m_alunoDetalhe").innerHTML = `
+    <!-- Cabeçalho -->
+    <div class="mob-detail-header">
+      <button class="mob-back-btn" onclick="mobVoltarAlunos()">←</button>
+      <div>
+        <div class="mob-detail-name">${escHtml(f.nome || aluno.nome || aluno.usuario)}</div>
+        <div class="mob-detail-user">@${escHtml(aluno.usuario)}</div>
+      </div>
+    </div>
+
+    <!-- Ações rápidas -->
+    <div class="mob-action-strip" style="margin-bottom:16px;">
+      <button class="mob-action-btn cyan" onclick="abrirFichaAdmin('${aluno.id_aluno}')">📋 Editar Ficha</button>
+      <button class="mob-action-btn amber" onclick="exportarFichaPDF('${aluno.id_aluno}')">⬇ Ficha PDF</button>
+      <button class="mob-action-btn amber" onclick="exportarTreinosPDF('${aluno.id_aluno}')">⬇ Treinos PDF</button>
+    </div>
+
+    <!-- Info tiles -->
+    <div class="mob-section-title">Dados</div>
+    <div class="mob-info-grid" style="margin-bottom:16px;">
+      <div class="mob-info-tile"><div class="mob-tile-lbl">Peso</div><div class="mob-tile-val">${f.peso ? f.peso + " kg" : "—"}</div></div>
+      <div class="mob-info-tile"><div class="mob-tile-lbl">Altura</div><div class="mob-tile-val">${f.altura ? f.altura + " m" : "—"}</div></div>
+      <div class="mob-info-tile"><div class="mob-tile-lbl">Telefone</div><div class="mob-tile-val">${escHtml(f.telefone || "—")}</div></div>
+      <div class="mob-info-tile"><div class="mob-tile-lbl">Email</div><div class="mob-tile-val" style="font-size:11px;">${escHtml(f.email || "—")}</div></div>
+      <div class="mob-info-tile full"><div class="mob-tile-lbl">Objetivo</div><div class="mob-tile-val">${escHtml(f.objetivos || f.objetivo || "—")}</div></div>
+    </div>
+
+    <!-- Enviar treino rápido -->
+    <div class="mob-section-title">Enviar Treino</div>
+    <div class="mob-form-card">
+      <div>
+        <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Data</div>
+        <input type="date" class="form-input" id="m_adminTreinoData" value="${hj}" style="font-size:14px;"/>
+      </div>
+      <div>
+        <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Descrição</div>
+        <textarea class="mob-feedback-ta" id="m_adminTreinoDesc" rows="4"
+          placeholder="Descreva o treino completo..."></textarea>
+      </div>
+      <button class="mob-btn-full" id="m_btnSalvarTreino" onclick="mobSalvarTreino('${aluno.id_aluno}')">
+        ＋ Salvar Treino
+      </button>
+    </div>
+
+    <!-- Histórico -->
+    <div class="mob-section-title" style="margin-top:8px;">Histórico</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${histHTML}
+    </div>
+  `;
+
+  mobNav("alunoDetalhe");
+}
+
+function mobVoltarAlunos() {
+  mobNav("alunos");
+}
+
+async function mobSalvarTreino(id_aluno) {
+  const data     = $("m_adminTreinoData")?.value;
+  const descricao = $("m_adminTreinoDesc")?.value?.trim();
+  if (!data || !descricao) { showToast("Preencha data e descrição."); return; }
+
+  const btn = $("m_btnSalvarTreino");
+  if (btn) btn.disabled = true;
+
+  const res = await callAPI({ action: "salvarTreino", id_aluno, data_treino: data, descricao_treino: descricao });
+  if (!res.ok) { showToast("Erro: " + (res.erro || "")); if (btn) btn.disabled = false; return; }
+
+  showToast("✓ Treino salvo!");
+  if ($("m_adminTreinoDesc")) $("m_adminTreinoDesc").value = "";
+
+  const novoTreino = { id_treino: res.id_treino, id_aluno, data_treino: data, descricao_treino: descricao, feedback_aluno: "", status: "Pendente" };
+  const idx = state.todosAlunos.findIndex(a => String(a.id_aluno) === String(id_aluno));
+  if (idx >= 0) { state.todosAlunos[idx].treinos.unshift(novoTreino); if (data === hoje()) state.todosAlunos[idx].statusHoje = "Pendente"; }
+
+  if (btn) btn.disabled = false;
+  mobVerAluno(id_aluno); // re-renderiza o detalhe
+}
+
+// ── Helper setText ────────────────────────────────────────────
+function setText(id, val) {
+  const el = $(id); if (el) el.textContent = val;
+}
+
+// ── Hook nas funções existentes para sincronizar mobile ───────
+const _origCarregarAlunoPanel = carregarAlunoPanel;
+carregarAlunoPanel = async function() {
+  await _origCarregarAlunoPanel.apply(this, arguments);
+  if (IS_MOBILE()) {
+    mobSyncAluno();
+    mobRenderWeek();
+    mobSelecionarDia(hoje());
+    initMobile("aluno");
+  }
+};
+
+const _origCarregarAdminPanel = carregarAdminPanel;
+carregarAdminPanel = async function() {
+  await _origCarregarAdminPanel.apply(this, arguments);
+  if (IS_MOBILE()) {
+    mobRenderAlunos(state.todosAlunos || []);
+    initMobile("admin");
+    // Perfil
+    const u = state.usuario || {};
+    setText("m_perfilNome", u.nome || "—");
+    setText("m_perfilUser", "@" + (u.usuario || "—"));
+    setText("m_perfilTipo", "Administrador");
+    const av = $("m_perfilAvatar");
+    if (av) av.textContent = (u.nome || u.usuario || "?").charAt(0).toUpperCase();
+  }
+};
+
+const _origNavegarSemana = navegarSemana;
+navegarSemana = function(delta) {
+  _origNavegarSemana.apply(this, arguments);
+  if (IS_MOBILE()) { mobRenderWeek(); mobRenderTreino(null, null); }
+};
+
+// Atualiza marca no mobile header ao salvar config
+const _origSalvarConfigMarca = salvarConfigMarca;
+salvarConfigMarca = function() {
+  _origSalvarConfigMarca.apply(this, arguments);
+  setTimeout(() => {
+    if (!IS_MOBILE()) return;
+    const m = getMarca();
+    const mhImg  = $("mhLogoImg");
+    const mhText = $("mhLogoText");
+    if (m.logoBase64) { mhImg.src = m.logoBase64; mhImg.style.display = "block"; mhText.style.display = "none"; }
+    else { mhText.textContent = m.logoTexto || "TrainOS"; mhText.style.display = "block"; mhImg.style.display = "none"; }
+  }, 100);
+};
+
+// ── Resize handler: troca entre mobile e desktop ─────────────
+window.addEventListener("resize", () => {
+  if (!state.usuario) return;
+  if (IS_MOBILE()) {
+    $("mobShell").style.display = "block";
+  } else {
+    $("mobShell").style.display = "none";
+  }
+});
+
 
 // ══════════════════════════════════════════════════════════════
 //  MÓDULO: CRIAR TREINO EM LOTE
