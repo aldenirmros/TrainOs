@@ -570,12 +570,183 @@
     font-weight: 600;
   }
   .cal-cell.cal-past { opacity: .35; cursor: not-allowed; }
+
+  /* ── classif-badge (estava faltando selector) ── */
+  .classif-badge {
     display: inline-flex; align-items: center; gap: 5px;
     font-size: 10px; font-family: 'JetBrains Mono', monospace;
     padding: 3px 9px; border-radius: 99px;
     border: 1px solid; font-weight: 500;
     white-space: nowrap;
   }
+
+  /* ══ TIMER / CRONÔMETRO ══ */
+  .timer-wrap {
+    background: #0a0a0f;
+    border: 1px solid #1e1e2e;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .timer-label {
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
+    color: #8888aa; letter-spacing: .14em; text-transform: uppercase;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .timer-display {
+    font-size: 42px; font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    color: #e8e8f0; text-align: center;
+    letter-spacing: .06em;
+    line-height: 1;
+    margin-bottom: 12px;
+    transition: color .3s;
+  }
+  .timer-display.running { color: #c8f135; }
+  .timer-display.finished {
+    animation: timerBlink .5s ease-in-out 4;
+    color: #f5a623;
+  }
+  @keyframes timerBlink {
+    0%,100% { opacity: 1; }
+    50%      { opacity: .15; }
+  }
+  .timer-presets {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; justify-content: center;
+  }
+  .timer-preset-btn {
+    background: #16161f; border: 1px solid #1e1e2e;
+    border-radius: 8px; padding: 5px 12px;
+    color: #8888aa; font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer; transition: all .15s;
+  }
+  .timer-preset-btn:hover  { border-color: rgba(200,241,53,.4); color: #c8f135; }
+  .timer-preset-btn.active { background: rgba(200,241,53,.1); border-color: rgba(200,241,53,.4); color: #c8f135; }
+  .timer-controls { display: flex; gap: 8px; justify-content: center; }
+  .timer-ctrl-btn {
+    flex: 1; max-width: 90px;
+    background: #16161f; border: 1px solid #1e1e2e;
+    border-radius: 8px; padding: 8px;
+    color: #e8e8f0; font-size: 13px; font-weight: 600;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; transition: all .15s; text-align: center;
+  }
+  .timer-ctrl-btn.start { background: rgba(200,241,53,.12); border-color: rgba(200,241,53,.35); color: #c8f135; }
+  .timer-ctrl-btn.start:hover { background: rgba(200,241,53,.2); }
+  .timer-ctrl-btn.reset:hover { border-color: rgba(248,113,113,.4); color: #f87171; }
+  .timer-progress {
+    width: 100%; height: 3px; background: #1e1e2e;
+    border-radius: 99px; margin-top: 12px; overflow: hidden;
+  }
+  .timer-progress-bar {
+    height: 100%; background: #c8f135;
+    border-radius: 99px;
+    transition: width .5s linear, background .3s;
+  }
+
+  /* ══ CALCULADORA DE PACE ══ */
+  .pace-card {
+    background: #16161f; border: 1px solid #1e1e2e;
+    border-radius: 14px; padding: 18px;
+  }
+  .pace-result {
+    background: #0a0a0f; border: 1px solid #1e1e2e;
+    border-radius: 10px; padding: 14px 18px;
+    text-align: center; margin-top: 12px;
+  }
+  .pace-result-value {
+    font-size: 32px; font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: #c8f135; letter-spacing: .04em;
+  }
+  .pace-result-label {
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
+    color: #8888aa; letter-spacing: .14em; text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .pace-result-extra {
+    font-size: 11px; font-family: 'JetBrains Mono', monospace;
+    color: #4a4a6a; margin-top: 6px;
+  }
+
+  /* ══ EVOLUÇÃO DE PESO ══ */
+  .peso-card {
+    background: #16161f; border: 1px solid #1e1e2e;
+    border-radius: 14px; padding: 18px;
+  }
+  .peso-timeline {
+    display: flex; flex-direction: column; gap: 8px;
+    max-height: 200px; overflow-y: auto;
+    margin-top: 10px; padding-right: 4px;
+  }
+  .peso-entry {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #0a0a0f; border: 1px solid #1e1e2e;
+    border-radius: 8px; padding: 8px 12px;
+  }
+  .peso-entry-date { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; }
+  .peso-entry-val  { font-size: 14px; font-weight: 700; color: #e8e8f0; }
+  .peso-entry-delta {
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
+    padding: 2px 7px; border-radius: 99px;
+  }
+  .peso-entry-delta.up   { color: #f87171; background: rgba(248,113,113,.1); }
+  .peso-entry-delta.down { color: #c8f135; background: rgba(200,241,53,.1);  }
+  .peso-entry-delta.same { color: #8888aa; background: rgba(136,136,170,.1); }
+  .peso-empty { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: #4a4a6a; text-align: center; padding: 16px 0; }
+
+  /* ══ NOTIFICAÇÃO FEEDBACK NÃO LIDO ══ */
+  .badge-novo-fb {
+    font-size: 9px; font-family: 'JetBrains Mono', monospace;
+    background: rgba(248,113,113,.15); color: #f87171;
+    border: 1px solid rgba(248,113,113,.35);
+    padding: 2px 7px; border-radius: 99px;
+    white-space: nowrap; font-weight: 600;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* ══ FILTRO DO HISTÓRICO ══ */
+  .hist-filter-wrap {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .hist-filter-input {
+    flex: 1; background: #0a0a0f; border: 1px solid #1e1e2e;
+    border-radius: 8px; padding: 8px 12px;
+    color: #e8e8f0; font-size: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    outline: none; transition: border-color .2s;
+  }
+  .hist-filter-input:focus { border-color: rgba(200,241,53,.4); }
+  .hist-filter-clear {
+    background: none; border: 1px solid #1e1e2e;
+    border-radius: 8px; padding: 8px 10px;
+    color: #8888aa; cursor: pointer; font-size: 12px;
+    transition: all .15s;
+  }
+  .hist-filter-clear:hover { color: #f87171; border-color: rgba(248,113,113,.35); }
+
+  /* ══ RASCUNHO ANAMNESE ══ */
+  .draft-banner {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(245,166,35,.1); border: 1px solid rgba(245,166,35,.3);
+    border-radius: 10px; padding: 10px 14px;
+    gap: 10px;
+  }
+  .draft-banner-text {
+    font-size: 12px; font-family: 'JetBrains Mono', monospace;
+    color: #f5a623;
+  }
+  .draft-banner-btn {
+    background: rgba(245,166,35,.15); border: 1px solid rgba(245,166,35,.4);
+    border-radius: 6px; padding: 5px 12px;
+    color: #f5a623; font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer; transition: all .15s; white-space: nowrap;
+  }
+  .draft-banner-btn:hover { background: rgba(245,166,35,.25); }
+
 
   .sidebar-list { flex: 1; overflow-y: auto; padding: 8px; }
   .aluno-item {
@@ -2083,6 +2254,15 @@
     </div>
     <div class="modal-body" id="anamneseBody">
 
+      <!-- Banner de rascunho salvo -->
+      <div id="draftBanner" class="draft-banner hidden">
+        <div class="draft-banner-text">📝 Rascunho não salvo encontrado</div>
+        <div style="display:flex;gap:6px;">
+          <button class="draft-banner-btn" onclick="restaurarRascunho()">Restaurar</button>
+          <button class="draft-banner-btn" style="color:#8888aa;border-color:#1e1e2e;background:rgba(136,136,170,.08);" onclick="descartarRascunho()">Descartar</button>
+        </div>
+      </div>
+
       <!-- BLOCO 1: Dados Básicos -->
       <div class="form-block anamnese-section">
         <div class="form-block-title">Dados Básicos</div>
@@ -2465,6 +2645,49 @@
         </div>
       </div>
 
+      <!-- Calculadora de Pace -->
+      <div class="pace-card anim-fadeup anim-delay-4">
+        <div class="section-title">Calculadora de Pace</div>
+        <div class="form-row" style="margin-bottom:10px;">
+          <div class="form-field">
+            <div class="field-label">Distância</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <input id="paceDistancia" class="field-input-sm" type="number" placeholder="10" min="0.1" step="0.1" oninput="calcularPace()" style="flex:1;"/>
+              <select id="paceUnidade" class="field-input-sm" onchange="calcularPace()" style="width:60px;padding:11px 6px;">
+                <option value="km">km</option>
+                <option value="m">m</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">Tempo total</div>
+            <input id="paceTempo" class="field-input-sm" type="text" placeholder="00:42:00"
+              oninput="calcularPace()" maxlength="8"
+              style="font-family:'JetBrains Mono',monospace;letter-spacing:.08em;"/>
+          </div>
+        </div>
+        <div class="pace-result" id="paceResult" style="display:none;">
+          <div class="pace-result-value" id="paceResultVal">—</div>
+          <div class="pace-result-label">Pace Médio</div>
+          <div class="pace-result-extra" id="paceResultExtra"></div>
+        </div>
+      </div>
+
+      <!-- Evolução de Peso -->
+      <div class="peso-card anim-fadeup anim-delay-4">
+        <div class="section-title">Evolução de Peso</div>
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:4px;">
+          <div class="form-field" style="flex:1;">
+            <div class="field-label">Peso atual (kg)</div>
+            <input id="pesoInput" class="field-input-sm" type="number" placeholder="72.5" step="0.1" min="30" max="250"/>
+          </div>
+          <button class="btn-admin" style="padding:10px 16px;font-size:13px;flex-shrink:0;" onclick="registrarPeso()">＋ Registrar</button>
+        </div>
+        <div class="peso-timeline" id="pesoTimeline">
+          <div class="peso-empty">Nenhum registro ainda.</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2642,6 +2865,12 @@ function showScreen(name) {
     $("screenApp").classList.remove("hidden");
     $("panelAluno").classList.remove("hidden");
   } else if (name === "admin") {
+    // Validação de segurança: só exibe painel admin se o estado interno confirmar
+    if (!state.usuario || state.usuario.tipo !== "admin") {
+      console.warn("TrainOS: tentativa de acesso ao painel admin sem permissão.");
+      $("screenLogin").classList.remove("hidden");
+      return;
+    }
     $("screenApp").classList.remove("hidden");
     $("panelAdmin").classList.remove("hidden");
   }
@@ -2680,6 +2909,13 @@ async function handleLogin() {
   $("btnLogin").disabled = false;
 
   if (!res.ok) { mostrarErroLogin(res.erro || "Erro no login."); return; }
+
+  // Validação rigorosa: tipo deve existir e ser string conhecida
+  const tipoValido = res.usuario?.tipo === "admin" || res.usuario?.tipo === "aluno";
+  if (!res.usuario || !tipoValido) {
+    mostrarErroLogin("Resposta inválida do servidor. Contate o administrador.");
+    return;
+  }
 
   state.usuario = res.usuario;
   saveSession(res.usuario);
@@ -2777,6 +3013,7 @@ function selecionarDia(date) {
 
 function renderTreino(treino, date) {
   const el = $("treinoContent");
+  if (!el) return;
   if (!treino) {
     el.innerHTML = `<div class="treino-empty">Nenhum treino para este dia.</div>`;
     return;
@@ -2786,14 +3023,20 @@ function renderTreino(treino, date) {
   const isPending = status.toLowerCase() !== "concluído" && status.toLowerCase() !== "concluido";
   const statusClass = isPending ? "status-pendente" : "status-concluido";
 
+  // Extrai classif para exibir no header
+  let classif = treino.classificacao || "";
+  if (!classif) { const m = String(treino.descricao_treino||"").match(/^\[([^\]]+)\]/); if(m) classif=m[1]; }
+  const descLimpa = String(treino.descricao_treino||"").replace(/^\[[^\]]+\]\s*[^\n]*\n?/,"");
+
+  const timerHTML = isPending ? buildTimerHTML("dt") : "";
+
   let feedbackHTML = "";
   if (!isPending) {
-    const fbText = treino.feedback_aluno ? `
+    feedbackHTML = treino.feedback_aluno ? `
       <div class="feedback-given">
         <div class="feedback-given-label">✓ Seu feedback</div>
         <div class="feedback-given-text">${escHtml(treino.feedback_aluno)}</div>
       </div>` : "";
-    feedbackHTML = fbText;
   } else {
     feedbackHTML = `
       <div class="feedback-label">Como foi o treino?</div>
@@ -2807,12 +3050,16 @@ function renderTreino(treino, date) {
     <div class="treino-header">
       <div>
         <div class="treino-date">${formatDate(treino.data_treino)}</div>
+        ${classif ? classifBadgeHTML(classif) : ""}
       </div>
       <span class="status-pill ${statusClass}">${status}</span>
     </div>
-    <div class="treino-desc">${escHtml(treino.descricao_treino || "—")}</div>
+    <div class="treino-desc">${escHtml(descLimpa || treino.descricao_treino || "—")}</div>
+    ${timerHTML}
     ${feedbackHTML}
   `;
+
+  if (isPending) initTimer("dt");
 }
 
 async function enviarFeedback(id_treino) {
@@ -2849,6 +3096,15 @@ function filtrarAlunos(q) {
   renderSidebar(filtrados);
 }
 
+function temFeedbackNaoLido(aluno) {
+  return (aluno.treinos || []).some(t => {
+    const s = String(t.status || "").trim().toLowerCase();
+    return (s === "concluído" || s === "concluido") &&
+           String(t.feedback_aluno || "").trim().length > 0 &&
+           !t._fbLido; // marcado como lido após o admin clicar
+  });
+}
+
 function badgeHTML(statusHoje) {
   const s = String(statusHoje || "").trim().toLowerCase();
   if (s === "concluído" || s === "concluido") return `<span class="badge-concluido">✓ hoje</span>`;
@@ -2858,19 +3114,28 @@ function badgeHTML(statusHoje) {
 
 function renderSidebar(lista) {
   const el = $("sidebarList");
+  if (!el) return;
   if (!lista.length) {
     el.innerHTML = `<div class="empty-state"><div class="empty-state-text">Nenhum aluno.</div></div>`;
     return;
   }
-  el.innerHTML = lista.map(a => `
+  el.innerHTML = lista.map(a => {
+    const fbBadge = temFeedbackNaoLido(a)
+      ? `<span class="badge-novo-fb">Novo FB</span>`
+      : "";
+    return `
     <div class="aluno-item ${state.alunoAdmin?.id_aluno === a.id_aluno ? "active" : ""}"
          onclick="selecionarAlunoAdmin('${a.id_aluno}')">
-      <div>
+      <div style="flex:1;min-width:0;">
         <div class="aluno-name">${escHtml(a.nome || a.usuario)}</div>
         <div class="aluno-user">@${escHtml(a.usuario)}</div>
       </div>
-      ${badgeHTML(a.statusHoje)}
-    </div>`).join("");
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+        ${badgeHTML(a.statusHoje)}
+        ${fbBadge}
+      </div>
+    </div>`;
+  }).join("");
 }
 
 function selecionarAlunoAdmin(id) {
@@ -2984,13 +3249,46 @@ function renderAdminMain(aluno) {
 
     <div>
       <div class="section-title">Histórico de Treinos</div>
+      <div class="hist-filter-wrap">
+        <input class="hist-filter-input" type="text" placeholder="🔍  Filtrar treinos deste aluno..."
+          oninput="filtrarHistorico(this.value)" id="histFilterInput"/>
+        <button class="hist-filter-clear" onclick="limparFiltroHistorico()" title="Limpar">✕</button>
+      </div>
       <div style="overflow-x:auto;">
-        <table class="hist-table">
+        <table class="hist-table" id="histTable">
           <thead>
             <tr><th>Data</th><th>Classif.</th><th>Treino</th><th>Status</th><th>Feedback</th></tr>
           </thead>
-          <tbody>${histRows}</tbody>
+          <tbody id="histTableBody">${histRows}</tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Calculadora de Pace (Admin) -->
+    <div class="pace-card" style="margin-top:4px;">
+      <div class="section-title">Calculadora de Pace</div>
+      <div class="form-row" style="margin-bottom:10px;">
+        <div class="form-field">
+          <div class="field-label">Distância</div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input id="paceDistanciaAdmin" class="field-input-sm" type="number" placeholder="10" min="0.1" step="0.1" oninput="calcularPaceAdmin()" style="flex:1;"/>
+            <select id="paceUnidadeAdmin" class="field-input-sm" onchange="calcularPaceAdmin()" style="width:60px;padding:11px 6px;">
+              <option value="km">km</option>
+              <option value="m">m</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-field">
+          <div class="field-label">Tempo total</div>
+          <input id="paceTempoAdmin" class="field-input-sm" type="text" placeholder="00:42:00"
+            oninput="calcularPaceAdmin()" maxlength="8"
+            style="font-family:'JetBrains Mono',monospace;letter-spacing:.08em;"/>
+        </div>
+      </div>
+      <div class="pace-result" id="paceResultAdmin" style="display:none;">
+        <div class="pace-result-value" id="paceResultValAdmin">—</div>
+        <div class="pace-result-label">Pace Médio</div>
+        <div class="pace-result-extra" id="paceResultExtraAdmin"></div>
       </div>
     </div>
   `;
@@ -3869,9 +4167,6 @@ function gerarTreinosPDF(nomeAluno, treinos) {
   showToast("✓ PDF de treinos gerado!");
 }
 
-// Carrega marca ao iniciar
-document.addEventListener("DOMContentLoaded", () => { carregarMarca(); });
-
 // ══════════════════════════════════════════════════════════════
 //  MÓDULO MOBILE
 // ══════════════════════════════════════════════════════════════
@@ -4014,6 +4309,8 @@ function mobRenderTreino(treino, date) {
   const isPending = s !== "concluído" && s !== "concluido";
   const statusClass = isPending ? "status-pendente" : "status-concluido";
 
+  const timerHTML = isPending ? `<div class="mob-treino-footer" style="border-top:1px solid #1e1e2e;">${buildTimerHTML("mob")}</div>` : "";
+
   let footer = "";
   if (!isPending && treino.feedback_aluno) {
     footer = `<div class="mob-treino-footer">
@@ -4033,14 +4330,12 @@ function mobRenderTreino(treino, date) {
     </div>`;
   }
 
-  // Extrai classificação
   let classif = treino.classificacao || "";
   if (!classif) {
     const match = String(treino.descricao_treino || "").match(/^\[([^\]]+)\]/);
     if (match) classif = match[1];
   }
-  const descLimpa = String(treino.descricao_treino || "")
-    .replace(/^\[[^\]]+\]\s*[^\n]*\n?/, "");
+  const descLimpa = String(treino.descricao_treino || "").replace(/^\[[^\]]+\]\s*[^\n]*\n?/, "");
 
   card.innerHTML = `
     <div class="mob-treino-header">
@@ -4051,8 +4346,11 @@ function mobRenderTreino(treino, date) {
       <span class="status-pill ${statusClass}">${treino.status || "Pendente"}</span>
     </div>
     <div class="mob-treino-body">${escHtml(descLimpa || treino.descricao_treino || "—")}</div>
+    ${timerHTML}
     ${footer}
   `;
+
+  if (isPending) initTimer("mob");
 }
 
 async function mobEnviarFeedback(id_treino) {
@@ -4089,11 +4387,12 @@ function mobRenderAlunos(lista) {
       : s === "pendente"
         ? `<span class="badge-pendente">pendente</span>`
         : `<span class="badge-semtreino">sem treino</span>`;
+    const fbBadge = temFeedbackNaoLido(a) ? `<span class="badge-novo-fb" style="font-size:9px;">Novo FB</span>` : "";
     return `<div class="mob-aluno-item" onclick="mobVerAluno('${a.id_aluno}')">
       <div class="mob-aluno-avatar">${escHtml(inicial)}</div>
       <div class="mob-aluno-info">
         <div class="mob-aluno-name">${escHtml(a.nome || a.usuario)}</div>
-        <div class="mob-aluno-user">@${escHtml(a.usuario)} &nbsp; ${statusHTML}</div>
+        <div class="mob-aluno-user">@${escHtml(a.usuario)} &nbsp; ${statusHTML} ${fbBadge}</div>
       </div>
       <span class="mob-aluno-arrow">›</span>
     </div>`;
@@ -4536,20 +4835,6 @@ initMobile = function(tipo) {
   _origInitMobile.apply(this, arguments);
   aplicarVisibilidadePorTipo(tipo);
 };
-
-// ── Carrega tema ao iniciar (junto com marca) ─────────────────
-document.addEventListener("DOMContentLoaded", () => {
-  carregarTema();
-  // Atualiza label do tema no perfil
-  try {
-    const t = JSON.parse(localStorage.getItem(TEMA_KEY) || "{}");
-    const td = TEMAS_PREDEFINIDOS.find(x => x.id === (t.id || "lime"));
-    const label = td ? `${td.nome} — ${td.sub}` : (t.cor ? `Personalizado — ${t.cor}` : "Lime — Padrão");
-    ["m_temaAtualLabel","m_temaAtualLabelAluno"].forEach(id => setText(id, label));
-    temaAtualId  = t.id  || "lime";
-    temaAtualCor = t.cor || "#c8f135";
-  } catch { /* silencioso */ }
-});
 
 // Hook no showScreen para aplicar visibilidade logo após login
 const _origShowScreen = showScreen;
@@ -5001,6 +5286,413 @@ function classifBadgeHTML(classif) {
     ${escHtml(classif)}
   </span>`;
 }
+
+</script>
+
+<!-- ══════════════════════════════════════════════════════════
+     MÓDULOS ADICIONAIS (Timer, Pace, Peso, Rascunho, Filtro)
+══════════════════════════════════════════════════════════ -->
+<script>
+
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO 1: CRONÔMETRO / TIMER DE DESCANSO
+// ══════════════════════════════════════════════════════════════
+const timers = {}; // { ns: { total, remaining, intervalId, running } }
+
+function buildTimerHTML(ns) {
+  return `
+  <div class="timer-wrap" id="timerWrap_${ns}">
+    <div class="timer-label">⏱ Timer de Descanso</div>
+    <div class="timer-presets">
+      <button class="timer-preset-btn" onclick="setTimerPreset('${ns}',30)">30s</button>
+      <button class="timer-preset-btn" onclick="setTimerPreset('${ns}',60)">1min</button>
+      <button class="timer-preset-btn" onclick="setTimerPreset('${ns}',90)">1m30</button>
+      <button class="timer-preset-btn" onclick="setTimerPreset('${ns}',120)">2min</button>
+    </div>
+    <div class="timer-display" id="timerDisplay_${ns}">00:00</div>
+    <div class="timer-progress"><div class="timer-progress-bar" id="timerBar_${ns}" style="width:100%"></div></div>
+    <div class="timer-controls" style="margin-top:12px;">
+      <button class="timer-ctrl-btn start" id="timerBtnStart_${ns}" onclick="toggleTimer('${ns}')">▶ Iniciar</button>
+      <button class="timer-ctrl-btn reset" onclick="resetTimer('${ns}')">↺ Zerar</button>
+    </div>
+  </div>`;
+}
+
+function initTimer(ns) {
+  if (!timers[ns]) {
+    timers[ns] = { total: 60, remaining: 60, intervalId: null, running: false };
+  }
+  updateTimerDisplay(ns);
+}
+
+function setTimerPreset(ns, secs) {
+  if (!timers[ns]) initTimer(ns);
+  pauseTimer(ns);
+  timers[ns].total     = secs;
+  timers[ns].remaining = secs;
+  // Atualiza active state nos preset buttons
+  const wrap = $(`timerWrap_${ns}`);
+  if (wrap) {
+    wrap.querySelectorAll(".timer-preset-btn").forEach(b => b.classList.remove("active"));
+    const btns = wrap.querySelectorAll(".timer-preset-btn");
+    const map  = {30:0, 60:1, 90:2, 120:3};
+    if (map[secs] !== undefined && btns[map[secs]]) btns[map[secs]].classList.add("active");
+  }
+  updateTimerDisplay(ns);
+}
+
+function toggleTimer(ns) {
+  if (!timers[ns]) initTimer(ns);
+  if (timers[ns].running) pauseTimer(ns);
+  else startTimer(ns);
+}
+
+function startTimer(ns) {
+  const t = timers[ns];
+  if (!t || t.remaining <= 0) return;
+  t.running = true;
+  const btn = $(`timerBtnStart_${ns}`);
+  const disp = $(`timerDisplay_${ns}`);
+  if (btn)  { btn.textContent = "⏸ Pausar"; btn.classList.remove("start"); btn.style.background="rgba(245,166,35,.12)"; btn.style.borderColor="rgba(245,166,35,.35)"; btn.style.color="#f5a623"; }
+  if (disp) disp.classList.add("running");
+
+  t.intervalId = setInterval(() => {
+    t.remaining--;
+    updateTimerDisplay(ns);
+    if (t.remaining <= 0) {
+      clearInterval(t.intervalId);
+      t.running = false;
+      t.intervalId = null;
+      timerFinished(ns);
+    }
+  }, 1000);
+}
+
+function pauseTimer(ns) {
+  const t = timers[ns];
+  if (!t) return;
+  t.running = false;
+  if (t.intervalId) { clearInterval(t.intervalId); t.intervalId = null; }
+  const btn  = $(`timerBtnStart_${ns}`);
+  const disp = $(`timerDisplay_${ns}`);
+  if (btn)  { btn.textContent = "▶ Iniciar"; btn.style.background=""; btn.style.borderColor=""; btn.style.color=""; btn.classList.add("start"); }
+  if (disp) disp.classList.remove("running");
+}
+
+function resetTimer(ns) {
+  const t = timers[ns];
+  if (!t) return;
+  pauseTimer(ns);
+  t.remaining = t.total;
+  updateTimerDisplay(ns);
+  const disp = $(`timerDisplay_${ns}`);
+  if (disp) disp.classList.remove("finished");
+}
+
+function updateTimerDisplay(ns) {
+  const t = timers[ns];
+  if (!t) return;
+  const m = String(Math.floor(t.remaining / 60)).padStart(2,"0");
+  const s = String(t.remaining % 60).padStart(2,"0");
+  const disp = $(`timerDisplay_${ns}`);
+  const bar  = $(`timerBar_${ns}`);
+  if (disp) disp.textContent = `${m}:${s}`;
+  if (bar)  {
+    const pct = t.total > 0 ? (t.remaining / t.total) * 100 : 100;
+    bar.style.width = pct + "%";
+    bar.style.background = pct > 30 ? "#c8f135" : pct > 10 ? "#f5a623" : "#f87171";
+  }
+}
+
+function timerFinished(ns) {
+  const disp = $(`timerDisplay_${ns}`);
+  const btn  = $(`timerBtnStart_${ns}`);
+  if (disp) { disp.classList.remove("running"); disp.classList.add("finished"); }
+  if (btn)  { btn.textContent = "▶ Iniciar"; btn.classList.add("start"); btn.style.background=""; btn.style.borderColor=""; btn.style.color=""; }
+  // Vibração haptica (mobile)
+  if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+  setTimeout(() => {
+    const d2 = $(`timerDisplay_${ns}`);
+    if (d2) d2.classList.remove("finished");
+  }, 3000);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO 2: CALCULADORA DE PACE
+// ══════════════════════════════════════════════════════════════
+function parseTempo(str) {
+  // Aceita hh:mm:ss ou mm:ss
+  const partes = String(str || "").trim().split(":").map(Number);
+  if (partes.some(isNaN)) return null;
+  if (partes.length === 3) return partes[0]*3600 + partes[1]*60 + partes[2];
+  if (partes.length === 2) return partes[0]*60   + partes[1];
+  return null;
+}
+
+function calcularPaceGenerico(distId, unidId, tempoId, resultId, valId, extraId) {
+  const distVal  = parseFloat($s(distId)?.value || "");
+  const unidade  = $s(unidId)?.value || "km";
+  const tempoStr = $s(tempoId)?.value || "";
+  const resultEl = $s(resultId);
+  const valEl    = $s(valId);
+  const extraEl  = $s(extraId);
+
+  if (!resultEl) return;
+
+  if (!distVal || distVal <= 0 || !tempoStr) { resultEl.style.display = "none"; return; }
+
+  const totalSec = parseTempo(tempoStr);
+  if (!totalSec || totalSec <= 0) { resultEl.style.display = "none"; return; }
+
+  const distKm = unidade === "m" ? distVal / 1000 : distVal;
+  if (distKm <= 0) { resultEl.style.display = "none"; return; }
+
+  const paceSecPerKm = totalSec / distKm;
+  const paceMin = Math.floor(paceSecPerKm / 60);
+  const paceSec = Math.round(paceSecPerKm % 60);
+  const paceStr = `${String(paceMin).padStart(2,"0")}:${String(paceSec).padStart(2,"0")}`;
+
+  // Velocidade média
+  const velKmh = (distKm / (totalSec / 3600)).toFixed(1);
+
+  if (valEl)   valEl.textContent  = paceStr + " /km";
+  if (extraEl) extraEl.textContent = `Velocidade média: ${velKmh} km/h  ·  ${distKm.toFixed(2)} km em ${tempoStr}`;
+  resultEl.style.display = "block";
+}
+
+// Helper seguro para $ que não quebra se id não existir no contexto atual
+function $s(id) { try { return document.getElementById(id); } catch { return null; } }
+
+function calcularPace() {
+  calcularPaceGenerico("paceDistancia","paceUnidade","paceTempo","paceResult","paceResultVal","paceResultExtra");
+}
+function calcularPaceAdmin() {
+  calcularPaceGenerico("paceDistanciaAdmin","paceUnidadeAdmin","paceTempoAdmin","paceResultAdmin","paceResultValAdmin","paceResultExtraAdmin");
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO 3: EVOLUÇÃO DE PESO
+// ══════════════════════════════════════════════════════════════
+const PESO_KEY = () => `trainOS_peso_${state.usuario?.id_aluno || "guest"}`;
+
+function carregarPeso() {
+  try {
+    const registros = JSON.parse(localStorage.getItem(PESO_KEY()) || "[]");
+    renderPesoTimeline(registros);
+  } catch { /* silencioso */ }
+}
+
+function registrarPeso() {
+  const val = parseFloat($("pesoInput")?.value || "");
+  if (!val || val < 10 || val > 400) { showToast("Informe um peso válido (kg)."); return; }
+
+  try {
+    const registros = JSON.parse(localStorage.getItem(PESO_KEY()) || "[]");
+    registros.unshift({ data: hoje(), peso: val, ts: Date.now() });
+    // Mantém máx 60 registros
+    if (registros.length > 60) registros.splice(60);
+    localStorage.setItem(PESO_KEY(), JSON.stringify(registros));
+    renderPesoTimeline(registros);
+    setVal("pesoInput","");
+    showToast(`✓ Peso de ${val} kg registrado!`);
+  } catch (e) { showToast("Erro ao salvar peso."); }
+}
+
+function renderPesoTimeline(registros) {
+  const el = $("pesoTimeline");
+  if (!el) return;
+  if (!registros.length) {
+    el.innerHTML = `<div class="peso-empty">Nenhum registro ainda.</div>`;
+    return;
+  }
+  el.innerHTML = registros.map((r, i) => {
+    const prev  = registros[i + 1];
+    let deltaHTML = "";
+    if (prev) {
+      const diff = (r.peso - prev.peso).toFixed(1);
+      const cls  = diff > 0 ? "up" : diff < 0 ? "down" : "same";
+      const sinal= diff > 0 ? "+" : "";
+      deltaHTML = `<span class="peso-entry-delta ${cls}">${sinal}${diff} kg</span>`;
+    }
+    return `<div class="peso-entry">
+      <span class="peso-entry-date">${formatDate(r.data)}</span>
+      <span class="peso-entry-val">${r.peso} kg</span>
+      ${deltaHTML}
+    </div>`;
+  }).join("");
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO 4: MÁSCARAS DE TEMPO NA ANAMNESE
+// ══════════════════════════════════════════════════════════════
+function aplicarMascaraTempo(input, formato) {
+  // formato: "mm:ss" ou "hh:mm:ss"
+  input.addEventListener("input", function(e) {
+    let v = this.value.replace(/[^0-9]/g,"");
+    const maxLen = formato === "hh:mm:ss" ? 6 : 4;
+    if (v.length > maxLen) v = v.slice(0, maxLen);
+
+    if (formato === "hh:mm:ss") {
+      if (v.length > 4) v = v.slice(0,2) + ":" + v.slice(2,4) + ":" + v.slice(4);
+      else if (v.length > 2) v = v.slice(0,2) + ":" + v.slice(2);
+    } else {
+      if (v.length > 2) v = v.slice(0,2) + ":" + v.slice(2);
+    }
+    this.value = v;
+  });
+  input.addEventListener("keydown", function(e) {
+    // Permite backspace, delete, tab, setas
+    if ([8,9,46,37,38,39,40].includes(e.keyCode)) return;
+    if (!/[0-9]/.test(e.key)) e.preventDefault();
+  });
+}
+
+function inicializarMascarasTempo() {
+  // 5K e 10K: mm:ss
+  ["an_t5k","an_t10k"].forEach(id => {
+    const el = $(id); if (el) aplicarMascaraTempo(el, "mm:ss");
+  });
+  // 21K, 42K, TAF: hh:mm:ss
+  ["an_t21k","an_t42k","an_ttaf"].forEach(id => {
+    const el = $(id); if (el) aplicarMascaraTempo(el, "hh:mm:ss");
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO 5: RASCUNHO AUTOMÁTICO DA ANAMNESE
+// ══════════════════════════════════════════════════════════════
+const DRAFT_KEY = () => `trainOS_anamnese_rascunho_${state.usuario?.id_aluno || "guest"}`;
+let _draftTimer = null;
+
+function coletarRascunho() {
+  // Coleta só campos de texto/select para não ser pesado demais
+  const campos = document.querySelectorAll("#anamneseBody input[type='text'],#anamneseBody input[type='number'],#anamneseBody input[type='date'],#anamneseBody input[type='email'],#anamneseBody input[type='tel'],#anamneseBody select,#anamneseBody textarea");
+  const data = {};
+  campos.forEach(el => { if (el.id) data[el.id] = el.value; });
+  // Checkboxes e radios
+  document.querySelectorAll("#anamneseBody input[type='checkbox'],#anamneseBody input[type='radio']").forEach(el => {
+    if (el.id || el.name) {
+      const k = el.id || `__r_${el.name}_${el.value}`;
+      data[k] = el.checked;
+    }
+  });
+  return data;
+}
+
+function salvarRascunho() {
+  try {
+    localStorage.setItem(DRAFT_KEY(), JSON.stringify(coletarRascunho()));
+  } catch { /* silencioso */ }
+}
+
+function verificarRascunho() {
+  try {
+    const draft = localStorage.getItem(DRAFT_KEY());
+    const banner = $("draftBanner");
+    if (draft && banner) banner.classList.remove("hidden");
+    else if (banner) banner.classList.add("hidden");
+  } catch { /* silencioso */ }
+}
+
+function restaurarRascunho() {
+  try {
+    const data = JSON.parse(localStorage.getItem(DRAFT_KEY()) || "null");
+    if (!data) return;
+    Object.entries(data).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === "checkbox" || el.type === "radio") el.checked = !!val;
+      else el.value = val || "";
+      // Dispara toggleQual para campos condicionais
+      if (el.type === "radio" && el.checked && el.name.startsWith("aq_")) {
+        const key = el.name.replace("aq_","");
+        toggleQual("qual_" + key, val === true || val === "sim");
+      }
+    });
+    const banner = $("draftBanner");
+    if (banner) banner.classList.add("hidden");
+    showToast("✓ Rascunho restaurado!");
+  } catch { showToast("Não foi possível restaurar o rascunho."); }
+}
+
+function descartarRascunho() {
+  try { localStorage.removeItem(DRAFT_KEY()); } catch { /* silencioso */ }
+  const banner = $("draftBanner");
+  if (banner) banner.classList.add("hidden");
+}
+
+function ativarAutoSaveRascunho() {
+  const body = $("anamneseBody");
+  if (!body) return;
+  body.addEventListener("input",  () => { clearTimeout(_draftTimer); _draftTimer = setTimeout(salvarRascunho, 800); });
+  body.addEventListener("change", () => { clearTimeout(_draftTimer); _draftTimer = setTimeout(salvarRascunho, 800); });
+}
+
+// Patch em abrirFichaAluno e abrirFichaAdmin para verificar rascunho ao abrir
+const _origAbrirFichaAluno = abrirFichaAluno;
+abrirFichaAluno = function() {
+  _origAbrirFichaAluno.apply(this, arguments);
+  setTimeout(() => { inicializarMascarasTempo(); ativarAutoSaveRascunho(); verificarRascunho(); }, 100);
+};
+
+const _origAbrirFichaAdmin = abrirFichaAdmin;
+abrirFichaAdmin = function() {
+  _origAbrirFichaAdmin.apply(this, arguments);
+  setTimeout(() => { inicializarMascarasTempo(); ativarAutoSaveRascunho(); verificarRascunho(); }, 100);
+};
+
+// Patch em salvarAnamnese para limpar rascunho no sucesso
+const _origSalvarAnamnese = salvarAnamnese;
+salvarAnamnese = async function() {
+  await _origSalvarAnamnese.apply(this, arguments);
+  // Limpa rascunho se modal fechou (sucesso)
+  if ($("modalAnamnese")?.classList.contains("hidden")) {
+    descartarRascunho();
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO 6: FILTRO DE HISTÓRICO DE TREINOS (ADMIN)
+// ══════════════════════════════════════════════════════════════
+function filtrarHistorico(q) {
+  const tbody = $("histTableBody");
+  if (!tbody) return;
+  const termo = (q || "").toLowerCase().trim();
+  tbody.querySelectorAll("tr").forEach(tr => {
+    if (!termo) { tr.style.display = ""; return; }
+    const texto = tr.textContent.toLowerCase();
+    tr.style.display = texto.includes(termo) ? "" : "none";
+  });
+}
+
+function limparFiltroHistorico() {
+  const inp = $("histFilterInput");
+  if (inp) { inp.value = ""; filtrarHistorico(""); }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  INIT DOS MÓDULOS
+// ══════════════════════════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", () => {
+  carregarMarca();
+  carregarTema();
+  // Atualiza label do tema no perfil
+  try {
+    const t  = JSON.parse(localStorage.getItem(TEMA_KEY) || "{}");
+    const td = TEMAS_PREDEFINIDOS.find(x => x.id === (t.id || "lime"));
+    const lbl= td ? `${td.nome} — ${td.sub}` : (t.cor ? `Personalizado — ${t.cor}` : "Lime — Padrão");
+    ["m_temaAtualLabel","m_temaAtualLabelAluno"].forEach(id => setText(id, lbl));
+    temaAtualId  = t.id  || "lime";
+    temaAtualCor = t.cor || "#c8f135";
+  } catch { /* silencioso */ }
+});
+
+// Carrega peso quando painel aluno estiver pronto
+const _origCarregarAlunoPanelModulos = carregarAlunoPanel;
+carregarAlunoPanel = async function() {
+  await _origCarregarAlunoPanelModulos.apply(this, arguments);
+  setTimeout(carregarPeso, 300);
+};
 
 </script>
 </body>
