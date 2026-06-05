@@ -2676,15 +2676,19 @@
       <!-- Evolução de Peso -->
       <div class="peso-card anim-fadeup anim-delay-4">
         <div class="section-title">Evolução de Peso</div>
-        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:4px;">
-          <div class="form-field" style="flex:1;">
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px;">
+          <div class="form-field" style="flex:1;min-width:100px;">
             <div class="field-label">Peso atual (kg)</div>
             <input id="pesoInput" class="field-input-sm" type="number" placeholder="72.5" step="0.1" min="30" max="250"/>
           </div>
-          <button class="btn-admin" style="padding:10px 16px;font-size:13px;flex-shrink:0;" onclick="registrarPeso()">＋ Registrar</button>
+          <div class="form-field" style="flex:2;min-width:140px;">
+            <div class="field-label">Observação (opcional)</div>
+            <input id="pesoObs" class="field-input-sm" type="text" placeholder="Ex: pós-treino, manhã em jejum..."/>
+          </div>
+          <button class="btn-admin" id="btnRegistrarPeso" style="padding:10px 16px;font-size:13px;flex-shrink:0;" onclick="registrarPeso()">＋ Registrar</button>
         </div>
         <div class="peso-timeline" id="pesoTimeline">
-          <div class="peso-empty">Nenhum registro ainda.</div>
+          <div class="peso-empty" style="color:#4a4a6a;">Carregando...</div>
         </div>
       </div>
 
@@ -2957,15 +2961,30 @@ async function carregarAlunoPanel() {
   const res = await callAPI({ action: "buscarDadosAluno", id_aluno: state.usuario.id_aluno }, "buscando treinos...");
   if (!res.ok) { showToast("Erro ao carregar dados."); return; }
 
-  state.aluno   = res.ficha  || {};
+  // Normaliza ficha no front também (garante aliases independente do GAS)
+  const fichaRaw  = res.ficha || {};
+  const ficha = { ...fichaRaw };
+  // Aliases nascimento
+  if (!ficha.nascimento     && ficha.data_nascimento) ficha.nascimento     = ficha.data_nascimento;
+  if (!ficha.data_nascimento && ficha.nascimento)    ficha.data_nascimento = ficha.nascimento;
+  // Aliases objetivo
+  if (!ficha.objetivo  && ficha.objetivos) ficha.objetivo  = ficha.objetivos;
+  if (!ficha.objetivos && ficha.objetivo)  ficha.objetivos = ficha.objetivo;
+
+  state.aluno   = ficha;
   state.treinos = res.treinos || [];
 
   const f = state.aluno;
-  $("alunoNome").textContent       = f.nome        || state.usuario.nome || "—";
-  $("alunoNivel").textContent      = f.nivel_condicionamento || "—";
-  $("alunoPesoAltura").textContent = (f.peso && f.altura) ? `${f.peso}kg · ${f.altura}m` : "—";
-  $("alunoObjetivo").textContent   = f.objetivo     || "—";
-  $("alunoProva").textContent      = f.proxima_prova ? formatDate(f.proxima_prova) : "—";
+  const el_nome = $("alunoNome");
+  const el_nivel = $("alunoNivel");
+  const el_pa = $("alunoPesoAltura");
+  const el_obj = $("alunoObjetivo");
+  const el_prova = $("alunoProva");
+  if (el_nome)  el_nome.textContent  = f.nome  || state.usuario.nome || "—";
+  if (el_nivel) el_nivel.textContent = f.nivel_condicionamento || "—";
+  if (el_pa)    el_pa.textContent    = (f.peso && f.altura) ? `${f.peso}kg · ${f.altura}m` : "—";
+  if (el_obj)   el_obj.textContent   = f.objetivos || f.objetivo || "—";
+  if (el_prova) el_prova.textContent = f.proxima_prova ? formatDate(f.proxima_prova) : "—";
 
   state.semanaOffset = 0;
   renderWeek();
@@ -3291,6 +3310,18 @@ function renderAdminMain(aluno) {
         <div class="pace-result-extra" id="paceResultExtraAdmin"></div>
       </div>
     </div>
+
+    <!-- Evolução de Peso do Aluno (Admin) -->
+    <div class="peso-card" style="margin-top:4px;">
+      <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <span>Evolução de Peso</span>
+        <button class="btn-secondary" style="font-size:11px;padding:6px 12px;"
+          onclick="adminCarregarPeso('${aluno.id_aluno}')">↺ Atualizar</button>
+      </div>
+      <div class="peso-timeline" id="adminPesoTimeline_${aluno.id_aluno}" style="max-height:240px;">
+        <div class="peso-empty" style="color:#4a4a6a;">Clique em Atualizar para carregar.</div>
+      </div>
+    </div>
   `;
 }
 
@@ -3611,7 +3642,8 @@ async function salvarAnamnese() {
 
   if (!dados.nome) { showToast("Preencha ao menos o nome."); return; }
 
-  $("btnSalvarAnamnese").disabled = true;
+  const btnSalvar = $("btnSalvarAnamnese");
+  if (btnSalvar) btnSalvar.disabled = true;
 
   let payload;
   if (state._anamneseMode === "admin" && state._anamneseAluno) {
@@ -3621,29 +3653,56 @@ async function salvarAnamnese() {
   }
 
   const res = await callAPI(payload, "salvando ficha...");
-  $("btnSalvarAnamnese").disabled = false;
+  if (btnSalvar) btnSalvar.disabled = false;
 
   if (!res.ok) { showToast("Erro: " + (res.erro || "tente novamente.")); return; }
 
   showToast("✓ Ficha salva com sucesso!");
   fecharModal("modalAnamnese");
+  descartarRascunho(); // limpa rascunho após sucesso
 
-  // Atualiza estado local
   if (state._anamneseMode === "admin" && state._anamneseAluno) {
-    const idx = state.todosAlunos.findIndex(a => String(a.id_aluno) === String(state._anamneseAluno.id_aluno));
-    if (idx >= 0) {
-      state.todosAlunos[idx].ficha = { ...(state.todosAlunos[idx].ficha || {}), ...dados };
-      if (state.alunoAdmin?.id_aluno === state._anamneseAluno.id_aluno) {
-        state.alunoAdmin.ficha = state.todosAlunos[idx].ficha;
-        renderAdminMain(state.alunoAdmin);
-      }
+    // Recarrega lista completa do admin para garantir dados frescos da planilha
+    await carregarAdminPanel();
+    // Reabre o detalhe do aluno que foi editado
+    const id = String(state._anamneseAluno.id_aluno);
+    const aluno = state.todosAlunos.find(a => String(a.id_aluno) === id);
+    if (aluno) {
+      state.alunoAdmin = aluno;
+      renderSidebar(state.todosAlunos);
+      renderAdminMain(state.alunoAdmin);
     }
   } else {
-    state.aluno = { ...state.aluno, ...dados };
-    // Atualiza nome/objetivo no resumo
-    $("alunoNome").textContent     = dados.nome || state.usuario.nome || "—";
-    $("alunoObjetivo").textContent = dados.objetivos || "—";
-    if (dados.peso && dados.altura) $("alunoPesoAltura").textContent = `${dados.peso}kg · ${dados.altura}m`;
+    // Aluno: recarrega a própria ficha do servidor
+    const resAtual = await callAPI({ action: "buscarDadosAluno", id_aluno: state.usuario.id_aluno }, "atualizando...");
+    if (resAtual.ok) {
+      const fichaAtual = resAtual.ficha || {};
+      // Normaliza aliases
+      if (!fichaAtual.nascimento     && fichaAtual.data_nascimento) fichaAtual.nascimento     = fichaAtual.data_nascimento;
+      if (!fichaAtual.data_nascimento && fichaAtual.nascimento)    fichaAtual.data_nascimento = fichaAtual.nascimento;
+      if (!fichaAtual.objetivo  && fichaAtual.objetivos) fichaAtual.objetivo  = fichaAtual.objetivos;
+      if (!fichaAtual.objetivos && fichaAtual.objetivo)  fichaAtual.objetivos = fichaAtual.objetivo;
+
+      state.aluno   = fichaAtual;
+      state.treinos = resAtual.treinos || state.treinos;
+    } else {
+      // Fallback: usa os dados locais que acabaram de ser enviados
+      state.aluno = { ...state.aluno, ...dados };
+    }
+
+    // Atualiza UI desktop
+    const f = state.aluno;
+    const el_nome  = $("alunoNome");
+    const el_obj   = $("alunoObjetivo");
+    const el_pa    = $("alunoPesoAltura");
+    const el_prova = $("alunoProva");
+    if (el_nome)  el_nome.textContent  = f.nome || state.usuario.nome || "—";
+    if (el_obj)   el_obj.textContent   = f.objetivos || f.objetivo || "—";
+    if (el_pa)    el_pa.textContent    = (f.peso && f.altura) ? `${f.peso}kg · ${f.altura}m` : "—";
+    if (el_prova) el_prova.textContent = f.proxima_prova ? formatDate(f.proxima_prova) : "—";
+
+    // Atualiza UI mobile
+    mobSyncAluno?.();
   }
 }
 
@@ -4482,6 +4541,16 @@ function mobVerAluno(id_aluno) {
     <div style="display:flex;flex-direction:column;gap:8px;">
       ${histHTML}
     </div>
+
+    <!-- Peso mobile admin -->
+    <div class="mob-section-title" style="margin-top:8px;">
+      Evolução de Peso
+      <button class="mob-action-btn amber" style="margin-left:auto;padding:6px 12px;font-size:11px;"
+        onclick="adminCarregarPeso('${aluno.id_aluno}')">↺ Carregar</button>
+    </div>
+    <div id="adminPesoTimeline_${aluno.id_aluno}" style="display:flex;flex-direction:column;gap:6px;">
+      <div class="peso-empty" style="color:#4a4a6a;">Toque em Carregar para ver.</div>
+    </div>
   `;
 
   mobNav("alunoDetalhe");
@@ -4522,6 +4591,8 @@ function setText(id, val) {
 const _origCarregarAlunoPanel = carregarAlunoPanel;
 carregarAlunoPanel = async function() {
   await _origCarregarAlunoPanel.apply(this, arguments);
+  // Carrega histórico de peso do servidor (desktop e mobile)
+  setTimeout(carregarPeso, 200);
   if (IS_MOBILE()) {
     mobSyncAluno();
     mobRenderWeek();
@@ -5471,59 +5542,174 @@ function calcularPaceAdmin() {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  MÓDULO 3: EVOLUÇÃO DE PESO
+//  MÓDULO 3: EVOLUÇÃO DE PESO — persiste via GAS
 // ══════════════════════════════════════════════════════════════
-const PESO_KEY = () => `trainOS_peso_${state.usuario?.id_aluno || "guest"}`;
 
-function carregarPeso() {
-  try {
-    const registros = JSON.parse(localStorage.getItem(PESO_KEY()) || "[]");
-    renderPesoTimeline(registros);
-  } catch { /* silencioso */ }
+// Cache local para não buscar toda hora
+let _pesoCache = null;
+let _pesoCacheAluno = null;
+
+async function carregarPeso() {
+  const el = $("pesoTimeline");
+  if (!el) return;
+
+  const id_aluno = state.usuario?.id_aluno;
+  if (!id_aluno) return;
+
+  // Usa cache se for o mesmo aluno
+  if (_pesoCache && _pesoCacheAluno === id_aluno) {
+    renderPesoTimeline(_pesoCache);
+    return;
+  }
+
+  el.innerHTML = `<div class="peso-empty" style="color:#4a4a6a;">Carregando...</div>`;
+
+  const res = await callAPI({ action: "buscarHistoricoPeso", id_aluno }, "buscando histórico de peso...");
+
+  if (!res.ok) {
+    el.innerHTML = `<div class="peso-empty">Erro ao carregar histórico.</div>`;
+    return;
+  }
+
+  _pesoCache      = res.registros || [];
+  _pesoCacheAluno = id_aluno;
+  renderPesoTimeline(_pesoCache);
 }
 
-function registrarPeso() {
+async function registrarPeso() {
   const val = parseFloat($("pesoInput")?.value || "");
+  const obs  = ($("pesoObs")?.value || "").trim();
+
   if (!val || val < 10 || val > 400) { showToast("Informe um peso válido (kg)."); return; }
 
-  try {
-    const registros = JSON.parse(localStorage.getItem(PESO_KEY()) || "[]");
-    registros.unshift({ data: hoje(), peso: val, ts: Date.now() });
-    // Mantém máx 60 registros
-    if (registros.length > 60) registros.splice(60);
-    localStorage.setItem(PESO_KEY(), JSON.stringify(registros));
-    renderPesoTimeline(registros);
-    setVal("pesoInput","");
-    showToast(`✓ Peso de ${val} kg registrado!`);
-  } catch (e) { showToast("Erro ao salvar peso."); }
+  const id_aluno = state.usuario?.id_aluno;
+  if (!id_aluno) { showToast("Sessão inválida. Faça login novamente."); return; }
+
+  const btnReg = $("btnRegistrarPeso");
+  if (btnReg) btnReg.disabled = true;
+
+  const res = await callAPI({
+    action:     "registrarPeso",
+    id_aluno,
+    peso_kg:    val,
+    data:       hoje(),
+    observacao: obs,
+  }, "salvando peso...");
+
+  if (btnReg) btnReg.disabled = false;
+
+  if (!res.ok) { showToast("Erro: " + (res.erro || "tente novamente.")); return; }
+
+  showToast(`✓ Peso de ${val} kg registrado!`);
+  setVal("pesoInput", "");
+  if ($("pesoObs")) setVal("pesoObs", "");
+
+  // Atualiza cache local imediatamente
+  const novoReg = { id_registro: res.id_registro, data: res.data, peso_kg: val, observacao: obs, ts: new Date().toISOString() };
+  _pesoCache = _pesoCache ? [novoReg, ..._pesoCache] : [novoReg];
+  renderPesoTimeline(_pesoCache);
+}
+
+async function excluirPeso(id_registro) {
+  const id_aluno = state.usuario?.id_aluno;
+  if (!id_aluno || !id_registro) return;
+
+  const res = await callAPI({ action: "excluirRegistroPeso", id_registro, id_aluno }, "removendo...");
+
+  if (!res.ok) { showToast("Erro: " + (res.erro || "tente novamente.")); return; }
+
+  showToast("✓ Registro removido.");
+  _pesoCache = (_pesoCache || []).filter(r => r.id_registro !== id_registro);
+  renderPesoTimeline(_pesoCache);
 }
 
 function renderPesoTimeline(registros) {
   const el = $("pesoTimeline");
   if (!el) return;
-  if (!registros.length) {
+
+  if (!registros || !registros.length) {
     el.innerHTML = `<div class="peso-empty">Nenhum registro ainda.</div>`;
     return;
   }
+
   el.innerHTML = registros.map((r, i) => {
     const prev  = registros[i + 1];
     let deltaHTML = "";
     if (prev) {
-      const diff = (r.peso - prev.peso).toFixed(1);
+      const diff = (r.peso_kg - prev.peso_kg).toFixed(1);
       const cls  = diff > 0 ? "up" : diff < 0 ? "down" : "same";
       const sinal= diff > 0 ? "+" : "";
       deltaHTML = `<span class="peso-entry-delta ${cls}">${sinal}${diff} kg</span>`;
     }
+    const obsHTML = r.observacao
+      ? `<span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#4a4a6a;margin-left:4px;">· ${escHtml(r.observacao)}</span>`
+      : "";
     return `<div class="peso-entry">
-      <span class="peso-entry-date">${formatDate(r.data)}</span>
-      <span class="peso-entry-val">${r.peso} kg</span>
-      ${deltaHTML}
+      <div style="display:flex;flex-direction:column;gap:2px;">
+        <span class="peso-entry-date">${formatDate(r.data)} ${obsHTML}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="peso-entry-val">${r.peso_kg} kg</span>
+        ${deltaHTML}
+        <button onclick="excluirPeso('${r.id_registro}')"
+          style="background:none;border:none;color:#4a4a6a;cursor:pointer;font-size:13px;padding:0 2px;transition:color .15s;"
+          onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#4a4a6a'"
+          title="Remover">×</button>
+      </div>
     </div>`;
   }).join("");
 }
 
-// ══════════════════════════════════════════════════════════════
-//  MÓDULO 4: MÁSCARAS DE TEMPO NA ANAMNESE
+// ── Admin: carrega peso de um aluno específico ───────────────
+async function adminCarregarPeso(id_aluno) {
+  const elId = `adminPesoTimeline_${id_aluno}`;
+  const el   = $(elId);
+  if (!el) return;
+
+  el.innerHTML = `<div class="peso-empty" style="color:#4a4a6a;">Carregando...</div>`;
+
+  const res = await callAPI({ action: "buscarHistoricoPeso", id_aluno, limite: 30 }, "buscando peso...");
+
+  if (!res.ok) {
+    el.innerHTML = `<div class="peso-empty">Erro ao carregar: ${escHtml(res.erro || "")}</div>`;
+    return;
+  }
+
+  const registros = res.registros || [];
+  if (!registros.length) {
+    el.innerHTML = `<div class="peso-empty">Nenhum registro de peso para este aluno.</div>`;
+    return;
+  }
+
+  el.innerHTML = registros.map((r, i) => {
+    const prev = registros[i + 1];
+    let deltaHTML = "";
+    if (prev) {
+      const diff  = (r.peso_kg - prev.peso_kg).toFixed(1);
+      const cls   = diff > 0 ? "up" : diff < 0 ? "down" : "same";
+      const sinal = diff > 0 ? "+" : "";
+      deltaHTML = `<span class="peso-entry-delta ${cls}">${sinal}${diff} kg</span>`;
+    }
+    const obsHTML = r.observacao
+      ? `<span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#4a4a6a;"> · ${escHtml(r.observacao)}</span>`
+      : "";
+    return `<div class="peso-entry">
+      <span class="peso-entry-date">${formatDate(r.data)}${obsHTML}</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="peso-entry-val">${r.peso_kg} kg</span>
+        ${deltaHTML}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// Invalida cache de peso ao fazer logout
+const _origHandleLogout = handleLogout;
+handleLogout = function() {
+  _pesoCache      = null;
+  _pesoCacheAluno = null;
+  _origHandleLogout.apply(this, arguments);
+};
 // ══════════════════════════════════════════════════════════════
 function aplicarMascaraTempo(input, formato) {
   // formato: "mm:ss" ou "hh:mm:ss"
@@ -5641,16 +5827,6 @@ abrirFichaAdmin = function() {
   setTimeout(() => { inicializarMascarasTempo(); ativarAutoSaveRascunho(); verificarRascunho(); }, 100);
 };
 
-// Patch em salvarAnamnese para limpar rascunho no sucesso
-const _origSalvarAnamnese = salvarAnamnese;
-salvarAnamnese = async function() {
-  await _origSalvarAnamnese.apply(this, arguments);
-  // Limpa rascunho se modal fechou (sucesso)
-  if ($("modalAnamnese")?.classList.contains("hidden")) {
-    descartarRascunho();
-  }
-};
-
 // ══════════════════════════════════════════════════════════════
 //  MÓDULO 6: FILTRO DE HISTÓRICO DE TREINOS (ADMIN)
 // ══════════════════════════════════════════════════════════════
@@ -5687,12 +5863,7 @@ document.addEventListener("DOMContentLoaded", () => {
   } catch { /* silencioso */ }
 });
 
-// Carrega peso quando painel aluno estiver pronto
-const _origCarregarAlunoPanelModulos = carregarAlunoPanel;
-carregarAlunoPanel = async function() {
-  await _origCarregarAlunoPanelModulos.apply(this, arguments);
-  setTimeout(carregarPeso, 300);
-};
+// O carregamento de peso é chamado dentro do hook existente em módulo mobile
 
 </script>
 </body>
