@@ -1514,12 +1514,12 @@
   /* ── Responsive breakpoints ── */
   @media (max-width: 768px) {
     .topbar, .admin-layout, #panelAluno .student-layout { display: none !important; }
-    .mobile-header { display: block; }
-    body.logado .bottom-nav { display: block; }
+    body.logado .mobile-header { display: block; }
+    body.logado .bottom-nav    { display: block; }
     body.logado.is-admin .mob-fab { display: flex; }
-    #mobShell      { display: flex !important; }
-    body           { overflow: hidden; height: 100dvh; }
-    #screenApp     { overflow: hidden; }
+    body.logado #mobShell      { display: flex !important; }
+    body.logado               { overflow: hidden; height: 100dvh; }
+    body.logado #screenApp    { overflow: hidden; }
   }
 
   @media (min-width: 769px) {
