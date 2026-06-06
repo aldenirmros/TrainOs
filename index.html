@@ -330,6 +330,37 @@
   }
   .treino-empty { font-size: 14px; color: #4a4a6a; font-family: 'JetBrains Mono', monospace; text-align: center; padding: 32px 0; }
 
+  /* ── Bloco de ritmos ── */
+  .ritmos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .ritmo-item {
+    background: #0a0a0f;
+    border: 1px solid #1e1e2e;
+    border-radius: 10px;
+    padding: 10px 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .ritmo-label {
+    font-size: 9px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .ritmo-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .ritmo-value {
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #e8e8f0;
+    line-height: 1.4;
+  }
+
   .feedback-label { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
   .feedback-textarea {
     width: 100%;
@@ -1185,238 +1216,136 @@
 
   /* ── Bottom Navigation Bar ── */
   .bottom-nav {
-    display: none;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    z-index: 200;
-    background: rgba(10,10,15,.96);
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    background: rgba(10,10,15,.97);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-top: 1px solid rgba(30,30,46,.8);
-    padding: 8px 0 max(env(safe-area-inset-bottom), 8px);
-    display: none; /* shown via JS on mobile */
+    padding: 8px 0 max(env(safe-area-inset-bottom, 8px), 8px);
+    display: none;
   }
-  .bottom-nav-inner {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-  }
+  .bottom-nav-inner { display: flex; justify-content: space-around; align-items: center; }
   .bn-item {
     display: flex; flex-direction: column; align-items: center;
-    gap: 3px; padding: 4px 16px;
-    background: none; border: none; cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: all .2s;
-    min-width: 60px;
-    position: relative;
+    gap: 3px; padding: 6px 8px; background: none; border: none; cursor: pointer;
+    -webkit-tap-highlight-color: transparent; transition: transform .15s;
+    min-width: 52px; flex: 1; position: relative;
   }
-  .bn-icon {
-    font-size: 20px; line-height: 1;
-    transition: transform .2s;
-  }
+  .bn-icon  { font-size: 20px; line-height: 1; transition: transform .2s; }
   .bn-label {
-    font-size: 10px; font-family: 'JetBrains Mono', monospace;
-    letter-spacing: .04em; color: #4a4a6a;
-    transition: color .2s;
-    text-transform: uppercase;
+    font-size: 9px; font-family: 'JetBrains Mono', monospace;
+    letter-spacing: .05em; color: #4a4a6a; transition: color .2s;
+    text-transform: uppercase; white-space: nowrap;
   }
   .bn-item.active .bn-label { color: #c8f135; }
   .bn-item.active .bn-icon  { transform: translateY(-2px); }
-  .bn-item:active            { transform: scale(.92); }
+  .bn-item:active            { transform: scale(.88); }
   .bn-dot {
-    position: absolute; top: 2px; right: 14px;
+    position: absolute; top: 4px; right: calc(50% - 16px);
     width: 6px; height: 6px; border-radius: 50%;
-    background: #c8f135;
-    box-shadow: 0 0 6px #c8f135;
+    background: #f87171; box-shadow: 0 0 6px #f87171;
   }
 
-  /* ── Mobile Header (replaces topbar on mobile) ── */
+  /* ── Mobile Header ── */
   .mobile-header {
-    display: none;
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: rgba(10,10,15,.95);
+    display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,10,15,.97);
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
     border-bottom: 1px solid rgba(30,30,46,.7);
-    padding: env(safe-area-inset-top) 0 0;
+    padding-top: env(safe-area-inset-top, 0px);
   }
   .mobile-header-inner {
-    height: 56px;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 16px;
+    height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
   }
   .mh-logo {
-    font-size: 17px; font-weight: 800; color: #c8f135;
-    letter-spacing: .03em;
-    display: flex; align-items: center; gap: 8px;
+    font-size: 17px; font-weight: 800; color: #c8f135; letter-spacing: .03em;
+    display: flex; align-items: center; gap: 8px; max-width: 55vw; overflow: hidden;
   }
-  .mh-logo img { height: 26px; border-radius: 4px; }
-  .mh-actions { display: flex; gap: 6px; }
+  .mh-logo span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mh-logo img  { height: 26px; max-width: 100px; border-radius: 4px; object-fit: contain; flex-shrink: 0; }
+  .mh-actions   { display: flex; gap: 6px; flex-shrink: 0; }
   .mh-btn {
-    width: 36px; height: 36px;
-    background: rgba(255,255,255,.05);
-    border: 1px solid rgba(30,30,46,.8);
-    border-radius: 10px;
-    color: #8888aa; font-size: 16px;
+    width: 36px; height: 36px; min-width: 36px;
+    background: rgba(255,255,255,.05); border: 1px solid rgba(30,30,46,.8);
+    border-radius: 10px; color: #8888aa; font-size: 16px;
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: all .2s;
+    cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all .15s;
   }
-  .mh-btn:active { background: rgba(200,241,53,.1); color: #c8f135; transform: scale(.92); }
+  .mh-btn:active { background: rgba(200,241,53,.12); color: #c8f135; transform: scale(.88); }
 
-  /* ── Mobile Page Shell ── */
+  /* ── App Shell ── */
+  #mobShell {
+    position: fixed; inset: 0; display: none; flex-direction: column; z-index: 10;
+  }
+
+  /* ── Pages ── */
   .mob-page {
-    display: none;
-    flex-direction: column;
-    min-height: 100dvh;
+    display: none; position: absolute; inset: 0;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    padding-top: calc(56px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(66px + env(safe-area-inset-bottom, 0px));
   }
-  .mob-page.active { display: flex; }
-
-  /* Content area with safe insets */
-  .mob-content {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    padding: calc(56px + env(safe-area-inset-top)) 0
-             calc(72px + env(safe-area-inset-bottom));
-  }
+  .mob-page.active { display: block; }
   .mob-content-inner {
-    padding: 16px;
-    display: flex; flex-direction: column;
-    gap: 12px;
-    max-width: 100%;
+    padding: 14px 14px 10px; display: flex; flex-direction: column; gap: 12px;
   }
 
-  /* ── Mobile Section Header ── */
+  /* ── Section titles ── */
   .mob-section-title {
-    font-size: 11px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
     color: #8888aa; letter-spacing: .14em; text-transform: uppercase;
-    margin-bottom: 10px;
     display: flex; align-items: center; gap: 8px;
   }
-  .mob-section-title::after { content:''; flex:1; height:1px; background:#1e1e2e; }
+  .mob-section-title .msep { flex: 1; height: 1px; background: #1e1e2e; }
 
-  /* ── Hero Card (aluno) ── */
+  /* ── Hero ── */
   .mob-hero {
     background: linear-gradient(135deg, #16161f 0%, #111118 100%);
-    border: 1px solid #1e1e2e;
-    border-radius: 20px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
+    border: 1px solid #1e1e2e; border-radius: 20px;
+    padding: 18px 20px; position: relative; overflow: hidden;
   }
   .mob-hero::before {
-    content: '';
-    position: absolute; top: -30px; right: -30px;
-    width: 120px; height: 120px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(200,241,53,.12), transparent 70%);
+    content: ''; position: absolute; top: -30px; right: -30px;
+    width: 130px; height: 130px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,241,53,.1), transparent 70%);
     pointer-events: none;
   }
-  .mob-hero-name {
-    font-size: 22px; font-weight: 800; color: #e8e8f0;
-    margin-bottom: 4px;
-  }
-  .mob-hero-sub {
-    font-size: 12px; font-family: 'JetBrains Mono', monospace;
-    color: #8888aa; margin-bottom: 16px;
-  }
-  .mob-hero-stats {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-  }
-  .mob-hero-stat { text-align: center; }
-  .mob-hero-stat-val {
-    font-size: 16px; font-weight: 700; color: #e8e8f0;
-    margin-bottom: 2px;
-  }
-  .mob-hero-stat-lbl {
-    font-size: 9px; font-family: 'JetBrains Mono', monospace;
-    color: #4a4a6a; letter-spacing: .08em; text-transform: uppercase;
-  }
-  .mob-hero-divider {
-    width: 1px; background: #1e1e2e; align-self: stretch;
-  }
+  .mob-hero-name    { font-size: 20px; font-weight: 800; color: #e8e8f0; margin-bottom: 3px; line-height: 1.2; word-break: break-word; }
+  .mob-hero-sub     { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; margin-bottom: 14px; line-height: 1.4; }
+  .mob-hero-stats   { display: flex; gap: 0; }
+  .mob-hero-stat    { flex: 1; text-align: center; }
+  .mob-hero-stat-val{ font-size: 15px; font-weight: 700; color: #e8e8f0; margin-bottom: 2px; }
+  .mob-hero-stat-lbl{ font-size: 9px; font-family: 'JetBrains Mono', monospace; color: #4a4a6a; letter-spacing: .07em; text-transform: uppercase; }
+  .mob-hero-divider { width: 1px; background: #1e1e2e; }
 
-  /* ── Quick actions row ── */
-  .mob-quick-row {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .mob-quick-btn {
-    background: #16161f;
-    border: 1px solid #1e1e2e;
-    border-radius: 14px;
-    padding: 14px 12px;
-    display: flex; flex-direction: column;
-    align-items: flex-start; gap: 6px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: all .2s;
-    text-align: left;
-  }
-  .mob-quick-btn:active { transform: scale(.97); }
-  .mob-quick-btn.lime  { border-color: rgba(200,241,53,.3); background: rgba(200,241,53,.06); }
-  .mob-quick-btn.amber { border-color: rgba(245,166,35,.3); background: rgba(245,166,35,.06); }
-  .mob-quick-icon { font-size: 22px; }
-  .mob-quick-label {
-    font-size: 12px; font-weight: 700; color: #e8e8f0;
-    line-height: 1.3;
-  }
-  .mob-quick-sub {
-    font-size: 10px; font-family: 'JetBrains Mono', monospace;
-    color: #8888aa;
-  }
-
-  /* ── Week strip mobile ── */
-  .mob-week-card {
-    background: #16161f;
-    border: 1px solid #1e1e2e;
-    border-radius: 16px;
-    padding: 14px 14px 10px;
-  }
-  .mob-week-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .mob-week-range {
-    font-size: 11px; font-family: 'JetBrains Mono', monospace;
-    color: #8888aa;
-  }
-  .mob-week-nav { display: flex; gap: 6px; }
+  /* ── Week strip ── */
+  .mob-week-card { background: #16161f; border: 1px solid #1e1e2e; border-radius: 16px; padding: 14px 14px 10px; }
+  .mob-week-header{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .mob-week-range { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; }
+  .mob-week-nav   { display: flex; gap: 6px; }
   .mob-week-btn {
-    width: 28px; height: 28px;
-    background: #0a0a0f; border: 1px solid #1e1e2e;
-    border-radius: 8px; color: #e8e8f0; font-size: 12px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    -webkit-tap-highlight-color: transparent;
-    transition: all .15s;
+    width: 32px; height: 32px; min-width: 32px;
+    background: #0a0a0f; border: 1px solid #1e1e2e; border-radius: 8px;
+    color: #e8e8f0; font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent; transition: all .15s;
   }
-  .mob-week-btn:active { border-color: #c8f135; color: #c8f135; }
+  .mob-week-btn:active { border-color: #c8f135; color: #c8f135; transform: scale(.9); }
 
-  /* ── Day pill mobile (wider touch targets) ── */
+  /* ── Day pills ── */
   .mob-day-strip {
     display: flex; gap: 6px; overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-bottom: 4px;
-    scrollbar-width: none;
+    scroll-snap-type: x mandatory; padding-bottom: 4px; scrollbar-width: none;
   }
   .mob-day-strip::-webkit-scrollbar { display: none; }
   .mob-day-pill {
-    flex: 0 0 auto;
-    min-width: 44px;
+    flex: 0 0 auto; min-width: 42px;
     display: flex; flex-direction: column; align-items: center;
-    padding: 8px 8px 6px;
-    border-radius: 12px;
-    border: 1px solid #1e1e2e;
-    cursor: pointer;
-    scroll-snap-align: start;
-    position: relative;
-    -webkit-tap-highlight-color: transparent;
-    transition: all .15s;
-    background: #0a0a0f;
+    padding: 8px 6px 6px; border-radius: 12px; border: 1px solid #1e1e2e;
+    cursor: pointer; scroll-snap-align: start; position: relative;
+    -webkit-tap-highlight-color: transparent; transition: all .15s; background: #0a0a0f;
   }
   .mob-day-pill.active      { background: #c8f135; border-color: #c8f135; }
   .mob-day-pill.has-treino::after {
@@ -1424,241 +1353,166 @@
     width: 4px; height: 4px; border-radius: 50%; background: #c8f135;
   }
   .mob-day-pill.active.has-treino::after { background: #0a0a0f; }
-  .mob-dp-wd  { font-size: 9px; font-family: 'JetBrains Mono', monospace; color: #4a4a6a; letter-spacing: .06em; margin-bottom: 4px; }
+  .mob-dp-wd  { font-size: 9px; font-family: 'JetBrains Mono', monospace; color: #4a4a6a; letter-spacing: .04em; margin-bottom: 4px; }
   .mob-dp-num { font-size: 15px; font-weight: 700; color: #e8e8f0; }
   .mob-day-pill.active .mob-dp-wd,
   .mob-day-pill.active .mob-dp-num { color: #0a0a0f; }
 
-  /* ── Treino card mobile ── */
-  .mob-treino-card {
-    background: #16161f;
-    border: 1px solid #1e1e2e;
-    border-radius: 16px;
-    overflow: hidden;
-  }
+  /* ── Treino card ── */
+  .mob-treino-card { background: #16161f; border: 1px solid #1e1e2e; border-radius: 16px; overflow: hidden; }
   .mob-treino-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 16px 12px;
-    border-bottom: 1px solid #1e1e2e;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 14px 16px 10px; border-bottom: 1px solid #1e1e2e; gap: 10px; flex-wrap: wrap;
   }
-  .mob-treino-date {
-    font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa;
-  }
+  .mob-treino-date { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; }
   .mob-treino-body {
-    padding: 14px 16px;
-    font-size: 13px; color: #8888aa;
-    font-family: 'JetBrains Mono', monospace;
-    line-height: 1.75; white-space: pre-wrap;
-    background: rgba(0,0,0,.2);
+    padding: 14px 16px; font-size: 13px; color: #8888aa;
+    font-family: 'JetBrains Mono', monospace; line-height: 1.75;
+    white-space: pre-wrap; background: rgba(0,0,0,.15); word-break: break-word;
   }
-  .mob-treino-footer { padding: 12px 16px; }
+  .mob-treino-footer { padding: 12px 16px; border-top: 1px solid #1e1e2e; }
   .mob-feedback-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .mob-feedback-lbl  { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: #8888aa; letter-spacing: .1em; text-transform: uppercase; }
   .mob-feedback-ta {
-    width: 100%;
-    background: #0a0a0f;
-    border: 1px solid #1e1e2e;
-    border-radius: 12px;
-    padding: 12px 14px;
-    color: #e8e8f0; font-size: 14px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    resize: none; min-height: 80px;
-    outline: none;
-    -webkit-appearance: none;
+    width: 100%; background: #0a0a0f; border: 1px solid #1e1e2e;
+    border-radius: 12px; padding: 12px 14px; color: #e8e8f0;
+    font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif;
+    resize: none; min-height: 80px; outline: none; -webkit-appearance: none;
+    transition: border-color .2s;
   }
   .mob-feedback-ta:focus { border-color: #c8f135; }
+
+  /* ── Full button ── */
   .mob-btn-full {
     width: 100%; background: #c8f135; color: #0a0a0f;
     font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800;
-    font-size: 15px; border: none; border-radius: 12px;
-    padding: 15px; cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: opacity .2s, transform .1s;
+    font-size: 15px; border: none; border-radius: 12px; padding: 15px;
+    cursor: pointer; text-align: center; display: block; box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; transition: opacity .2s, transform .1s;
   }
   .mob-btn-full:active { transform: scale(.98); opacity: .88; }
 
-  /* ── Admin mobile: alunos list ── */
+  /* ── Alunos list ── */
   .mob-aluno-item {
     display: flex; align-items: center; gap: 12px;
-    padding: 14px 16px;
-    background: #16161f;
-    border: 1px solid #1e1e2e;
-    border-radius: 14px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: all .15s;
+    padding: 14px 16px; background: #16161f;
+    border: 1px solid #1e1e2e; border-radius: 14px;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+    transition: all .15s; width: 100%; text-align: left; box-sizing: border-box;
   }
-  .mob-aluno-item:active { transform: scale(.98); }
+  .mob-aluno-item:active { transform: scale(.98); background: rgba(200,241,53,.05); }
   .mob-aluno-avatar {
-    width: 42px; height: 42px; border-radius: 12px;
-    background: rgba(200,241,53,.1);
-    border: 1px solid rgba(200,241,53,.2);
+    width: 42px; height: 42px; min-width: 42px; border-radius: 12px;
+    background: rgba(200,241,53,.1); border: 1px solid rgba(200,241,53,.2);
     display: flex; align-items: center; justify-content: center;
     font-size: 16px; font-weight: 800; color: #c8f135;
-    flex-shrink: 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
   }
-  .mob-aluno-info { flex: 1; min-width: 0; }
-  .mob-aluno-name { font-size: 14px; font-weight: 700; color: #e8e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .mob-aluno-user { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; }
-  .mob-aluno-arrow { color: #4a4a6a; font-size: 14px; }
+  .mob-aluno-info  { flex: 1; min-width: 0; }
+  .mob-aluno-name  { font-size: 14px; font-weight: 700; color: #e8e8f0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mob-aluno-user  { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; margin-top: 2px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .mob-aluno-arrow { color: #4a4a6a; font-size: 16px; flex-shrink: 0; }
 
-  /* ── Admin mobile: detalhe do aluno ── */
-  .mob-detail-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: 0 0 16px;
-    border-bottom: 1px solid #1e1e2e;
-    margin-bottom: 16px;
-  }
+  /* ── Detalhe aluno ── */
+  .mob-detail-header { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid #1e1e2e; margin-bottom: 14px; }
   .mob-back-btn {
-    width: 36px; height: 36px;
-    background: #16161f; border: 1px solid #1e1e2e;
-    border-radius: 10px; color: #e8e8f0; font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; flex-shrink: 0;
-    -webkit-tap-highlight-color: transparent;
-    transition: all .15s;
+    width: 38px; height: 38px; min-width: 38px;
+    background: #16161f; border: 1px solid #1e1e2e; border-radius: 10px;
+    color: #e8e8f0; font-size: 18px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all .15s; flex-shrink: 0;
   }
   .mob-back-btn:active { background: rgba(200,241,53,.1); border-color: rgba(200,241,53,.3); }
-  .mob-detail-name { font-size: 16px; font-weight: 800; color: #e8e8f0; }
+  .mob-detail-name { font-size: 16px; font-weight: 800; color: #e8e8f0; line-height: 1.2; }
   .mob-detail-user { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; }
 
-  /* ── Admin action buttons strip ── */
-  .mob-action-strip {
-    display: flex; gap: 8px; overflow-x: auto;
-    padding-bottom: 4px; scrollbar-width: none;
-  }
+  /* ── Action strip ── */
+  .mob-action-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
   .mob-action-strip::-webkit-scrollbar { display: none; }
   .mob-action-btn {
-    flex: 0 0 auto;
-    padding: 10px 16px;
-    border-radius: 10px;
-    font-size: 12px; font-weight: 700;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    cursor: pointer; border: 1px solid;
-    -webkit-tap-highlight-color: transparent;
-    white-space: nowrap;
-    transition: all .15s;
+    flex: 0 0 auto; padding: 10px 14px; border-radius: 10px;
+    font-size: 12px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; border: 1px solid; -webkit-tap-highlight-color: transparent;
+    white-space: nowrap; transition: all .15s;
   }
-  .mob-action-btn:active { transform: scale(.95); }
-  .mob-action-btn.lime  { background: rgba(200,241,53,.1); border-color: rgba(200,241,53,.3); color: #c8f135; }
+  .mob-action-btn:active { transform: scale(.93); }
+  .mob-action-btn.lime  { background: rgba(200,241,53,.1);  border-color: rgba(200,241,53,.3);  color: #c8f135; }
   .mob-action-btn.cyan  { background: rgba(56,217,245,.08); border-color: rgba(56,217,245,.25); color: #38d9f5; }
   .mob-action-btn.amber { background: rgba(245,166,35,.08); border-color: rgba(245,166,35,.25); color: #f5a623; }
 
-  /* ── Info tiles mobile ── */
-  .mob-info-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-  }
-  .mob-info-tile {
-    background: #16161f; border: 1px solid #1e1e2e;
-    border-radius: 12px; padding: 12px;
-  }
+  /* ── Info tiles ── */
+  .mob-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mob-info-tile { background: #16161f; border: 1px solid #1e1e2e; border-radius: 12px; padding: 12px; }
   .mob-info-tile.full { grid-column: 1/-1; }
   .mob-tile-lbl { font-size: 9px; font-family: 'JetBrains Mono', monospace; color: #8888aa; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
-  .mob-tile-val { font-size: 13px; font-weight: 600; color: #e8e8f0; line-height: 1.4; }
+  .mob-tile-val { font-size: 13px; font-weight: 600; color: #e8e8f0; line-height: 1.4; word-break: break-word; }
 
-  /* ── Treino form mobile ── */
-  .mob-form-card {
-    background: #16161f; border: 1px solid #1e1e2e;
-    border-radius: 16px; padding: 16px;
-    display: flex; flex-direction: column; gap: 10px;
-  }
+  /* ── Form card ── */
+  .mob-form-card { background: #16161f; border: 1px solid #1e1e2e; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
 
-  /* ── Hist list mobile (cards, não table) ── */
-  .mob-hist-card {
-    background: #0a0a0f; border: 1px solid #1e1e2e;
-    border-radius: 12px; padding: 12px 14px;
-    display: flex; flex-direction: column; gap: 6px;
-  }
-  .mob-hist-top {
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .mob-hist-date {
-    font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa;
-  }
-  .mob-hist-desc {
-    font-size: 12px; font-family: 'JetBrains Mono', monospace;
-    color: #8888aa; line-height: 1.5;
-  }
-  .mob-hist-fb {
-    font-size: 12px; color: #c8f135;
-    font-family: 'JetBrains Mono', monospace;
-    padding: 6px 10px; background: rgba(200,241,53,.06);
-    border-radius: 8px; border: 1px solid rgba(200,241,53,.15);
-    line-height: 1.5;
-  }
+  /* ── Hist cards ── */
+  .mob-hist-card { background: #0a0a0f; border: 1px solid #1e1e2e; border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .mob-hist-top  { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .mob-hist-date { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8888aa; }
+  .mob-hist-desc { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: #8888aa; line-height: 1.5; word-break: break-word; }
+  .mob-hist-fb   { font-size: 12px; color: #c8f135; font-family: 'JetBrains Mono', monospace; padding: 6px 10px; background: rgba(200,241,53,.06); border-radius: 8px; border: 1px solid rgba(200,241,53,.15); line-height: 1.5; word-break: break-word; }
 
-  /* ── Floating Action Button (admin) ── */
+  /* ── FAB ── */
   .mob-fab {
     position: fixed;
-    bottom: calc(72px + env(safe-area-inset-bottom) + 12px);
-    right: 16px;
-    z-index: 150;
-    width: 52px; height: 52px;
-    border-radius: 16px;
-    background: #c8f135;
-    color: #0a0a0f;
-    font-size: 24px; font-weight: 800;
-    border: none; cursor: pointer;
-    display: none;
-    align-items: center; justify-content: center;
-    box-shadow: 0 4px 20px rgba(200,241,53,.4);
-    -webkit-tap-highlight-color: transparent;
-    transition: all .2s;
+    bottom: calc(66px + env(safe-area-inset-bottom, 0px) + 12px);
+    right: 16px; z-index: 150;
+    width: 54px; height: 54px; border-radius: 16px;
+    background: #c8f135; color: #0a0a0f;
+    font-size: 26px; font-weight: 800; border: none; cursor: pointer;
+    display: none; align-items: center; justify-content: center;
+    box-shadow: 0 4px 24px rgba(200,241,53,.45);
+    -webkit-tap-highlight-color: transparent; transition: all .2s;
   }
-  .mob-fab:active { transform: scale(.92); }
+  .mob-fab:active { transform: scale(.9); }
 
-  /* ── Modal mobile overrides ── */
+  /* ── Pace e Peso nos cards mobile ── */
+  .mob-card-generic {
+    background: #16161f; border: 1px solid #1e1e2e; border-radius: 16px; padding: 16px;
+  }
+
+  /* ── Modal — bottom sheet ── */
   @media (max-width: 600px) {
-    .modal-overlay {
-      align-items: flex-end;
-      padding: 0;
-    }
+    .modal-overlay { align-items: flex-end; padding: 0; }
     .modal-box {
-      border-radius: 24px 24px 0 0;
-      max-width: 100%;
-      width: 100%;
-      max-height: 92dvh;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      margin: 0;
-      padding-bottom: env(safe-area-inset-bottom);
+      border-radius: 22px 22px 0 0; max-width: 100%; width: 100%;
+      max-height: 94dvh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain; margin: 0;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
-    .modal-box::before { left: 40%; right: 40%; } /* drag handle hint */
-    .modal-body { padding: 16px 20px; gap: 14px; }
-    .modal-footer { padding: 12px 20px calc(16px + env(safe-area-inset-bottom)); }
+    .modal-box::before { left: 40%; right: 40%; }
+    .modal-body    { padding: 14px 18px; gap: 14px; }
+    .modal-footer  { padding: 12px 18px calc(14px + env(safe-area-inset-bottom, 0px)); }
     .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
-    .check-grid { gap: 6px; }
-    .check-item { padding: 8px 10px; }
-    .simnao-row { flex-direction: column; gap: 6px; }
-    .classif-grid { gap: 6px; }
-    .classif-pill { padding: 8px 12px; font-size: 12px; }
-    .aluno-select-list { max-height: 200px; }
+    .check-grid    { gap: 6px; }
+    .check-item    { padding: 8px 10px; }
+    .simnao-row    { flex-direction: column; gap: 6px; }
+    .classif-grid  { gap: 6px; }
+    .classif-pill  { padding: 8px 12px; font-size: 12px; }
+    .aluno-select-list { max-height: 180px; }
+    .timer-display { font-size: 36px; }
   }
 
-  /* ── Main media query: show/hide mobile vs desktop ── */
+  /* ── Responsive breakpoints ── */
   @media (max-width: 768px) {
-    /* Hide desktop elements */
-    .topbar        { display: none !important; }
-    .admin-layout  { display: none !important; }
-    #panelAluno .student-layout { display: none !important; }
-
-    /* Show mobile elements */
+    .topbar, .admin-layout, #panelAluno .student-layout { display: none !important; }
     .mobile-header { display: block; }
     .bottom-nav    { display: block; }
     .mob-fab       { display: flex; }
-
-    /* Full-height app shell */
-    body { overflow: hidden; }
-    #screenApp { height: 100dvh; overflow: hidden; }
+    #mobShell      { display: flex !important; }
+    body           { overflow: hidden; height: 100dvh; }
+    #screenApp     { overflow: hidden; }
   }
 
   @media (min-width: 769px) {
-    /* Hide mobile elements on desktop */
-    .mobile-header    { display: none !important; }
-    .bottom-nav       { display: none !important; }
-    .mob-fab          { display: none !important; }
-    .mob-page         { display: none !important; }
-    .admin-layout     { display: flex !important; flex-direction: row; }
+    .mobile-header, .bottom-nav, .mob-fab { display: none !important; }
+    #mobShell { display: none !important; }
+    .mob-page { display: none !important; }
+    .admin-layout { display: flex !important; flex-direction: row; }
     .admin-sidebar.mobile-hidden { display: flex !important; }
     .admin-main.mobile-hidden    { display: flex !important; }
   }
@@ -1718,172 +1572,191 @@
 
   <!-- ── PAGE: Treinos (aluno) ── -->
   <div class="mob-page" id="mobPageHome">
-    <div class="mob-content">
-      <div class="mob-content-inner">
+    <div class="mob-content-inner">
 
-        <!-- Hero -->
-        <div class="mob-hero">
-          <div class="mob-hero-name" id="m_alunoNome">—</div>
-          <div class="mob-hero-sub" id="m_alunoSub">Carregando...</div>
-          <div class="mob-hero-stats">
-            <div class="mob-hero-stat">
-              <div class="mob-hero-stat-val" id="m_alunoPeso">—</div>
-              <div class="mob-hero-stat-lbl">Peso</div>
-            </div>
-            <div class="mob-hero-divider"></div>
-            <div class="mob-hero-stat">
-              <div class="mob-hero-stat-val" id="m_alunoAltura">—</div>
-              <div class="mob-hero-stat-lbl">Altura</div>
-            </div>
-            <div class="mob-hero-divider"></div>
-            <div class="mob-hero-stat">
-              <div class="mob-hero-stat-val" id="m_alunoNivel">—</div>
-              <div class="mob-hero-stat-lbl">Nível</div>
-            </div>
+      <!-- Hero -->
+      <div class="mob-hero">
+        <div class="mob-hero-name" id="m_alunoNome">—</div>
+        <div class="mob-hero-sub"  id="m_alunoSub">Carregando...</div>
+        <div class="mob-hero-stats">
+          <div class="mob-hero-stat">
+            <div class="mob-hero-stat-val" id="m_alunoPeso">—</div>
+            <div class="mob-hero-stat-lbl">Peso</div>
+          </div>
+          <div class="mob-hero-divider"></div>
+          <div class="mob-hero-stat">
+            <div class="mob-hero-stat-val" id="m_alunoAltura">—</div>
+            <div class="mob-hero-stat-lbl">Altura</div>
+          </div>
+          <div class="mob-hero-divider"></div>
+          <div class="mob-hero-stat">
+            <div class="mob-hero-stat-val" id="m_alunoNivel">—</div>
+            <div class="mob-hero-stat-lbl">Nível</div>
           </div>
         </div>
-
-        <!-- Semana -->
-        <div class="mob-week-card">
-          <div class="mob-week-header">
-            <span class="mob-week-range" id="m_weekLabel">—</span>
-            <div class="mob-week-nav">
-              <button class="mob-week-btn" onclick="navegarSemana(-1)">←</button>
-              <button class="mob-week-btn" id="m_btnNext" onclick="navegarSemana(1)">→</button>
-            </div>
-          </div>
-          <div class="mob-day-strip" id="m_daysStrip"></div>
-        </div>
-
-        <!-- Treino do dia -->
-        <div class="mob-treino-card" id="m_treinoCard">
-          <div class="mob-treino-body" style="color:#4a4a6a;font-size:13px;padding:20px;text-align:center;">
-            Selecione um dia acima
-          </div>
-        </div>
-
       </div>
+
+      <!-- Semana -->
+      <div class="mob-week-card">
+        <div class="mob-week-header">
+          <span class="mob-week-range" id="m_weekLabel">—</span>
+          <div class="mob-week-nav">
+            <button class="mob-week-btn" onclick="navegarSemana(-1)">←</button>
+            <button class="mob-week-btn" id="m_btnNext" onclick="navegarSemana(1)">→</button>
+          </div>
+        </div>
+        <div class="mob-day-strip" id="m_daysStrip"></div>
+      </div>
+
+      <!-- Treino do dia -->
+      <div class="mob-treino-card" id="m_treinoCard">
+        <div class="mob-treino-body" style="color:#4a4a6a;font-size:13px;padding:20px;text-align:center;">
+          Selecione um dia acima
+        </div>
+      </div>
+
+      <!-- Calculadora de Pace -->
+      <div class="mob-card-generic">
+        <div class="mob-section-title" style="margin-bottom:12px;">Pace <span class="msep"></span></div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:100px;">
+            <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Distância</div>
+            <div style="display:flex;gap:5px;">
+              <input id="paceDistancia" class="field-input-sm" type="number" placeholder="10" min="0.1" step="0.1" oninput="calcularPace()" style="flex:1;font-size:13px;"/>
+              <select id="paceUnidade" class="field-input-sm" onchange="calcularPace()" style="width:52px;padding:10px 4px;font-size:12px;">
+                <option value="km">km</option>
+                <option value="m">m</option>
+              </select>
+            </div>
+          </div>
+          <div style="flex:1;min-width:100px;">
+            <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Tempo</div>
+            <input id="paceTempo" class="field-input-sm" type="text" placeholder="00:42:00" oninput="calcularPace()" maxlength="8" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:13px;"/>
+          </div>
+        </div>
+        <div class="pace-result" id="paceResult" style="display:none;">
+          <div class="pace-result-value" id="paceResultVal">—</div>
+          <div class="pace-result-label">Pace Médio</div>
+          <div class="pace-result-extra" id="paceResultExtra"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- ── PAGE: Ficha Cadastral (aluno) ── -->
+  <!-- ── PAGE: Ficha + Peso (aluno) ── -->
   <div class="mob-page" id="mobPageFicha">
-    <div class="mob-content">
-      <div class="mob-content-inner">
-        <div class="mob-section-title">Ficha Cadastral</div>
-        <button class="mob-btn-full" style="background:rgba(200,241,53,.1);color:#c8f135;border:1px solid rgba(200,241,53,.3);font-size:14px;"
-          onclick="abrirFichaAluno()">
-          📋 Preencher / Atualizar Ficha
-        </button>
-        <button class="mob-btn-full" style="background:rgba(245,166,35,.08);color:#f5a623;border:1px solid rgba(245,166,35,.25);font-size:14px;margin-top:8px;"
-          onclick="exportarMeusTreinosPDF()">
-          ⬇ Exportar Treinos em PDF
-        </button>
-        <div class="mob-section-title" style="margin-top:8px;">Objetivo</div>
-        <div class="mob-info-tile full">
-          <div class="mob-tile-lbl">Objetivo com o treino</div>
-          <div class="mob-tile-val" id="m_alunoObjetivo">—</div>
+    <div class="mob-content-inner">
+
+      <div class="mob-section-title">Ficha Cadastral <span class="msep"></span></div>
+      <button class="mob-btn-full" style="background:rgba(200,241,53,.1);color:#c8f135;border:1px solid rgba(200,241,53,.3);font-size:14px;" onclick="abrirFichaAluno()">
+        📋 Preencher / Atualizar Ficha
+      </button>
+      <button class="mob-btn-full" style="background:rgba(245,166,35,.08);color:#f5a623;border:1px solid rgba(245,166,35,.25);font-size:14px;margin-top:-4px;" onclick="exportarMeusTreinosPDF()">
+        ⬇ Exportar Treinos em PDF
+      </button>
+
+      <div class="mob-section-title" style="margin-top:4px;">Dados <span class="msep"></span></div>
+      <div class="mob-info-grid">
+        <div class="mob-info-tile"><div class="mob-tile-lbl">Objetivo</div><div class="mob-tile-val" id="m_alunoObjetivo">—</div></div>
+        <div class="mob-info-tile"><div class="mob-tile-lbl">Próxima Prova</div><div class="mob-tile-val" id="m_alunoProva">—</div></div>
+        <div class="mob-info-tile"><div class="mob-tile-lbl">Modalidade</div><div class="mob-tile-val" id="m_alunoModalidade">—</div></div>
+        <div class="mob-info-tile"><div class="mob-tile-lbl">Clube</div><div class="mob-tile-val" id="m_alunoClube">—</div></div>
+      </div>
+
+      <div class="mob-section-title" style="margin-top:4px;">Evolução de Peso <span class="msep"></span></div>
+      <div class="mob-card-generic">
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;">
+          <div style="flex:1;min-width:90px;">
+            <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Peso (kg)</div>
+            <input id="pesoInput" class="field-input-sm" type="number" placeholder="72.5" step="0.1" min="30" max="250" style="width:100%;font-size:14px;"/>
+          </div>
+          <div style="flex:2;min-width:120px;">
+            <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Observação</div>
+            <input id="pesoObs" class="field-input-sm" type="text" placeholder="Ex: manhã em jejum..." style="width:100%;font-size:13px;"/>
+          </div>
         </div>
-        <div class="mob-section-title">Próxima Prova</div>
-        <div class="mob-info-tile full">
-          <div class="mob-tile-lbl">Data alvo</div>
-          <div class="mob-tile-val" id="m_alunoProva">—</div>
+        <button class="mob-btn-full" id="btnRegistrarPeso" style="font-size:14px;" onclick="registrarPeso()">＋ Registrar Peso</button>
+        <div class="peso-timeline" id="pesoTimeline" style="margin-top:12px;">
+          <div class="peso-empty" style="color:#4a4a6a;">Carregando...</div>
         </div>
       </div>
+
     </div>
   </div>
 
   <!-- ── PAGE: Alunos (admin) ── -->
   <div class="mob-page" id="mobPageAlunos">
-    <div class="mob-content">
-      <div class="mob-content-inner">
-        <input class="form-input" type="text" placeholder="🔍  Buscar aluno..."
-          style="font-size:14px;" oninput="mobFiltrarAlunos(this.value)" id="m_searchAluno"/>
-        <div id="m_alunoList" style="display:flex;flex-direction:column;gap:8px;">
-          <div style="padding:20px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#4a4a6a;">
-            Carregando...
-          </div>
-        </div>
+    <div class="mob-content-inner">
+
+      <!-- Ações admin -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button class="mob-btn-full" style="font-size:13px;padding:13px;" onclick="abrirModalCriarUsuario()">＋ Usuário</button>
+        <button class="mob-btn-full" style="font-size:13px;padding:13px;" onclick="abrirModalCriarAluno()">＋ Aluno</button>
+      </div>
+
+      <input class="form-input" type="text" placeholder="🔍  Buscar aluno..."
+        style="font-size:14px;" oninput="mobFiltrarAlunos(this.value)" id="m_searchAluno"/>
+
+      <div id="m_alunoList" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="padding:20px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#4a4a6a;">Carregando...</div>
       </div>
     </div>
   </div>
 
   <!-- ── PAGE: Detalhe do aluno (admin) ── -->
   <div class="mob-page" id="mobPageAlunoDetalhe">
-    <div class="mob-content">
-      <div class="mob-content-inner" id="m_alunoDetalhe">
-      </div>
-    </div>
+    <div class="mob-content-inner" id="m_alunoDetalhe"></div>
   </div>
 
   <!-- ── PAGE: Perfil ── -->
   <div class="mob-page" id="mobPagePerfil">
-    <div class="mob-content">
-      <div class="mob-content-inner">
+    <div class="mob-content-inner">
 
-        <!-- Conta -->
-        <div class="mob-section-title">Conta</div>
-        <div class="mob-info-tile full" style="display:flex;align-items:center;gap:14px;">
-          <div style="width:52px;height:52px;border-radius:14px;background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#c8f135;flex-shrink:0;" id="m_perfilAvatar">?</div>
-          <div>
-            <div style="font-size:15px;font-weight:700;color:#e8e8f0;" id="m_perfilNome">—</div>
-            <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#8888aa;" id="m_perfilUser">@—</div>
-            <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#c8f135;margin-top:2px;text-transform:uppercase;letter-spacing:.08em;" id="m_perfilTipo">—</div>
-          </div>
+      <!-- Conta -->
+      <div class="mob-section-title">Conta <span class="msep"></span></div>
+      <div class="mob-info-tile full" style="display:flex;align-items:center;gap:14px;">
+        <div id="m_perfilAvatar" style="width:52px;height:52px;min-width:52px;border-radius:14px;background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#c8f135;font-family:'Plus Jakarta Sans',sans-serif;">?</div>
+        <div style="min-width:0;">
+          <div style="font-size:15px;font-weight:700;color:#e8e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="m_perfilNome">—</div>
+          <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#8888aa;" id="m_perfilUser">@—</div>
+          <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#c8f135;margin-top:2px;text-transform:uppercase;letter-spacing:.08em;" id="m_perfilTipo">—</div>
         </div>
+      </div>
 
-        <!-- Bloco exclusivo ADMIN -->
-        <div id="m_adminOnlySection" style="display:none;">
-
-          <div class="mob-section-title" style="margin-top:4px;">Marca &amp; Aparência</div>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-
-            <!-- Personalizar marca -->
-            <button class="mob-aluno-item" style="cursor:pointer;" onclick="abrirConfigMarca()">
-              <span style="font-size:20px;">🎨</span>
-              <div class="mob-aluno-info">
-                <div class="mob-aluno-name">Personalizar marca</div>
-                <div class="mob-aluno-user">Logo, nome e informações do PDF</div>
-              </div>
-              <span class="mob-aluno-arrow">›</span>
-            </button>
-
-            <!-- Tema de cores -->
-            <button class="mob-aluno-item" style="cursor:pointer;" onclick="abrirTemasCores()">
-              <span style="font-size:20px;">🖌</span>
-              <div class="mob-aluno-info">
-                <div class="mob-aluno-name">Tema de cores</div>
-                <div class="mob-aluno-user" id="m_temaAtualLabel">Lime — padrão</div>
-              </div>
-              <span class="mob-aluno-arrow">›</span>
-            </button>
-
-          </div>
-        </div>
-
-        <!-- Tema de cores também no desktop (botão na topbar já existe) -->
-        <!-- Para aluno mobile: só aparência básica, sem config de marca -->
-        <div id="m_alunoOnlySection" style="display:none;">
-          <div class="mob-section-title" style="margin-top:4px;">Aparência</div>
-          <button class="mob-aluno-item" style="cursor:pointer;" onclick="abrirTemasCores()">
-            <span style="font-size:20px;">🖌</span>
-            <div class="mob-aluno-info">
-              <div class="mob-aluno-name">Tema de cores</div>
-              <div class="mob-aluno-user" id="m_temaAtualLabelAluno">Lime — padrão</div>
-            </div>
+      <!-- Admin only -->
+      <div id="m_adminOnlySection" style="display:none;">
+        <div class="mob-section-title" style="margin-top:4px;">Marca &amp; Aparência <span class="msep"></span></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="mob-aluno-item" onclick="abrirConfigMarca()">
+            <span style="font-size:20px;flex-shrink:0;">🎨</span>
+            <div class="mob-aluno-info"><div class="mob-aluno-name">Personalizar marca</div><div class="mob-aluno-user">Logo, nome e PDF</div></div>
+            <span class="mob-aluno-arrow">›</span>
+          </button>
+          <button class="mob-aluno-item" onclick="abrirTemasCores()">
+            <span style="font-size:20px;flex-shrink:0;">🖌</span>
+            <div class="mob-aluno-info"><div class="mob-aluno-name">Tema de cores</div><div class="mob-aluno-user" id="m_temaAtualLabel">Lime — padrão</div></div>
             <span class="mob-aluno-arrow">›</span>
           </button>
         </div>
-
-        <!-- Sessão -->
-        <div class="mob-section-title" style="margin-top:4px;">Sessão</div>
-        <button class="mob-btn-full"
-          style="background:rgba(248,113,113,.08);color:#f87171;border:1px solid rgba(248,113,113,.2);font-size:15px;"
-          onclick="handleLogout()">
-          ↩ Sair da conta
-        </button>
-
       </div>
+
+      <!-- Aluno only -->
+      <div id="m_alunoOnlySection" style="display:none;">
+        <div class="mob-section-title" style="margin-top:4px;">Aparência <span class="msep"></span></div>
+        <button class="mob-aluno-item" onclick="abrirTemasCores()">
+          <span style="font-size:20px;flex-shrink:0;">🖌</span>
+          <div class="mob-aluno-info"><div class="mob-aluno-name">Tema de cores</div><div class="mob-aluno-user" id="m_temaAtualLabelAluno">Lime — padrão</div></div>
+          <span class="mob-aluno-arrow">›</span>
+        </button>
+      </div>
+
+      <!-- Sessão -->
+      <div class="mob-section-title" style="margin-top:4px;">Sessão <span class="msep"></span></div>
+      <button class="mob-btn-full" style="background:rgba(248,113,113,.08);color:#f87171;border:1px solid rgba(248,113,113,.2);font-size:15px;" onclick="handleLogout()">
+        ↩ Sair da conta
+      </button>
+
     </div>
   </div>
 
@@ -1991,6 +1864,50 @@
             <input id="treinoTitulo" class="form-input" type="text"
               placeholder="Ex: Intervalado 5×1000m — Ritmo de Prova"/>
           </div>
+
+          <!-- Campos de ritmo -->
+          <div class="form-field-wrap form-grid-full">
+            <div class="form-block-title" style="margin-bottom:10px;">Ritmos do Treino</div>
+            <div class="form-grid-2" style="gap:10px;">
+              <div class="form-field-wrap">
+                <div class="form-label" style="display:flex;align-items:center;gap:6px;">
+                  <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#38d9f5;flex-shrink:0;"></span>
+                  RTL — Ritmo Leve
+                </div>
+                <input id="treinoRTL" class="form-input" type="text"
+                  style="font-family:'JetBrains Mono',monospace;font-size:12px;"
+                  placeholder="Ex: 6:30/km · 120-130bpm"/>
+              </div>
+              <div class="form-field-wrap">
+                <div class="form-label" style="display:flex;align-items:center;gap:6px;">
+                  <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#c8f135;flex-shrink:0;"></span>
+                  RTM — Ritmo Médio
+                </div>
+                <input id="treinoRTM" class="form-input" type="text"
+                  style="font-family:'JetBrains Mono',monospace;font-size:12px;"
+                  placeholder="Ex: 5:45/km · 140-150bpm"/>
+              </div>
+              <div class="form-field-wrap">
+                <div class="form-label" style="display:flex;align-items:center;gap:6px;">
+                  <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f5a623;flex-shrink:0;"></span>
+                  RTF — Ritmo Forte
+                </div>
+                <input id="treinoRTF" class="form-input" type="text"
+                  style="font-family:'JetBrains Mono',monospace;font-size:12px;"
+                  placeholder="Ex: 4:45/km · 160-170bpm"/>
+              </div>
+              <div class="form-field-wrap">
+                <div class="form-label" style="display:flex;align-items:center;gap:6px;">
+                  <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#8888aa;flex-shrink:0;"></span>
+                  RTC — Ritmo Caminhada
+                </div>
+                <input id="treinoRTC" class="form-input" type="text"
+                  style="font-family:'JetBrains Mono',monospace;font-size:12px;"
+                  placeholder="Ex: 8:00/km · abaixo 110bpm"/>
+              </div>
+            </div>
+          </div>
+
           <div class="form-field-wrap form-grid-full">
             <div class="form-label">Descrição detalhada</div>
             <textarea id="treinoDescricao" class="form-input form-textarea"
@@ -3154,7 +3071,10 @@ function renderTreino(treino, date) {
   // Extrai classif para exibir no header
   let classif = treino.classificacao || "";
   if (!classif) { const m = String(treino.descricao_treino||"").match(/^\[([^\]]+)\]/); if(m) classif=m[1]; }
-  const descLimpa = String(treino.descricao_treino||"").replace(/^\[[^\]]+\]\s*[^\n]*\n?/,"");
+  const descLimpa = String(treino.descricao_treino||"")
+    .replace(/^\[[^\]]+\]\s*[^\n]*\n?/,"")
+    .replace(/^RT[LMFC]\s*\([^)]*\):\s*.+\n?/gim, "")
+    .trim();
 
   const timerHTML = isPending ? buildTimerHTML("dt") : "";
 
@@ -3182,6 +3102,7 @@ function renderTreino(treino, date) {
       </div>
       <span class="status-pill ${statusClass}">${status}</span>
     </div>
+    ${buildRitmosHTML(treino)}
     <div class="treino-desc">${escHtml(descLimpa || treino.descricao_treino || "—")}</div>
     ${timerHTML}
     ${feedbackHTML}
@@ -4418,46 +4339,57 @@ function mobNav(page) {
 function initMobile(tipo) {
   if (!IS_MOBILE()) return;
 
-  $("mobShell").style.display = "block";
+  // O CSS media query já exibe #mobShell via display:flex; apenas garante o inline
+  const shell = $("mobShell");
+  if (shell) shell.style.display = "flex";
 
   // Atualiza header logo
-  const m = getMarca();
+  const m     = getMarca();
   const mhImg  = $("mhLogoImg");
   const mhText = $("mhLogoText");
-  if (m.logoBase64) {
-    mhImg.src = m.logoBase64; mhImg.style.display = "block";
-    mhText.style.display = "none";
-  } else {
-    mhText.textContent = m.logoTexto || "TrainOS";
-    mhText.style.display = "block"; mhImg.style.display = "none";
+  if (mhImg && mhText) {
+    if (m.logoBase64) {
+      mhImg.src = m.logoBase64; mhImg.style.display = "block";
+      mhText.style.display = "none";
+    } else {
+      mhText.textContent = m.logoTexto || "TrainOS";
+      mhText.style.display = "block"; mhImg.style.display = "none";
+    }
   }
 
   if (tipo === "admin") {
-    // Mostra aba alunos, esconde ficha, muda ícone home
-    $("bnAlunos").style.display = "flex";
-    $("bnFicha").style.display  = "none";
-    $("bnHome").style.display   = "none";
-    $("mobFab").style.display   = "flex";
+    const bnAlunos = $("bnAlunos");
+    const bnFicha  = $("bnFicha");
+    const bnHome   = $("bnHome");
+    const fab      = $("mobFab");
+    if (bnAlunos) bnAlunos.style.display = "flex";
+    if (bnFicha)  bnFicha.style.display  = "none";
+    if (bnHome)   bnHome.style.display   = "none";
+    if (fab)      fab.style.display      = "flex";
     mobNav("alunos");
   } else {
-    $("bnAlunos").style.display = "none";
-    $("mobFab").style.display   = "none";
+    const bnAlunos = $("bnAlunos");
+    const fab      = $("mobFab");
+    if (bnAlunos) bnAlunos.style.display = "none";
+    if (fab)      fab.style.display      = "none";
     mobNav("home");
   }
 }
 
 // ── Sync dados do aluno para UI mobile ───────────────────────
 function mobSyncAluno() {
-  const f = state.aluno || {};
+  const f    = state.aluno || {};
   const nome = f.nome || state.usuario?.nome || "—";
-  setText("m_alunoNome",    nome);
-  setText("m_alunoSub",     f.objetivo ? f.objetivo.substring(0,60) + (f.objetivo.length > 60 ? "…" : "") : "Bem-vindo ao TrainOS");
-  setText("m_alunoPeso",    f.peso   ? f.peso + " kg"  : "—");
-  setText("m_alunoAltura",  f.altura ? f.altura + " m" : "—");
-  setText("m_alunoNivel",   f.nivel_condicionamento || "—");
-  setText("m_alunoObjetivo",f.objetivo || "—");
-  setText("m_alunoProva",   f.proxima_prova ? formatDate(f.proxima_prova) : "—");
-
+  setText("m_alunoNome",      nome);
+  const sub = (f.objetivos || f.objetivo || "").substring(0,60);
+  setText("m_alunoSub",       sub || "Bem-vindo ao TrainOS");
+  setText("m_alunoPeso",      f.peso   ? f.peso   + " kg" : "—");
+  setText("m_alunoAltura",    f.altura ? f.altura + " m"  : "—");
+  setText("m_alunoNivel",     f.nivel_condicionamento || "—");
+  setText("m_alunoObjetivo",  f.objetivos || f.objetivo || "—");
+  setText("m_alunoProva",     f.proxima_prova ? formatDate(f.proxima_prova) : "—");
+  setText("m_alunoModalidade",f.modalidade || "—");
+  setText("m_alunoClube",     f.clube || "—");
   // Perfil
   const u = state.usuario || {};
   setText("m_perfilNome", u.nome || nome);
@@ -4541,7 +4473,10 @@ function mobRenderTreino(treino, date) {
     const match = String(treino.descricao_treino || "").match(/^\[([^\]]+)\]/);
     if (match) classif = match[1];
   }
-  const descLimpa = String(treino.descricao_treino || "").replace(/^\[[^\]]+\]\s*[^\n]*\n?/, "");
+  const descLimpa = String(treino.descricao_treino || "")
+    .replace(/^\[[^\]]+\]\s*[^\n]*\n?/, "")
+    .replace(/^RT[LMFC]\s*\([^)]*\):\s*.+\n?/gim, "")
+    .trim();
 
   card.innerHTML = `
     <div class="mob-treino-header">
@@ -4551,6 +4486,7 @@ function mobRenderTreino(treino, date) {
       </div>
       <span class="status-pill ${statusClass}">${treino.status || "Pendente"}</span>
     </div>
+    ${buildRitmosHTML(treino)}
     <div class="mob-treino-body">${escHtml(descLimpa || treino.descricao_treino || "—")}</div>
     ${timerHTML}
     ${footer}
@@ -4619,39 +4555,39 @@ function mobVerAluno(id_aluno) {
   if (!aluno) return;
   state.alunoAdmin = aluno;
 
-  const f   = aluno.ficha || {};
-  const hj  = hoje();
+  const f  = aluno.ficha || {};
+  const hj = hoje();
 
-  const histHTML = (aluno.treinos || []).slice(0, 20).map(t => {
-    const s = String(t.status || "").trim().toLowerCase();
+  const histHTML = (aluno.treinos || []).slice(0, 25).map(t => {
+    const s  = String(t.status || "").trim().toLowerCase();
     const ok = s === "concluído" || s === "concluido";
     let classif = t.classificacao || "";
     if (!classif) { const m = String(t.descricao_treino || "").match(/^\[([^\]]+)\]/); if (m) classif = m[1]; }
-    const descLimpa = String(t.descricao_treino || "").replace(/^\[[^\]]+\]\s*[^\n]*\n?/, "").substring(0, 100);
+    const descLimpa = String(t.descricao_treino || "").replace(/^\[[^\]]+\]\s*[^\n]*\n?/, "").substring(0, 120);
     return `<div class="mob-hist-card">
       <div class="mob-hist-top">
         <span class="mob-hist-date">${formatDate(t.data_treino)}</span>
         <span class="status-pill ${ok ? "status-concluido" : "status-pendente"}">${t.status || "Pendente"}</span>
       </div>
       ${classif ? classifBadgeHTML(classif) : ""}
-      <div class="mob-hist-desc">${escHtml(descLimpa)}${descLimpa.length >= 100 ? "…" : ""}</div>
+      <div class="mob-hist-desc">${escHtml(descLimpa)}${descLimpa.length >= 120 ? "…" : ""}</div>
       ${t.feedback_aluno ? `<div class="mob-hist-fb">✓ ${escHtml(t.feedback_aluno)}</div>` : ""}
     </div>`;
   }).join("") || `<div style="padding:16px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#4a4a6a;">Nenhum treino ainda.</div>`;
 
   $("m_alunoDetalhe").innerHTML = `
-    <!-- Cabeçalho -->
     <div class="mob-detail-header">
       <button class="mob-back-btn" onclick="mobVoltarAlunos()">←</button>
-      <div>
+      <div style="min-width:0;">
         <div class="mob-detail-name">${escHtml(f.nome || aluno.nome || aluno.usuario)}</div>
         <div class="mob-detail-user">@${escHtml(aluno.usuario)}</div>
       </div>
     </div>
 
-    <!-- Ações rápidas -->
-    <div class="mob-action-strip" style="margin-bottom:16px;">
-      <button class="mob-action-btn cyan" onclick="abrirFichaAdmin('${aluno.id_aluno}')">📋 Editar Ficha</button>
+    <!-- Ações rápidas com scroll horizontal -->
+    <div class="mob-action-strip" style="margin-bottom:14px;">
+      <button class="mob-action-btn cyan"  onclick="abrirFichaAdmin('${aluno.id_aluno}')">📋 Editar Ficha</button>
+      <button class="mob-action-btn lime"  onclick="abrirModalCriarTreino()">＋ Criar Treino</button>
       <button class="mob-action-btn amber" onclick="exportarFichaPDF('${aluno.id_aluno}')">⬇ Ficha PDF</button>
       <button class="mob-action-btn amber" onclick="exportarTreinosPDF('${aluno.id_aluno}')">⬇ Treinos PDF</button>
       <button class="mob-action-btn" style="background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.3);color:#f87171;"
@@ -4659,42 +4595,67 @@ function mobVerAluno(id_aluno) {
     </div>
 
     <!-- Info tiles -->
-    <div class="mob-section-title">Dados</div>
-    <div class="mob-info-grid" style="margin-bottom:16px;">
+    <div class="mob-section-title">Dados <span class="msep"></span></div>
+    <div class="mob-info-grid" style="margin-bottom:14px;">
       <div class="mob-info-tile"><div class="mob-tile-lbl">Peso</div><div class="mob-tile-val">${f.peso ? f.peso + " kg" : "—"}</div></div>
       <div class="mob-info-tile"><div class="mob-tile-lbl">Altura</div><div class="mob-tile-val">${f.altura ? f.altura + " m" : "—"}</div></div>
+      <div class="mob-info-tile"><div class="mob-tile-lbl">Nível</div><div class="mob-tile-val">${escHtml(f.nivel_condicionamento || "—")}</div></div>
+      <div class="mob-info-tile"><div class="mob-tile-lbl">Modalidade</div><div class="mob-tile-val">${escHtml(f.modalidade || "—")}</div></div>
       <div class="mob-info-tile"><div class="mob-tile-lbl">Telefone</div><div class="mob-tile-val">${escHtml(f.telefone || "—")}</div></div>
-      <div class="mob-info-tile"><div class="mob-tile-lbl">Email</div><div class="mob-tile-val" style="font-size:11px;">${escHtml(f.email || "—")}</div></div>
+      <div class="mob-info-tile"><div class="mob-tile-lbl">Clube</div><div class="mob-tile-val">${escHtml(f.clube || "—")}</div></div>
       <div class="mob-info-tile full"><div class="mob-tile-lbl">Objetivo</div><div class="mob-tile-val">${escHtml(f.objetivos || f.objetivo || "—")}</div></div>
+      <div class="mob-info-tile full"><div class="mob-tile-lbl">Email</div><div class="mob-tile-val" style="font-size:12px;">${escHtml(f.email || "—")}</div></div>
     </div>
 
     <!-- Enviar treino rápido -->
-    <div class="mob-section-title">Enviar Treino</div>
+    <div class="mob-section-title">Treino Rápido <span class="msep"></span></div>
     <div class="mob-form-card">
       <div>
-        <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Data</div>
+        <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Data</div>
         <input type="date" class="form-input" id="m_adminTreinoData" value="${hj}" style="font-size:14px;"/>
       </div>
       <div>
-        <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Descrição</div>
-        <textarea class="mob-feedback-ta" id="m_adminTreinoDesc" rows="4"
-          placeholder="Descreva o treino completo..."></textarea>
+        <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Descrição do treino</div>
+        <textarea class="mob-feedback-ta" id="m_adminTreinoDesc" rows="4" placeholder="Descreva o treino completo..."></textarea>
       </div>
-      <button class="mob-btn-full" id="m_btnSalvarTreino" onclick="mobSalvarTreino('${aluno.id_aluno}')">
-        ＋ Salvar Treino
-      </button>
+      <button class="mob-btn-full" id="m_btnSalvarTreino" onclick="mobSalvarTreino('${aluno.id_aluno}')">＋ Salvar Treino</button>
     </div>
 
-    <!-- Histórico -->
-    <div class="mob-section-title" style="margin-top:8px;">Histórico</div>
-    <div style="display:flex;flex-direction:column;gap:8px;">
-      ${histHTML}
+    <!-- Calculadora de Pace -->
+    <div class="mob-section-title" style="margin-top:4px;">Pace <span class="msep"></span></div>
+    <div class="mob-card-generic">
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:100px;">
+          <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Distância</div>
+          <div style="display:flex;gap:5px;">
+            <input id="paceDistanciaAdmin" class="field-input-sm" type="number" placeholder="10" min="0.1" step="0.1" oninput="calcularPaceAdmin()" style="flex:1;font-size:13px;"/>
+            <select id="paceUnidadeAdmin" class="field-input-sm" onchange="calcularPaceAdmin()" style="width:52px;padding:10px 4px;font-size:12px;">
+              <option value="km">km</option>
+              <option value="m">m</option>
+            </select>
+          </div>
+        </div>
+        <div style="flex:1;min-width:100px;">
+          <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Tempo</div>
+          <input id="paceTempoAdmin" class="field-input-sm" type="text" placeholder="00:42:00" oninput="calcularPaceAdmin()" maxlength="8" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:13px;"/>
+        </div>
+      </div>
+      <div class="pace-result" id="paceResultAdmin" style="display:none;">
+        <div class="pace-result-value" id="paceResultValAdmin">—</div>
+        <div class="pace-result-label">Pace Médio</div>
+        <div class="pace-result-extra" id="paceResultExtraAdmin"></div>
+      </div>
     </div>
 
-    <!-- Peso mobile admin -->
-    <div class="mob-section-title" style="margin-top:8px;">
-      Evolução de Peso
-      <button class="mob-action-btn amber" style="margin-left:auto;padding:6px 12px;font-size:11px;"
+    <!-- Histórico de treinos -->
+    <div class="mob-section-title" style="margin-top:4px;">Histórico <span class="msep"></span></div>
+    <div style="display:flex;flex-direction:column;gap:8px;">${histHTML}</div>
+
+    <!-- Evolução de Peso -->
+    <div class="mob-section-title" style="margin-top:4px;align-items:center;">
+      Peso
+      <span class="msep"></span>
+      <button class="mob-action-btn amber" style="padding:5px 10px;font-size:10px;flex-shrink:0;"
         onclick="adminCarregarPeso('${aluno.id_aluno}')">↺ Carregar</button>
     </div>
     <div id="adminPesoTimeline_${aluno.id_aluno}" style="display:flex;flex-direction:column;gap:6px;">
@@ -4791,10 +4752,12 @@ salvarConfigMarca = function() {
 // ── Resize handler: troca entre mobile e desktop ─────────────
 window.addEventListener("resize", () => {
   if (!state.usuario) return;
+  const shell = $("mobShell");
+  if (!shell) return;
   if (IS_MOBILE()) {
-    $("mobShell").style.display = "block";
+    shell.style.display = "flex";
   } else {
-    $("mobShell").style.display = "none";
+    shell.style.display = "none";
   }
 });
 
@@ -5304,6 +5267,10 @@ function abrirModalCriarTreino() {
   setVal("treinoDescricao",    "");
   setVal("treinoVolume",       "");
   setVal("treinoIntensidade",  "");
+  setVal("treinoRTL",          "");
+  setVal("treinoRTM",          "");
+  setVal("treinoRTF",          "");
+  setVal("treinoRTC",          "");
   setVal("treinoBuscaAluno",   "");
   setVal("treinoDataInput",    hoje());
   setVal("ps_inicio", hoje());
@@ -5495,6 +5462,10 @@ async function criarTreinoLote() {
   const descricao   = ($("treinoDescricao")?.value  || "").trim();
   const volume      = ($("treinoVolume")?.value      || "").trim();
   const intensidade = ($("treinoIntensidade")?.value || "").trim();
+  const rtl         = ($("treinoRTL")?.value         || "").trim();
+  const rtm         = ($("treinoRTM")?.value         || "").trim();
+  const rtf         = ($("treinoRTF")?.value         || "").trim();
+  const rtc         = ($("treinoRTC")?.value         || "").trim();
   const datas       = [...datasSelecionadas].sort();
 
   if (!classif)              { showToast("Selecione ou digite uma classificação."); return; }
@@ -5508,6 +5479,13 @@ async function criarTreinoLote() {
   else             partes.push(`[${classif.toUpperCase()}]`);
   if (intensidade) partes.push(`Zona: ${intensidade}`);
   if (volume)      partes.push(`Volume: ${volume}`);
+  // Bloco de ritmos
+  const ritmos = [];
+  if (rtl) ritmos.push(`RTL (Leve): ${rtl}`);
+  if (rtm) ritmos.push(`RTM (Médio): ${rtm}`);
+  if (rtf) ritmos.push(`RTF (Forte): ${rtf}`);
+  if (rtc) ritmos.push(`RTC (Caminhada): ${rtc}`);
+  if (ritmos.length) { partes.push(""); partes.push(...ritmos); }
   partes.push("", descricao);
   const descricaoFinal = partes.join("\n").trim();
 
@@ -5521,6 +5499,10 @@ async function criarTreinoLote() {
     descricao_treino: descricaoFinal,
     volume,
     intensidade,
+    rtl,
+    rtm,
+    rtf,
+    rtc,
     datas_treino:     datas,          // ← array de datas
     ids_alunos:       [...alunosSelecionados],
   };
@@ -5651,6 +5633,49 @@ function classifBadgeHTML(classif) {
     <span style="width:6px;height:6px;border-radius:50%;background:${c.cor};display:inline-block;"></span>
     ${escHtml(classif)}
   </span>`;
+}
+
+// ── Bloco visual de ritmos para o aluno ─────────────────────
+// Extrai rtl/rtm/rtf/rtc: tenta do objeto direto, senão
+// faz parse do texto da descrição (gerado pelo personal).
+function extrairRitmos(treino) {
+  const desc = String(treino.descricao_treino || "");
+  function fromDesc(sigla) {
+    const re = new RegExp("^" + sigla + "\\s*\\([^)]*\\):\\s*(.+)$", "im");
+    const m = desc.match(re);
+    return m ? m[1].trim() : "";
+  }
+  return {
+    rtl: str2(treino.rtl) || fromDesc("RTL"),
+    rtm: str2(treino.rtm) || fromDesc("RTM"),
+    rtf: str2(treino.rtf) || fromDesc("RTF"),
+    rtc: str2(treino.rtc) || fromDesc("RTC"),
+  };
+}
+function str2(v) { return (v === null || v === undefined) ? "" : String(v).trim(); }
+
+function buildRitmosHTML(treino) {
+  const r = extrairRitmos(treino);
+  const itens = [
+    { sigla: "RTL", label: "Ritmo Leve",     cor: "#38d9f5", val: r.rtl },
+    { sigla: "RTM", label: "Ritmo Médio",    cor: "#c8f135", val: r.rtm },
+    { sigla: "RTF", label: "Ritmo Forte",    cor: "#f5a623", val: r.rtf },
+    { sigla: "RTC", label: "Ritmo Caminhada",cor: "#8888aa", val: r.rtc },
+  ].filter(x => x.val);
+
+  if (!itens.length) return "";
+
+  const cards = itens.map(x => `
+    <div class="ritmo-item" style="border-color:${x.cor}22;">
+      <div class="ritmo-label">
+        <span class="ritmo-dot" style="background:${x.cor};"></span>
+        <span style="color:${x.cor};">${x.sigla}</span>
+        <span style="color:#4a4a6a;">— ${x.label}</span>
+      </div>
+      <div class="ritmo-value">${escHtml(x.val)}</div>
+    </div>`).join("");
+
+  return `<div class="ritmos-grid">${cards}</div>`;
 }
 
 </script>
