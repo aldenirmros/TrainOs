@@ -3300,6 +3300,40 @@ function renderAdminMain(aluno) {
           <input type="text" class="field-input-sm" value="${escHtml(aluno.nome||aluno.usuario)}" disabled style="opacity:.5"/>
         </div>
       </div>
+
+      <!-- Ritmos -->
+      <div class="field-label" style="margin-bottom:8px;">Ritmos do Treino</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+        <div>
+          <div class="field-label" style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">
+            <span style="width:7px;height:7px;border-radius:50%;background:#38d9f5;display:inline-block;flex-shrink:0;"></span>
+            <span style="color:#38d9f5;">RTL</span><span style="color:#4a4a6a;font-size:10px;"> — Ritmo Leve</span>
+          </div>
+          <input class="field-input-sm" id="adminRTL" type="text" style="font-family:'JetBrains Mono',monospace;font-size:11px;" placeholder="Ex: 6:30/km"/>
+        </div>
+        <div>
+          <div class="field-label" style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">
+            <span style="width:7px;height:7px;border-radius:50%;background:#c8f135;display:inline-block;flex-shrink:0;"></span>
+            <span style="color:#c8f135;">RTM</span><span style="color:#4a4a6a;font-size:10px;"> — Ritmo Médio</span>
+          </div>
+          <input class="field-input-sm" id="adminRTM" type="text" style="font-family:'JetBrains Mono',monospace;font-size:11px;" placeholder="Ex: 5:45/km"/>
+        </div>
+        <div>
+          <div class="field-label" style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">
+            <span style="width:7px;height:7px;border-radius:50%;background:#f5a623;display:inline-block;flex-shrink:0;"></span>
+            <span style="color:#f5a623;">RTF</span><span style="color:#4a4a6a;font-size:10px;"> — Ritmo Forte</span>
+          </div>
+          <input class="field-input-sm" id="adminRTF" type="text" style="font-family:'JetBrains Mono',monospace;font-size:11px;" placeholder="Ex: 4:45/km"/>
+        </div>
+        <div>
+          <div class="field-label" style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">
+            <span style="width:7px;height:7px;border-radius:50%;background:#8888aa;display:inline-block;flex-shrink:0;"></span>
+            <span style="color:#8888aa;">RTC</span><span style="color:#4a4a6a;font-size:10px;"> — Ritmo Caminhada</span>
+          </div>
+          <input class="field-input-sm" id="adminRTC" type="text" style="font-family:'JetBrains Mono',monospace;font-size:11px;" placeholder="Ex: 8:00/km"/>
+        </div>
+      </div>
+
       <div class="field-label">Descrição do Treino</div>
       <textarea class="treino-textarea" id="adminTreinoDesc"
         placeholder="Ex: Aquecimento 10min trot leve.&#10;Parte principal: 5x1000m com 2min descanso, ritmo 5:00/km.&#10;Volta calma 10min."></textarea>
@@ -3379,8 +3413,24 @@ async function salvarTreino(id_aluno) {
   const descricao = $("adminTreinoDesc")?.value?.trim();
   if (!data || !descricao) { showToast("Preencha data e descrição."); return; }
 
+  const rtl = ($("adminRTL")?.value || "").trim();
+  const rtm = ($("adminRTM")?.value || "").trim();
+  const rtf = ($("adminRTF")?.value || "").trim();
+  const rtc = ($("adminRTC")?.value || "").trim();
+
+  // Monta descrição com ritmos no topo
+  const partes = [];
+  const ritmos = [];
+  if (rtl) ritmos.push(`RTL (Leve): ${rtl}`);
+  if (rtm) ritmos.push(`RTM (Médio): ${rtm}`);
+  if (rtf) ritmos.push(`RTF (Forte): ${rtf}`);
+  if (rtc) ritmos.push(`RTC (Caminhada): ${rtc}`);
+  if (ritmos.length) { partes.push(...ritmos); partes.push(""); }
+  partes.push(descricao);
+  const descricaoFinal = partes.join("\n").trim();
+
   $("btnSalvarTreino").disabled = true;
-  const res = await callAPI({ action: "salvarTreino", id_aluno, data_treino: data, descricao_treino: descricao }, "salvando treino...");
+  const res = await callAPI({ action: "salvarTreino", id_aluno, data_treino: data, descricao_treino: descricaoFinal }, "salvando treino...");
 
   if (!res.ok) {
     showToast("Erro: " + (res.erro || "tente novamente."));
@@ -3390,8 +3440,12 @@ async function salvarTreino(id_aluno) {
 
   showToast("✓ Treino salvo!");
   $("adminTreinoDesc").value = "";
+  if ($("adminRTL")) $("adminRTL").value = "";
+  if ($("adminRTM")) $("adminRTM").value = "";
+  if ($("adminRTF")) $("adminRTF").value = "";
+  if ($("adminRTC")) $("adminRTC").value = "";
 
-  const novoTreino = { id_treino: res.id_treino, id_aluno, data_treino: data, descricao_treino: descricao, feedback_aluno: "", status: "Pendente" };
+  const novoTreino = { id_treino: res.id_treino, id_aluno, data_treino: data, descricao_treino: descricaoFinal, feedback_aluno: "", status: "Pendente" };
   const idx = state.todosAlunos.findIndex(a => String(a.id_aluno) === String(id_aluno));
   if (idx >= 0) {
     state.todosAlunos[idx].treinos.unshift(novoTreino);
@@ -4625,6 +4679,46 @@ function mobVerAluno(id_aluno) {
         <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Data</div>
         <input type="date" class="form-input" id="m_adminTreinoData" value="${hj}" style="font-size:14px;"/>
       </div>
+
+      <!-- Ritmos mobile -->
+      <div>
+        <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Ritmos do Treino</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:#38d9f5;display:inline-block;"></span>
+              <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#38d9f5;letter-spacing:.08em;">RTL</span>
+              <span style="font-size:9px;color:#4a4a6a;">Leve</span>
+            </div>
+            <input class="form-input" id="m_adminRTL" type="text" style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 10px;" placeholder="6:30/km"/>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:#c8f135;display:inline-block;"></span>
+              <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#c8f135;letter-spacing:.08em;">RTM</span>
+              <span style="font-size:9px;color:#4a4a6a;">Médio</span>
+            </div>
+            <input class="form-input" id="m_adminRTM" type="text" style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 10px;" placeholder="5:45/km"/>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:#f5a623;display:inline-block;"></span>
+              <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#f5a623;letter-spacing:.08em;">RTF</span>
+              <span style="font-size:9px;color:#4a4a6a;">Forte</span>
+            </div>
+            <input class="form-input" id="m_adminRTF" type="text" style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 10px;" placeholder="4:45/km"/>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:#8888aa;display:inline-block;"></span>
+              <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.08em;">RTC</span>
+              <span style="font-size:9px;color:#4a4a6a;">Caminhada</span>
+            </div>
+            <input class="form-input" id="m_adminRTC" type="text" style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 10px;" placeholder="8:00/km"/>
+          </div>
+        </div>
+      </div>
+
       <div>
         <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#8888aa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Descrição do treino</div>
         <textarea class="mob-feedback-ta" id="m_adminTreinoDesc" rows="4" placeholder="Descreva o treino completo..."></textarea>
@@ -4682,25 +4776,41 @@ function mobVoltarAlunos() {
 }
 
 async function mobSalvarTreino(id_aluno) {
-  const data     = $("m_adminTreinoData")?.value;
+  const data      = $("m_adminTreinoData")?.value;
   const descricao = $("m_adminTreinoDesc")?.value?.trim();
   if (!data || !descricao) { showToast("Preencha data e descrição."); return; }
+
+  const rtl = ($("m_adminRTL")?.value || "").trim();
+  const rtm = ($("m_adminRTM")?.value || "").trim();
+  const rtf = ($("m_adminRTF")?.value || "").trim();
+  const rtc = ($("m_adminRTC")?.value || "").trim();
+
+  const partes = [];
+  const ritmos = [];
+  if (rtl) ritmos.push(`RTL (Leve): ${rtl}`);
+  if (rtm) ritmos.push(`RTM (Médio): ${rtm}`);
+  if (rtf) ritmos.push(`RTF (Forte): ${rtf}`);
+  if (rtc) ritmos.push(`RTC (Caminhada): ${rtc}`);
+  if (ritmos.length) { partes.push(...ritmos); partes.push(""); }
+  partes.push(descricao);
+  const descricaoFinal = partes.join("\n").trim();
 
   const btn = $("m_btnSalvarTreino");
   if (btn) btn.disabled = true;
 
-  const res = await callAPI({ action: "salvarTreino", id_aluno, data_treino: data, descricao_treino: descricao });
+  const res = await callAPI({ action: "salvarTreino", id_aluno, data_treino: data, descricao_treino: descricaoFinal });
   if (!res.ok) { showToast("Erro: " + (res.erro || "")); if (btn) btn.disabled = false; return; }
 
   showToast("✓ Treino salvo!");
   if ($("m_adminTreinoDesc")) $("m_adminTreinoDesc").value = "";
+  ["m_adminRTL","m_adminRTM","m_adminRTF","m_adminRTC"].forEach(id => { if ($(id)) $(id).value = ""; });
 
-  const novoTreino = { id_treino: res.id_treino, id_aluno, data_treino: data, descricao_treino: descricao, feedback_aluno: "", status: "Pendente" };
+  const novoTreino = { id_treino: res.id_treino, id_aluno, data_treino: data, descricao_treino: descricaoFinal, feedback_aluno: "", status: "Pendente" };
   const idx = state.todosAlunos.findIndex(a => String(a.id_aluno) === String(id_aluno));
   if (idx >= 0) { state.todosAlunos[idx].treinos.unshift(novoTreino); if (data === hoje()) state.todosAlunos[idx].statusHoje = "Pendente"; }
 
   if (btn) btn.disabled = false;
-  mobVerAluno(id_aluno); // re-renderiza o detalhe
+  mobVerAluno(id_aluno);
 }
 
 // ── Helper setText ────────────────────────────────────────────
