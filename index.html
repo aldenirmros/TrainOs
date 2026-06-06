@@ -1501,8 +1501,8 @@
   @media (max-width: 768px) {
     .topbar, .admin-layout, #panelAluno .student-layout { display: none !important; }
     .mobile-header { display: block; }
-    .bottom-nav    { display: block; }
-    .mob-fab       { display: flex; }
+    body.logado .bottom-nav { display: block; }
+    body.logado.is-admin .mob-fab { display: flex; }
     #mobShell      { display: flex !important; }
     body           { overflow: hidden; height: 100dvh; }
     #screenApp     { overflow: hidden; }
@@ -2895,23 +2895,28 @@ function showScreen(name) {
 
   if (name === "login") {
     $("screenLogin").classList.remove("hidden");
+    document.body.classList.remove("logado", "is-admin");
     if (bottomNav) bottomNav.style.display = "none";
     if (mobFab)    mobFab.style.display    = "none";
   } else if (name === "aluno") {
     $("screenApp").classList.remove("hidden");
     $("panelAluno").classList.remove("hidden");
+    document.body.classList.add("logado");
+    document.body.classList.remove("is-admin");
     if (bottomNav) bottomNav.style.display = "";
-    if (mobFab)    mobFab.style.display    = "none"; // aluno não tem FAB
+    if (mobFab)    mobFab.style.display    = "none";
   } else if (name === "admin") {
     if (!state.usuario || state.usuario.tipo !== "admin") {
       console.warn("TrainOS: tentativa de acesso ao painel admin sem permissão.");
       $("screenLogin").classList.remove("hidden");
+      document.body.classList.remove("logado", "is-admin");
       if (bottomNav) bottomNav.style.display = "none";
       if (mobFab)    mobFab.style.display    = "none";
       return;
     }
     $("screenApp").classList.remove("hidden");
     $("panelAdmin").classList.remove("hidden");
+    document.body.classList.add("logado", "is-admin");
     if (bottomNav) bottomNav.style.display = "";
     if (mobFab)    mobFab.style.display    = "";
   }
