@@ -476,53 +476,59 @@ body {
 
 /* ── Ritmos ──────────────────────────────────────────────── */
 .ritmos-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 8px; margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
 }
 .ritmo-item {
   background: var(--bg-base);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: 8px;
+  padding: 7px 10px;
 }
 .ritmo-label {
   font-size: 9px; font-family: 'JetBrains Mono', monospace;
-  letter-spacing: .12em; text-transform: uppercase;
-  display: flex; align-items: center; gap: 5px;
-  margin-bottom: 4px;
+  letter-spacing: .10em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 4px;
+  margin-bottom: 3px;
 }
-.ritmo-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-.ritmo-value { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--text-1); }
+.ritmo-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.ritmo-value { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-1); }
 
 /* ── Treino card (workspace) ─────────────────────────────── */
 .treino-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 18px 20px;
-  margin-bottom: 10px;
+  padding: 13px 16px;
+  margin-bottom: 8px;
   transition: border-color var(--dur);
 }
 .treino-card:hover { border-color: var(--border-lg); }
 .treino-header {
-  display: flex; align-items: flex-start;
-  justify-content: space-between; gap: 12px;
-  margin-bottom: 10px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 10px;
+  margin-bottom: 8px;
 }
-.treino-date { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+/* data + badge side-by-side */
+.treino-date-row {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.treino-date { font-size: 13px; font-weight: 600; }
 .treino-desc {
   font-size: 12px;
   font-family: 'JetBrains Mono', monospace;
   color: var(--text-2);
-  line-height: 1.8;
+  line-height: 1.6;
   white-space: pre-wrap;
 }
 .feedback-box {
-  margin-top: 12px;
+  margin-top: 10px;
   background: rgba(200,241,53,.04);
   border: 1px solid rgba(200,241,53,.12);
   border-radius: 8px;
-  padding: 10px 14px;
+  padding: 8px 12px;
 }
 .feedback-label { font-size: 9px; color: var(--lime); font-family: 'JetBrains Mono', monospace; letter-spacing: .1em; margin-bottom: 4px; }
 .feedback-text  { font-size: 12px; color: var(--text-2); font-family: 'JetBrains Mono', monospace; }
@@ -532,6 +538,7 @@ body {
   color: var(--red); border-radius: 6px;
   padding: 3px 8px; font-size: 11px;
   cursor: pointer; transition: all var(--dur);
+  flex-shrink: 0;
 }
 .btn-del-treino:hover { background: rgba(248,113,113,.12); border-color: rgba(248,113,113,.5); }
 
@@ -564,15 +571,19 @@ body {
 
 /* ── Timer circular ──────────────────────────────────────── */
 .timer-wrap {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 12px;
-  padding: 18px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0 4px;
+  border-top: 1px solid var(--border);
+  margin-top: 10px;
+  flex-wrap: wrap;
 }
-.timer-ring-wrap { position: relative; width: 120px; height: 120px; }
+.timer-ring-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
 .timer-ring-svg  { transform: rotate(-90deg); }
-.timer-ring-bg   { fill: none; stroke: var(--border-lg); stroke-width: 6; }
+.timer-ring-bg   { fill: none; stroke: var(--border-lg); stroke-width: 5; }
 .timer-ring-fg {
-  fill: none; stroke: var(--lime); stroke-width: 6;
+  fill: none; stroke: var(--lime); stroke-width: 5;
   stroke-linecap: round;
   transition: stroke-dashoffset .5s var(--ease), stroke .3s;
 }
@@ -584,13 +595,13 @@ body {
   align-items: center; justify-content: center;
 }
 .timer-digits {
-  font-size: 26px; font-weight: 800;
+  font-size: 15px; font-weight: 800;
   font-family: 'JetBrains Mono', monospace;
   color: var(--text-1); letter-spacing: -.02em;
   transition: color .3s;
 }
-.timer-label { font-size: 9px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; letter-spacing: .1em; }
-.timer-controls { display: flex; gap: 8px; }
+.timer-label { font-size: 7px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; letter-spacing: .08em; }
+.timer-controls { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .timer-btn {
   padding: 8px 16px; border-radius: 8px;
   font-size: 12px; font-weight: 700;
@@ -625,19 +636,19 @@ body {
 /* ── Modal ───────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0,0,0,.72);
+  backdrop-filter: blur(14px) saturate(1.5);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
   display: flex; align-items: center; justify-content: center;
   z-index: 1000; padding: 20px;
   animation: fadeIn .15s var(--ease);
 }
 .modal-box {
   width: 100%; max-width: 680px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-lg);
+  background: rgba(13,13,24,.93);
+  border: 1px solid rgba(255,255,255,.14);
   border-radius: var(--radius-lg);
-  box-shadow: 0 40px 100px rgba(0,0,0,.8);
+  box-shadow: 0 40px 100px rgba(0,0,0,.85), 0 0 0 1px rgba(200,241,53,.05);
   overflow: hidden;
   display: flex; flex-direction: column;
   max-height: 90dvh;
@@ -726,13 +737,209 @@ body {
   display: flex; align-items: center; gap: 6px;
 }
 
+/* ── Sim/Não toggle ──────────────────────────────────────── */
+.sn-toggle {
+  display: inline-flex;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border-lg);
+  gap: 0;
+}
+.sn-btn {
+  padding: 8px 18px;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer;
+  background: var(--bg-base);
+  color: var(--text-3);
+  border: none;
+  border-right: 1px solid var(--border-lg);
+  transition: all var(--dur) var(--ease);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: .03em;
+}
+.sn-btn:last-child { border-right: none; }
+.sn-btn:hover { color: var(--text-1); background: var(--bg-hover); }
+.sn-btn.sn-sim.active  { background: rgba(200,241,53,.18); color: var(--lime); }
+.sn-btn.sn-nao.active  { background: rgba(248,113,113,.12); color: var(--red); }
+
+/* ── Time input HH:MM:SS ─────────────────────────────────── */
+.time-input {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: .08em;
+}
+
+/* ── Ficha section label ─────────────────────────────────── */
+.ficha-section {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex; flex-direction: column; gap: 14px;
+  margin-bottom: 14px;
+}
+.ficha-section-title {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--lime); padding-bottom: 6px;
+  border-bottom: 1px solid rgba(200,241,53,.15);
+  margin-bottom: 2px;
+}
+.ficha-aq-row {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.ficha-aq-row:last-child { border-bottom: none; }
+.ficha-aq-label {
+  font-size: 12px; color: var(--text-2); flex: 1; line-height: 1.5;
+}
+.ficha-aq-right { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.ficha-aq-detail {
+  font-size: 11px; color: var(--text-3);
+  font-family: 'JetBrains Mono', monospace; margin-top: 2px;
+}
+.ficha-aq-detail input {
+  background: var(--bg-base);
+  border: 1px solid var(--border-lg);
+  border-radius: 6px;
+  color: var(--text-1);
+  font-size: 11px;
+  padding: 5px 10px;
+  outline: none;
+  transition: border-color var(--dur);
+  font-family: 'JetBrains Mono', monospace;
+  width: 220px;
+}
+.ficha-aq-detail input:focus { border-color: var(--lime); }
+
 /* ════════════════════════════════════════════════════════════
-   PAINEL DO ALUNO (desktop)
+   CRONÔMETRO — painel aluno
 ════════════════════════════════════════════════════════════ */
+.crono-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 28px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.crono-title {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 20px;
+  align-self: flex-start;
+}
+/* SVG ring */
+.crono-ring-wrap {
+  position: relative;
+  width: 180px; height: 180px;
+  flex-shrink: 0;
+  margin-bottom: 20px;
+}
+.crono-ring-svg { transform: rotate(-90deg); }
+.crono-ring-bg  { fill: none; stroke: var(--border-lg); stroke-width: 6; }
+.crono-ring-fg  {
+  fill: none; stroke: var(--lime); stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset .3s linear, stroke .4s;
+}
+.crono-ring-fg.paused { stroke: var(--amber); }
+.crono-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px;
+}
+.crono-digits {
+  font-size: 38px; font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-1); letter-spacing: -.03em;
+  line-height: 1;
+}
+.crono-ms {
+  font-size: 16px; font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-3); letter-spacing: .04em;
+}
+/* Controls */
+.crono-controls {
+  display: flex; gap: 10px; align-items: center;
+  margin-bottom: 16px;
+}
+.crono-btn {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px;
+  border-radius: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700; cursor: pointer;
+  border: 1px solid;
+  transition: all var(--dur) var(--spring);
+}
+.crono-btn-play {
+  width: 64px; height: 64px; font-size: 22px;
+  background: var(--lime); color: #05050a;
+  border-color: var(--lime);
+  box-shadow: 0 4px 20px var(--lime-glow);
+}
+.crono-btn-play:hover { background: #d4f550; transform: scale(1.05); }
+.crono-btn-play:active { transform: scale(.97); }
+.crono-btn-sm {
+  width: 48px; height: 48px; font-size: 16px;
+  background: var(--bg-card2); color: var(--text-2);
+  border-color: var(--border-lg);
+}
+.crono-btn-sm:hover { background: var(--bg-hover); color: var(--text-1); }
+.crono-btn-lap {
+  background: rgba(56,217,245,.08); color: var(--cyan);
+  border-color: rgba(56,217,245,.25);
+}
+.crono-btn-lap:hover { background: rgba(56,217,245,.16); }
+/* Lap history */
+.crono-laps {
+  width: 100%;
+  max-height: 220px;
+  overflow-y: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+.crono-laps-title {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 8px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.crono-lap-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  transition: background var(--dur);
+  animation: fadeUp .2s var(--ease);
+}
+.crono-lap-row:nth-child(odd)  { background: var(--bg-card2); }
+.crono-lap-row:nth-child(even) { background: transparent; }
+.crono-lap-num  { color: var(--text-3); min-width: 36px; }
+.crono-lap-time { color: var(--lime); font-weight: 700; }
+.crono-lap-delta{ color: var(--text-3); font-size: 10px; }
+.crono-lap-best { color: var(--cyan); }
+.crono-lap-worst{ color: var(--amber); }
+.crono-empty {
+  font-size: 11px; color: var(--text-3);
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center; padding: 12px 0;
+}
 #panelAluno {
   display: flex;
+  flex-direction: column;
+  width: 100%;
   height: 100dvh;
   overflow: hidden;
+  background: var(--bg-base);
 }
 
 /* Week strip */
@@ -771,7 +978,7 @@ body {
 .dp-num { font-size: 16px; font-weight: 700; }
 
 /* Aluno layout */
-.aluno-layout { display: flex; flex: 1; overflow: hidden; }
+.aluno-layout { display: flex; flex: 1; min-height: 0; overflow: hidden; }
 .aluno-sidebar {
   width: 280px; flex-shrink: 0;
   background: var(--bg-card);
@@ -1158,6 +1365,10 @@ body {
   .mob-nav, .mob-fab { display: none; }
   body.logado .mob-nav { display: flex; }
   body.logado.is-admin .mob-fab { display: flex; }
+
+  /* .hidden dentro do mob-nav sobrepõe o flex pai */
+  .mob-nav-item.hidden { display: none !important; }
+  .mob-header-btn.hidden { display: none !important; }
 }
 @media (min-width: 769px) {
   #mobShell { display: none !important; }
@@ -1221,16 +1432,69 @@ body {
 }
 .no-treino-icon { font-size: 40px; margin-bottom: 12px; opacity: .4; }
 
-/* Gerenciar aluno modal confirm box */
+/* ── Gerenciar aluno modal confirm box */
 .modal-confirm-box {
   width: 100%; max-width: 420px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-lg);
+  background: rgba(13,13,24,.93);
+  border: 1px solid rgba(255,255,255,.14);
   border-radius: var(--radius-lg);
-  box-shadow: 0 40px 100px rgba(0,0,0,.8);
+  box-shadow: 0 40px 100px rgba(0,0,0,.85);
   overflow: hidden;
   display: flex; flex-direction: column;
   animation: scaleIn .2s var(--spring);
+}
+
+/* ── Filtros rápidos da athlete-list ─────────────────────── */
+.al-filters {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  padding: 0 0 10px;
+}
+.al-filter-btn {
+  padding: 3px 10px; border-radius: 99px;
+  font-size: 9px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--text-3);
+  transition: all var(--dur);
+  white-space: nowrap;
+}
+.al-filter-btn.active,
+.al-filter-btn:hover { background: var(--lime-glow); color: var(--lime); border-color: rgba(200,241,53,.3); }
+.al-filter-btn.f-inativo.active { background: rgba(248,113,113,.1); color: var(--red); border-color: rgba(248,113,113,.3); }
+.al-filter-btn.f-vencido.active { background: rgba(245,166,35,.1); color: var(--amber); border-color: rgba(245,166,35,.3); }
+
+/* ── formPrescricaoCard desktop: 2 colunas ───────────────── */
+@media (min-width: 769px) {
+  .prescricao-layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 16px;
+    align-items: start;
+  }
+  .prescricao-left { display: flex; flex-direction: column; gap: 12px; }
+  .prescricao-right { display: flex; flex-direction: column; height: 100%; }
+  .prescricao-right .field-textarea { flex: 1; min-height: 220px; resize: vertical; }
+}
+
+/* ── Ritmos-grid mobile: carrossel horizontal fino ───────── */
+@media (max-width: 768px) {
+  .ritmos-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    scrollbar-width: none;
+    margin-bottom: 8px;
+  }
+  .ritmos-grid::-webkit-scrollbar { display: none; }
+  .ritmo-item {
+    min-width: 100px;
+    flex-shrink: 0;
+    padding: 6px 8px;
+  }
+  /* Timer mobile: permanece vertical mas menor */
+  .timer-ring-wrap { width: 60px; height: 60px; }
+  .timer-digits { font-size: 13px; }
 }
 </style>
 </head>
@@ -1267,7 +1531,7 @@ body {
 <div id="screenApp" class="hidden">
 
   <!-- ── Painel Admin ────────────────────────────────────── -->
-  <div id="panelAdmin" class="hidden" style="display:flex;width:100%;height:100dvh;overflow:hidden;">
+  <div id="panelAdmin" class="hidden" style="display:flex;width:100%;height:100dvh;overflow:hidden;flex-shrink:0;flex:1;">
 
     <!-- Sidebar ícones -->
     <nav class="sidebar-icons" id="sidebarIcons">
@@ -1300,6 +1564,12 @@ body {
         <input class="al-search" id="alSearch" type="text"
           placeholder="Buscar atleta…"
           oninput="filtrarAtletas(this.value)"/>
+        <div class="al-filters">
+          <button class="al-filter-btn active" id="alFiltroTodos"   onclick="alFiltro('todos')">Todos</button>
+          <button class="al-filter-btn"        id="alFiltroAtivo"   onclick="alFiltro('ativo')">Ativos</button>
+          <button class="al-filter-btn f-inativo" id="alFiltroInativo" onclick="alFiltro('inativo')">Inativos</button>
+          <button class="al-filter-btn f-vencido" id="alFiltroVencido" onclick="alFiltro('vencido')">⏰ Vencidos</button>
+        </div>
       </div>
       <div class="al-scroll" id="alScroll">
         <div style="padding:24px;text-align:center;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text-3);">
@@ -1345,7 +1615,7 @@ body {
           <!-- Tabs -->
           <div class="ws-tabs">
             <button class="ws-tab active" id="tabPrescricao"   onclick="wsTab('prescricao')">Prescrição</button>
-            <button class="ws-tab"        id="tabEvolucao"     onclick="wsTab('evolucao')">Evolução de Carga</button>
+            <button class="ws-tab"        id="tabEvolucao"     onclick="wsTab('evolucao')">Balança Corporal</button>
             <button class="ws-tab"        id="tabFicha"        onclick="wsTab('ficha')">Ficha do Atleta</button>
             <button class="ws-tab"        id="tabPace"         onclick="wsTab('pace')">Calculadora</button>
           </div>
@@ -1359,56 +1629,63 @@ body {
             <!-- Form criar treino inline -->
             <div class="card" style="margin-bottom:20px;" id="formPrescricaoCard">
               <div class="card-title">Novo Treino</div>
-              <div class="form-grid-2" style="gap:12px;margin-bottom:14px;">
-                <div>
-                  <div class="field-label">Data</div>
-                  <input class="field-input" id="adminTreinoData" type="date"/>
-                </div>
-                <div>
-                  <div class="field-label">Classificação</div>
-                  <div class="classif-pills" id="wsClassifPills"></div>
-                </div>
-              </div>
-              <!-- Ritmos -->
-              <div class="form-grid-4" style="margin-bottom:14px;">
-                <div>
-                  <div class="field-label" style="display:flex;align-items:center;gap:5px;">
-                    <span style="width:6px;height:6px;border-radius:50%;background:#38d9f5;display:inline-block;"></span>
-                    <span style="color:#38d9f5;">RTL</span> Leve
+              <div class="prescricao-layout">
+                <!-- Coluna esquerda: dados e ritmos -->
+                <div class="prescricao-left">
+                  <div class="form-grid-2" style="gap:12px;">
+                    <div>
+                      <div class="field-label">Data</div>
+                      <input class="field-input" id="adminTreinoData" type="date"/>
+                    </div>
+                    <div>
+                      <div class="field-label">Classificação</div>
+                      <div class="classif-pills" id="wsClassifPills"></div>
+                    </div>
                   </div>
-                  <input class="field-input" id="adminRTL" type="text" placeholder="6:30/km"/>
-                </div>
-                <div>
-                  <div class="field-label" style="display:flex;align-items:center;gap:5px;">
-                    <span style="width:6px;height:6px;border-radius:50%;background:#c8f135;display:inline-block;"></span>
-                    <span style="color:#c8f135;">RTM</span> Médio
+                  <!-- Ritmos -->
+                  <div class="form-grid-4">
+                    <div>
+                      <div class="field-label" style="display:flex;align-items:center;gap:5px;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:#38d9f5;display:inline-block;"></span>
+                        <span style="color:#38d9f5;">RTL</span> Leve
+                      </div>
+                      <input class="field-input" id="adminRTL" type="text" placeholder="6:30/km"/>
+                    </div>
+                    <div>
+                      <div class="field-label" style="display:flex;align-items:center;gap:5px;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:#c8f135;display:inline-block;"></span>
+                        <span style="color:#c8f135;">RTM</span> Médio
+                      </div>
+                      <input class="field-input" id="adminRTM" type="text" placeholder="5:45/km"/>
+                    </div>
+                    <div>
+                      <div class="field-label" style="display:flex;align-items:center;gap:5px;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:#f5a623;display:inline-block;"></span>
+                        <span style="color:#f5a623;">RTF</span> Forte
+                      </div>
+                      <input class="field-input" id="adminRTF" type="text" placeholder="4:45/km"/>
+                    </div>
+                    <div>
+                      <div class="field-label" style="display:flex;align-items:center;gap:5px;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:#8888aa;display:inline-block;"></span>
+                        <span style="color:#8888aa;">RTC</span> Caminhada
+                      </div>
+                      <input class="field-input" id="adminRTC" type="text" placeholder="8:00/km"/>
+                    </div>
                   </div>
-                  <input class="field-input" id="adminRTM" type="text" placeholder="5:45/km"/>
-                </div>
-                <div>
-                  <div class="field-label" style="display:flex;align-items:center;gap:5px;">
-                    <span style="width:6px;height:6px;border-radius:50%;background:#f5a623;display:inline-block;"></span>
-                    <span style="color:#f5a623;">RTF</span> Forte
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-lime" id="btnSalvarTreino" onclick="salvarTreino(state.alunoAdmin?.id_aluno)">＋ Salvar Treino</button>
+                    <button class="btn btn-ghost btn-sm" onclick="salvarComoTemplate()">💾 Salvar como Template</button>
+                    <button class="btn btn-ghost btn-sm" onclick="abrirSelecionarTemplate()">📋 Usar Template</button>
                   </div>
-                  <input class="field-input" id="adminRTF" type="text" placeholder="4:45/km"/>
                 </div>
-                <div>
-                  <div class="field-label" style="display:flex;align-items:center;gap:5px;">
-                    <span style="width:6px;height:6px;border-radius:50%;background:#8888aa;display:inline-block;"></span>
-                    <span style="color:#8888aa;">RTC</span> Caminhada
-                  </div>
-                  <input class="field-input" id="adminRTC" type="text" placeholder="8:00/km"/>
+                <!-- Coluna direita: descrição esticada -->
+                <div class="prescricao-right">
+                  <div class="field-label">Descrição do Treino</div>
+                  <textarea class="field-input field-textarea" id="adminTreinoDesc"
+                    style="flex:1;min-height:220px;"
+                    placeholder="Ex: Aquecimento 15min trot leve&#10;Principal: 5×1000m c/ 90s descanso — ritmo RTF&#10;Volta calma 10min + alongamento"></textarea>
                 </div>
-              </div>
-              <div style="margin-bottom:12px;">
-                <div class="field-label">Descrição do Treino</div>
-                <textarea class="field-input field-textarea" id="adminTreinoDesc"
-                  placeholder="Ex: Aquecimento 15min trot leve&#10;Principal: 5×1000m c/ 90s descanso — ritmo RTF&#10;Volta calma 10min + alongamento"></textarea>
-              </div>
-              <div style="display:flex;gap:8px;">
-                <button class="btn btn-lime" id="btnSalvarTreino" onclick="salvarTreino(state.alunoAdmin?.id_aluno)">＋ Salvar Treino</button>
-                <button class="btn btn-ghost btn-sm" onclick="salvarComoTemplate()">💾 Salvar como Template</button>
-                <button class="btn btn-ghost btn-sm" onclick="abrirSelecionarTemplate()">📋 Usar Template</button>
               </div>
             </div>
 
@@ -1416,10 +1693,10 @@ body {
             <div id="wsHistoricoTreinos"></div>
           </div>
 
-          <!-- ── TAB: Evolução de Carga ── -->
+          <!-- ── TAB: Balança Corporal ── -->
           <div class="ws-pane" id="paneEvolucao">
             <div class="card" style="margin-bottom:16px;">
-              <div class="card-title">Evolução de Peso</div>
+              <div class="card-title">Balança Corporal</div>
               <div class="peso-stats" id="wsPesoStats"></div>
               <div class="peso-chart-wrap">
                 <canvas id="wsPesoChart"></canvas>
@@ -1472,7 +1749,7 @@ body {
   </div><!-- /panelAdmin -->
 
   <!-- ── Painel Aluno ─────────────────────────────────────── -->
-  <div id="panelAluno" class="hidden" style="display:flex;flex-direction:column;width:100%;height:100dvh;overflow:hidden;background:var(--bg-base);">
+  <div id="panelAluno" class="hidden">
 
     <!-- Topbar aluno -->
     <header style="display:flex;align-items:center;justify-content:space-between;padding:14px 28px;background:var(--bg-card);border-bottom:1px solid var(--border);flex-shrink:0;">
@@ -1518,6 +1795,39 @@ body {
       <!-- Main treino -->
       <main class="aluno-main" id="alunoMain">
         <div id="alunoTreinoArea"></div>
+
+        <!-- Cronômetro -->
+        <div id="cronometroWrap" style="margin-top:24px;">
+          <div class="crono-wrap">
+            <div class="crono-title">⏱ Cronômetro</div>
+            <div class="crono-ring-wrap">
+              <svg class="crono-ring-svg" width="180" height="180" viewBox="0 0 180 180">
+                <circle class="crono-ring-bg" cx="90" cy="90" r="82"/>
+                <circle class="crono-ring-fg" id="cronoRingFg" cx="90" cy="90" r="82"
+                  stroke-dasharray="515.2" stroke-dashoffset="515.2"/>
+              </svg>
+              <div class="crono-center">
+                <div class="crono-digits" id="cronoDigits">00:00</div>
+                <div class="crono-ms" id="cronoMs">.00</div>
+              </div>
+            </div>
+            <div class="crono-controls">
+              <button class="crono-btn crono-btn-sm crono-btn-lap" id="cronoBtnLap" title="Marcar volta" onclick="cronoLap()">🚩</button>
+              <button class="crono-btn crono-btn-play" id="cronoBtnPlay" onclick="cronoToggle()">▶</button>
+              <button class="crono-btn crono-btn-sm" id="cronoBtnReset" title="Zerar" onclick="cronoReset()">↺</button>
+            </div>
+            <div class="crono-laps" id="cronoLaps">
+              <div class="crono-laps-title">
+                <span>Histórico de Voltas</span>
+                <span id="cronoLapsCount" style="color:var(--lime);"></span>
+              </div>
+              <div id="cronoLapList"><div class="crono-empty">Nenhuma volta marcada</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ficha do próprio aluno (desktop) -->
+        <div id="alunoFichaArea" style="margin-top:24px;"></div>
       </main>
     </div>
   </div><!-- /panelAluno -->
@@ -1559,6 +1869,38 @@ body {
       <div id="mobFichaContent" style="padding:16px;"></div>
     </div>
 
+    <!-- Page: Cronômetro (aluno mobile) -->
+    <div class="mob-page" id="mobPageCrono">
+      <div style="padding:20px 16px 80px;">
+        <div class="crono-wrap" style="padding:24px 16px 16px;">
+          <div class="crono-title">⏱ Cronômetro</div>
+          <div class="crono-ring-wrap" style="width:160px;height:160px;margin-bottom:16px;">
+            <svg class="crono-ring-svg" width="160" height="160" viewBox="0 0 160 160">
+              <circle class="crono-ring-bg" cx="80" cy="80" r="72"/>
+              <circle class="crono-ring-fg" id="cronoRingFgMob" cx="80" cy="80" r="72"
+                stroke-dasharray="452.4" stroke-dashoffset="452.4"/>
+            </svg>
+            <div class="crono-center">
+              <div class="crono-digits" id="cronoDigitsMob" style="font-size:32px;">00:00</div>
+              <div class="crono-ms" id="cronsMsMob">.00</div>
+            </div>
+          </div>
+          <div class="crono-controls">
+            <button class="crono-btn crono-btn-sm crono-btn-lap" title="Marcar volta" onclick="cronoLap()">🚩</button>
+            <button class="crono-btn crono-btn-play" id="cronoBtnPlayMob" onclick="cronoToggle()">▶</button>
+            <button class="crono-btn crono-btn-sm" title="Zerar" onclick="cronoReset()">↺</button>
+          </div>
+          <div class="crono-laps" id="cronoLapsMob" style="width:100%;">
+            <div class="crono-laps-title">
+              <span>Histórico de Voltas</span>
+              <span id="cronoLapsCountMob" style="color:var(--lime);"></span>
+            </div>
+            <div id="cronoLapListMob"><div class="crono-empty">Nenhuma volta marcada</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Page: Alunos (admin) -->
     <div class="mob-page" id="mobPageAlunos">
       <div style="padding:12px 16px;border-bottom:1px solid var(--border);">
@@ -1591,16 +1933,19 @@ body {
 
   <!-- Bottom nav (hidden until login) -->
   <nav class="mob-nav" id="mobNav">
-    <button class="mob-nav-item" id="mobBnHome" onclick="mobNav('home')">
+    <button class="mob-nav-item" id="mobBnHome" onclick="mobNavTo('home')">
       <span class="nav-icon">🏠</span>Treinos
     </button>
-    <button class="mob-nav-item" id="mobBnFicha" onclick="mobNav('ficha')">
+    <button class="mob-nav-item" id="mobBnCrono" onclick="mobNavTo('crono')">
+      <span class="nav-icon">⏱</span>Crono
+    </button>
+    <button class="mob-nav-item" id="mobBnFicha" onclick="mobNavTo('ficha')">
       <span class="nav-icon">📋</span>Ficha
     </button>
-    <button class="mob-nav-item" id="mobBnAlunos" onclick="mobNav('alunos')" style="display:none;">
+    <button class="mob-nav-item" id="mobBnAlunos" onclick="mobNavTo('alunos')" style="display:none;">
       <span class="nav-icon">👥</span>Atletas
     </button>
-    <button class="mob-nav-item" id="mobBnPerfil" onclick="mobNav('perfil')">
+    <button class="mob-nav-item" id="mobBnPerfil" onclick="mobNavTo('perfil')">
       <span class="nav-icon">👤</span>Perfil
     </button>
   </nav>
@@ -1900,7 +2245,7 @@ body {
     <div class="modal-body" id="modalAnamneseBody"></div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="fecharModal('modalAnamnese')">Cancelar</button>
-      <button class="btn btn-lime" id="btnSalvarFichaAdmin" onclick="salvarFichaAdmin()">Salvar Ficha</button>
+      <button class="btn btn-lime" id="btnSalvarFichaAdmin" onclick="salvarFichaDispatch()">Salvar Ficha</button>
     </div>
   </div>
 </div>
@@ -2018,10 +2363,16 @@ function showScreen(name) {
     if (name === "admin") {
       $("panelAdmin").classList.remove("hidden");
       $("panelAluno").classList.add("hidden");
+      // Garante display correto ao remover hidden (inline style sobrescreve CSS)
+      $("panelAdmin").style.display = "flex";
+      $("panelAluno").style.display = "none";
       document.body.classList.add("logado","is-admin");
     } else {
       $("panelAluno").classList.remove("hidden");
       $("panelAdmin").classList.add("hidden");
+      // Garante display correto ao remover hidden
+      $("panelAluno").style.display = "flex";
+      $("panelAdmin").style.display = "none";
       document.body.classList.add("logado");
       document.body.classList.remove("is-admin");
     }
@@ -2070,6 +2421,7 @@ function aplicarMarca(m) {
 }
 
 function abrirConfigMarca() {
+  if (state.usuario?.tipo !== "admin") return; // somente admin
   const m = getMarca();
   setVal("cfgLogoUrl",   m.logoUrl    || "");
   setVal("cfgLogoTexto", m.logoTexto  || "");
@@ -2090,10 +2442,16 @@ async function salvarConfigMarca() {
     pdfContato: getVal("cfgPdfContato"),
   };
   localStorage.setItem(MARCA_KEY, JSON.stringify(m));
+
+  // Persiste o id do admin para que alunos possam buscar a config na planilha
+  if (state.usuario?.id_aluno) {
+    localStorage.setItem("trainOS_adminId", state.usuario.id_aluno);
+  }
+
   aplicarMarca(m);
 
   if (state.usuario?.tipo === "admin") {
-    callAPI({
+    const res = await callAPI({
       action:      "salvarConfigPersonal",
       id_admin:    state.usuario.id_aluno,
       logo_url:    m.logoUrl,
@@ -2101,6 +2459,7 @@ async function salvarConfigMarca() {
       pdf_nome:    m.pdfNome,
       pdf_contato: m.pdfContato,
     });
+    if (res && !res.ok) showToast("⚠ Erro ao salvar no servidor: " + (res.erro || ""));
   }
   fecharModal("modalConfigMarca");
   showToast("✓ Marca salva!");
@@ -2135,12 +2494,34 @@ async function handleLogin() {
   state.usuario = res.usuario;
   setVal("loginSenha", "");
 
-  // Carrega configurações do servidor
+  // ── Carrega e persiste configurações de marca ─────────────
   if (res.usuario.tipo === "admin") {
+    // Admin: busca a própria config e salva o adminId
+    localStorage.setItem("trainOS_adminId", res.usuario.id_aluno);
     const cfgRes = await callAPI({ action: "buscarConfigPersonal", id_admin: res.usuario.id_aluno });
     if (cfgRes.ok && cfgRes.config) {
-      const m = { logoUrl: cfgRes.config.logo_url, logoTexto: cfgRes.config.logo_texto, pdfNome: cfgRes.config.pdf_nome, pdfContato: cfgRes.config.pdf_contato };
+      const m = {
+        logoUrl:    cfgRes.config.logo_url    || "",
+        logoTexto:  cfgRes.config.logo_texto  || "TrainOS",
+        pdfNome:    cfgRes.config.pdf_nome    || "",
+        pdfContato: cfgRes.config.pdf_contato || "",
+      };
       localStorage.setItem(MARCA_KEY, JSON.stringify(m));
+    }
+  } else {
+    // Aluno: busca a config do admin usando o id salvo no localStorage
+    const adminId = localStorage.getItem("trainOS_adminId");
+    if (adminId) {
+      const cfgRes = await callAPI({ action: "buscarConfigPersonal", id_admin: adminId });
+      if (cfgRes.ok && cfgRes.config) {
+        const m = {
+          logoUrl:    cfgRes.config.logo_url    || "",
+          logoTexto:  cfgRes.config.logo_texto  || "TrainOS",
+          pdfNome:    cfgRes.config.pdf_nome    || "",
+          pdfContato: cfgRes.config.pdf_contato || "",
+        };
+        localStorage.setItem(MARCA_KEY, JSON.stringify(m));
+      }
     }
   }
 
@@ -2158,8 +2539,10 @@ function handleLogout() {
   state.todosAlunos = []; state.alunoAdmin = null;
   datasSelecionadas.clear(); alunosSelecionados.clear();
   document.body.classList.remove("logado","is-admin");
-  $("panelAdmin").classList.add("hidden");
-  $("panelAluno").classList.add("hidden");
+  const pAdmin = $("panelAdmin");
+  const pAluno = $("panelAluno");
+  if (pAdmin) { pAdmin.classList.add("hidden"); pAdmin.style.display = ""; }
+  if (pAluno) { pAluno.classList.add("hidden"); pAluno.style.display = ""; }
   showScreen("login");
 }
 
@@ -2248,6 +2631,27 @@ function filtrarAtletas(q) {
   renderAthleteList(lista);
 }
 
+// ── Filtros rápidos por status ────────────────────────────
+let _alFiltroAtual = "todos";
+function alFiltro(tipo) {
+  _alFiltroAtual = tipo;
+  // Atualiza estilo dos botões
+  ["todos","ativo","inativo","vencido"].forEach(t => {
+    const btn = $("alFiltro" + t.charAt(0).toUpperCase() + t.slice(1));
+    if (btn) btn.classList.toggle("active", t === tipo);
+  });
+  // Filtra e re-renderiza
+  const q = $("alSearch")?.value || "";
+  let lista = state.todosAlunos.filter(a =>
+    (a.nome || "").toLowerCase().includes(q.toLowerCase()) ||
+    (a.usuario || "").toLowerCase().includes(q.toLowerCase())
+  );
+  if (tipo === "ativo")   lista = lista.filter(a => String(a.status||"").toLowerCase() === "ativo" && !isAlunoVencido(a));
+  if (tipo === "inativo") lista = lista.filter(a => String(a.status||"").toLowerCase() === "inativo");
+  if (tipo === "vencido") lista = lista.filter(a => isAlunoVencido(a));
+  renderAthleteList(lista);
+}
+
 function temFeedbackNaoLido(a) {
   return (a.treinos || []).some(t =>
     t.feedback_aluno && String(t.status || "").toLowerCase() === "concluído"
@@ -2314,8 +2718,8 @@ function renderWsHistorico(aluno) {
     const ritmosHtml = buildRitmosHTML(t);
     return `<div class="treino-card">
       <div class="treino-header">
-        <div>
-          <div class="treino-date">${formatDate(t.data_treino)}</div>
+        <div class="treino-date-row">
+          <span class="treino-date">${formatDate(t.data_treino)}</span>
           ${classif ? classifBadgeHtml(classif) : ""}
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
@@ -2383,7 +2787,7 @@ async function salvarTreino(id_aluno) {
   renderAthleteList(state.todosAlunos);
 }
 
-// ── Workspace: Evolução de Peso (Chart.js) ────────────────
+// ── Workspace: Balança Corporal (Chart.js) ────────────────
 async function wsCarregarPeso(id_aluno) {
   const res = await callAPI({ action: "buscarHistoricoPeso", id_aluno });
   if (!res.ok) return;
@@ -3015,7 +3419,7 @@ async function executarExcluirAlunoGer() {
   renderAthleteList(state.todosAlunos);
   $("wsEmpty").classList.remove("hidden");
   $("wsContent").classList.add("hidden");
-  if (IS_MOBILE()) { mobRenderAlunos(state.todosAlunos); mobNav("alunos"); }
+  if (IS_MOBILE()) { mobRenderAlunos(state.todosAlunos); mobNavTo("alunos"); }
 }
 
 // ════════════════════════════════════════════════════════════
@@ -3067,89 +3471,521 @@ async function confirmarCriarUsuario() {
 }
 
 // ════════════════════════════════════════════════════════════
-//  FICHA ADMIN (modal anamnese)
+//  FICHA DO PRÓPRIO ALUNO (painel aluno desktop + mobile)
+// ════════════════════════════════════════════════════════════
+
+// Dispatcher: decide se salva como admin ou como aluno baseado em quem abriu o modal
+let _fichaModalModo = "admin"; // "admin" | "aluno"
+
+function salvarFichaDispatch() {
+  if (_fichaModalModo === "aluno") {
+    salvarFichaProprioAluno();
+  } else {
+    salvarFichaAdmin();
+  }
+}
+
+function renderAlunoFicha() {
+  const el = $("alunoFichaArea");
+  if (!el) return;
+  const f = state.aluno || {};
+
+  const field = (label, val) => `
+    <div style="margin-bottom:10px;">
+      <div class="field-label">${label}</div>
+      <div style="font-size:13px;color:var(--text-1);font-family:'JetBrains Mono',monospace;padding:6px 0;border-bottom:1px solid var(--border);">${escHtml(val || "—")}</div>
+    </div>`;
+
+  // Calcula idade se tiver nascimento
+  const idade = (dob) => {
+    if (!dob) return "";
+    const d = new Date(dob + "T12:00:00"), hoje_ = new Date();
+    let a = hoje_.getFullYear() - d.getFullYear();
+    if (hoje_.getMonth() < d.getMonth() || (hoje_.getMonth() === d.getMonth() && hoje_.getDate() < d.getDate())) a--;
+    return a > 0 ? a + " anos" : "";
+  };
+
+  const sim_nao = v => v === "sim" ? "✓ Sim" : v === "nao" ? "✗ Não" : (v || "—");
+
+  el.innerHTML = `
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>📋 Minha Ficha Cadastral</span>
+        <button class="btn btn-lime btn-sm" onclick="abrirFichaProprioAluno()">✏ Editar</button>
+      </div>
+
+      <div class="form-block-title" style="margin-bottom:8px;">Dados Básicos</div>
+      <div class="form-grid-2">
+        ${field("Nome",       f.nome)}
+        ${field("E-mail",     f.email)}
+        ${field("Nascimento", f.nascimento || f.data_nascimento)}
+        ${field("Idade",      idade(f.nascimento || f.data_nascimento))}
+        ${field("Telefone",   f.telefone)}
+        ${field("Peso / Altura", (f.peso ? f.peso+"kg" : "—") + " / " + (f.altura ? f.altura+"m" : "—"))}
+        ${field("Trabalho",   f.trabalho)}
+        ${field("Nível",      f.nivel_condicionamento)}
+        ${field("Modalidade", f.modalidade)}
+        ${field("Clube",      f.clube)}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div class="form-block-title" style="margin-bottom:8px;">🏅 Histórico de Corrida</div>
+      <div class="form-grid-2">
+        ${field("Provas",            f.provas)}
+        ${field("Tempo 5K",          f.tempo_5k)}
+        ${field("Tempo 10K",         f.tempo_10k)}
+        ${field("Tempo 21K",         f.tempo_21k)}
+        ${field("Tempo 42K",         f.tempo_42k)}
+        ${field("Tempo TAF",         f.tempo_taf)}
+        ${field("Tempo de Prática",  f.tempo_pratica)}
+        ${field("Maior km Semanal",  f.maior_km)}
+        ${field("Treino Atual",      f.treino_atual)}
+        ${field("Prova Alvo",        f.prova_alvo)}
+        ${field("Próxima Prova",     f.proxima_prova ? formatDate(f.proxima_prova) : "")}
+        ${field("Academia",          f.academia)}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div class="form-block-title" style="margin-bottom:8px;">🩺 Saúde e Patologias</div>
+      <div class="form-grid-2">
+        ${field("Patologias",        f.patologias)}
+        ${field("Detalhes",          f.detalhes_patologias)}
+        ${field("Tabagismo",         f.tabagismo)}
+      </div>
+      <div class="form-block-title" style="margin:12px 0 8px;">Questões de Saúde</div>
+      <div class="form-grid-2">
+        ${field("Doença Grave",              sim_nao(f.doenca_grave))}
+        ${field("Hospitalização/Cirurgia",   sim_nao(f.hospitalizacao))}
+        ${field("Medicações Regulares",      f.medicacoes)}
+        ${field("Medicamentos Desempenho",   f.medicamentos_desempenho)}
+        ${field("Alergias",                  f.alergias)}
+        ${field("Desmaios Pós-Exercício",    sim_nao(f.desmaios))}
+        ${field("Dor no Peito",              sim_nao(f.dor_peito))}
+        ${field("Palpitações",               sim_nao(f.palpitacoes))}
+        ${field("Sopro Cardíaco",            sim_nao(f.sopro_cardiaco))}
+        ${field("Hist. Morte Súbita Fam.",   sim_nao(f.morte_subita_fam))}
+        ${field("Cardiomiopatia Fam.",       sim_nao(f.cardiomiopatia_fam))}
+        ${field("Doença Viral (últ. mês)",   sim_nao(f.doenca_viral))}
+        ${field("Restrição Médica",          sim_nao(f.restricao_medica))}
+        ${field("Convulsão",                 sim_nao(f.convulsao))}
+        ${field("Dores de Cabeça Fortes",    sim_nao(f.dores_cabeca))}
+        ${field("Formigamento/Dormência",    sim_nao(f.formigamento))}
+        ${field("Aperto Nervoso",            sim_nao(f.aperto_nervoso))}
+        ${field("Sint. Respiratórios",       sim_nao(f.sint_respiratorios))}
+        ${field("Asma",                      sim_nao(f.asma))}
+        ${field("Alergias Temporárias",      f.alergias_temporarias)}
+        ${field("Equipamentos de Suporte",   f.equipamentos_suporte)}
+        ${field("Distensão Muscular",        sim_nao(f.distensao_muscular))}
+        ${field("Ossos/Luxação",             sim_nao(f.ossos_luxacao))}
+        ${field("Dores Articulações/Tendões",sim_nao(f.dores_articulacoes))}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div class="form-block-title" style="margin-bottom:8px;">🏃 Atividade Física e Objetivos</div>
+      <div class="form-grid-2">
+        ${field("Tempo de Prática",  f.tempo_pratica)}
+        ${field("Hist. Atividades",  f.hist_atividades)}
+        ${field("Atividades Atuais", f.atividades_atuais)}
+        ${field("Horas Semanais",    f.horas_semanais)}
+        ${field("Tempo Diário",      f.tempo_diario)}
+        ${field("Dias Disponíveis",  f.dias_disponiveis)}
+      </div>
+      <div style="margin-top:10px;">
+        <div class="field-label">Objetivos</div>
+        <div style="font-size:13px;color:var(--text-2);font-family:'JetBrains Mono',monospace;line-height:1.8;padding:6px 0;">${escHtml(f.objetivos || f.objetivo || "—")}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="form-block-title" style="margin-bottom:8px;">🥗 Alimentação</div>
+      <div class="form-grid-2">
+        ${field("Alimentação Adequada", sim_nao(f.alimentacao_adequada))}
+        ${field("Nutricionista",         sim_nao(f.nutricionista))}
+        ${field("Suplementação",         sim_nao(f.suplementacao))}
+        ${field("Suplementos",           f.suplementos)}
+      </div>
+      <div style="margin-top:10px;">
+        <div class="field-label">Descrição Alimentar</div>
+        <div style="font-size:13px;color:var(--text-2);font-family:'JetBrains Mono',monospace;line-height:1.8;padding:6px 0;">${escHtml(f.desc_alimentacao || "—")}</div>
+      </div>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  FICHA CADASTRAL COMPLETA — helpers compartilhados
+// ════════════════════════════════════════════════════════════
+
+// Máscara HH:MM:SS aplicada em tempo real
+function _aplicarMascaraTempo(el) {
+  el.addEventListener("input", function() {
+    let v = this.value.replace(/[^0-9]/g, "");
+    if (v.length > 6) v = v.slice(0,6);
+    let out = "";
+    if (v.length > 4)      out = v.slice(0,2) + ":" + v.slice(2,4) + ":" + v.slice(4);
+    else if (v.length > 2) out = v.slice(0,2) + ":" + v.slice(2);
+    else                   out = v;
+    this.value = out;
+  });
+  el.addEventListener("blur", function() {
+    // Normaliza para HH:MM:SS ao sair do campo
+    const partes = this.value.split(":");
+    if (partes.length === 3) {
+      this.value = partes.map(p => String(p||"00").padStart(2,"0")).join(":");
+    } else if (partes.length === 2) {
+      this.value = String(partes[0]||"00").padStart(2,"0") + ":" + String(partes[1]||"00").padStart(2,"0") + ":00";
+    } else if (this.value.length > 0 && this.value.match(/^\d+$/)) {
+      this.value = "00:00:" + String(this.value).padStart(2,"0");
+    }
+  });
+}
+
+function _snToggle(prefix, val) {
+  // val: "sim" | "nao" | ""
+  const simBtn = $("sn_sim_" + prefix);
+  const naoBtn = $("sn_nao_" + prefix);
+  if (!simBtn || !naoBtn) return;
+  simBtn.classList.toggle("active", val === "sim");
+  naoBtn.classList.toggle("active", val === "nao");
+  simBtn.dataset.val = val === "sim" ? "sim" : "";
+  naoBtn.dataset.val = val === "nao" ? "nao" : "";
+}
+
+function _snRead(prefix) {
+  const simBtn = $("sn_sim_" + prefix);
+  const naoBtn = $("sn_nao_" + prefix);
+  if (simBtn && simBtn.classList.contains("active")) return "sim";
+  if (naoBtn && naoBtn.classList.contains("active")) return "nao";
+  return "";
+}
+
+function _snHtml(prefix, val) {
+  const sv = (val === "sim" || val === "s" || val === "1" || val === true) ? "sim"
+           : (val === "nao" || val === "não" || val === "n" || val === "0" || val === false) ? "nao" : "";
+  return `<div class="sn-toggle">
+    <button type="button" class="sn-btn sn-sim ${sv==="sim"?"active":""}" id="sn_sim_${prefix}"
+      onclick="(function(){const p='${prefix}',simB=$('sn_sim_'+p),naoB=$('sn_nao_'+p);const cur=simB.classList.contains('active');simB.classList.toggle('active',!cur);naoB.classList.remove('active');})()">
+      ✓ Sim
+    </button>
+    <button type="button" class="sn-btn sn-nao ${sv==="nao"?"active":""}" id="sn_nao_${prefix}"
+      onclick="(function(){const p='${prefix}',simB=$('sn_sim_'+p),naoB=$('sn_nao_'+p);const cur=naoB.classList.contains('active');naoB.classList.toggle('active',!cur);simB.classList.remove('active');})()">
+      ✗ Não
+    </button>
+  </div>`;
+}
+
+const _CAMPOS_FICHA_COMPLETA = [
+  "nome","email","nascimento","data_nascimento","telefone","peso","altura","trabalho",
+  "nivel_condicionamento","modalidade","clube",
+  "provas","tempo_5k","tempo_10k","tempo_21k","tempo_42k","tempo_taf",
+  "tempo_corrida","maior_km","treino_atual","prova_alvo","proxima_prova","academia",
+  "patologias","patologia_outros_desc","tabagismo","tempo_pratica",
+  "historico_atividades","atividades_atuais","horas_semanais","tempo_diario",
+  "objetivos","dias_disponiveis",
+  "alim_adequada","alim_desc","nutricionista","suplementacao","suplementos_desc",
+  "aq_doenca_grave","aqd_doenca_grave","aq_hospitalizacao","aqd_hospitalizacao",
+  "aq_medicacoes_regulares","aqd_medicacoes_regulares","aq_medicamentos_peso","aqd_medicamentos_peso",
+  "aq_alergias","aqd_alergias","aq_desmaio_pos_exercicio","aqd_desmaio_pos_exercicio",
+  "aq_dor_peito","aqd_dor_peito","aq_palpitacao","aqd_palpitacao",
+  "aq_sopro_cardiaco","aqd_sopro_cardiaco","aq_hist_morte_subita","aqd_hist_morte_subita",
+  "aq_cardiomiopatia_fam","aqd_cardiomiopatia_fam","aq_doenca_viral","aqd_doenca_viral",
+  "aq_restricao_medica","aqd_restricao_medica","aq_convulsao","aqd_convulsao",
+  "aq_dor_cabeca","aqd_dor_cabeca","aq_formigamento","aqd_formigamento",
+  "aq_aperto_nervo","aqd_aperto_nervo","aq_sint_respiratorios","aqd_sint_respiratorios",
+  "aq_asma","aqd_asma","aq_alergias_temporarias","aqd_alergias_temporarias",
+  "aq_equipamentos_suporte","aqd_equipamentos_suporte","aq_distensao_muscular","aqd_distensao_muscular",
+  "aq_ossos_quebrados","aqd_ossos_quebrados","aq_dor_articulacoes","aqd_dor_articulacoes",
+  "historico_saude","observacoes",
+  "menarca","intervalo_ciclo","maior_intervalo","ultima_menstruacao","idade"
+];
+
+const _AQ_CAMPOS = [
+  { key:"aq_doenca_grave",        label:"Doença grave",                    detKey:"aqd_doenca_grave" },
+  { key:"aq_hospitalizacao",      label:"Hospitalização ou cirurgia",      detKey:"aqd_hospitalizacao" },
+  { key:"aq_medicacoes_regulares",label:"Medicações regulares",            detKey:"aqd_medicacoes_regulares" },
+  { key:"aq_medicamentos_peso",   label:"Medicamentos para peso/desempenho",detKey:"aqd_medicamentos_peso" },
+  { key:"aq_alergias",            label:"Alergias",                        detKey:"aqd_alergias" },
+  { key:"aq_desmaio_pos_exercicio",label:"Desmaio pós-exercício",          detKey:"aqd_desmaio_pos_exercicio" },
+  { key:"aq_dor_peito",           label:"Dor no peito durante esforço",    detKey:"aqd_dor_peito" },
+  { key:"aq_palpitacao",          label:"Palpitações",                     detKey:"aqd_palpitacao" },
+  { key:"aq_sopro_cardiaco",      label:"Sopro cardíaco",                  detKey:"aqd_sopro_cardiaco" },
+  { key:"aq_hist_morte_subita",   label:"Hist. familiar de morte súbita",  detKey:"aqd_hist_morte_subita" },
+  { key:"aq_cardiomiopatia_fam",  label:"Cardiomiopatia familiar",         detKey:"aqd_cardiomiopatia_fam" },
+  { key:"aq_doenca_viral",        label:"Doença viral (últ. mês)",         detKey:"aqd_doenca_viral" },
+  { key:"aq_restricao_medica",    label:"Restrição médica para exercício", detKey:"aqd_restricao_medica" },
+  { key:"aq_convulsao",           label:"Convulsão",                       detKey:"aqd_convulsao" },
+  { key:"aq_dor_cabeca",          label:"Dores de cabeça fortes",          detKey:"aqd_dor_cabeca" },
+  { key:"aq_formigamento",        label:"Formigamento / dormência",        detKey:"aqd_formigamento" },
+  { key:"aq_aperto_nervo",        label:"Sensação de aperto nervoso",      detKey:"aqd_aperto_nervo" },
+  { key:"aq_sint_respiratorios",  label:"Sintomas respiratórios",          detKey:"aqd_sint_respiratorios" },
+  { key:"aq_asma",                label:"Asma",                            detKey:"aqd_asma" },
+  { key:"aq_alergias_temporarias",label:"Alergias temporárias",            detKey:"aqd_alergias_temporarias" },
+  { key:"aq_equipamentos_suporte",label:"Equipamentos de suporte",         detKey:"aqd_equipamentos_suporte" },
+  { key:"aq_distensao_muscular",  label:"Distensão muscular",              detKey:"aqd_distensao_muscular" },
+  { key:"aq_ossos_quebrados",     label:"Ossos quebrados / luxações",      detKey:"aqd_ossos_quebrados" },
+  { key:"aq_dor_articulacoes",    label:"Dores em articulações / tendões", detKey:"aqd_dor_articulacoes" },
+];
+
+function _buildFichaHtml(f, isAdmin, alunoData) {
+  const val = k => escHtml(f[k] || "");
+  const inp = (id, lbl, v, type="text", extra="") => `
+    <div>
+      <div class="field-label">${lbl}</div>
+      <input class="field-input ${type==="time"?"time-input":""}" id="fa_${id}" type="${type==="time"?"text":type}"
+        ${type==="time"?'placeholder="00:00:00" maxlength="8"':""} value="${escHtml(v||"")}" ${extra}/>
+    </div>`;
+  const ta = (id, lbl, v) => `
+    <div style="grid-column:span 2;">
+      <div class="field-label">${lbl}</div>
+      <textarea class="field-input field-textarea" id="fa_${id}">${escHtml(v||"")}</textarea>
+    </div>`;
+  const sel = (id, lbl, v, opts) => `
+    <div>
+      <div class="field-label">${lbl}</div>
+      <select class="field-input" id="fa_${id}">
+        <option value="">— Selecionar —</option>
+        ${opts.map(o => `<option value="${o}" ${v===o?"selected":""}>${o}</option>`).join("")}
+      </select>
+    </div>`;
+  const snRow = (key, label, detKey) => `
+    <div class="ficha-aq-row">
+      <div class="ficha-aq-label">${label}</div>
+      <div class="ficha-aq-right">
+        ${_snHtml(key, f[key])}
+        <div class="ficha-aq-detail">
+          <input id="fa_${detKey}" placeholder="Detalhar se Sim…" value="${val(detKey)}"/>
+        </div>
+      </div>
+    </div>`;
+
+  return `
+    <div class="ficha-section">
+      <div class="ficha-section-title">👤 Dados Básicos</div>
+      <div class="form-grid-2">
+        ${inp("nome",  "Nome",        f.nome)}
+        ${inp("email", "E-mail",      f.email, "email")}
+        ${inp("nascimento","Nascimento", f.nascimento||f.data_nascimento, "date")}
+        ${inp("telefone","Telefone",  f.telefone)}
+        ${inp("peso",  "Peso (kg)",   f.peso, "number")}
+        ${inp("altura","Altura (m)",  f.altura, "number")}
+        ${inp("trabalho","Trabalho",  f.trabalho)}
+        ${sel("nivel_condicionamento","Nível de Condicionamento", f.nivel_condicionamento,
+          ["Iniciante","Intermediário","Avançado","Elite"])}
+        ${sel("modalidade","Modalidade Principal", f.modalidade,
+          ["Corrida de Rua","Trail","Triathlon","Ciclismo","Natação","Funcional","Musculação","Outro"])}
+        ${inp("clube","Clube / Assessoria", f.clube)}
+        ${inp("proxima_prova","Próxima Prova", f.proxima_prova, "date")}
+        ${isAdmin ? inp("data_vencimento","📅 Vencimento da Conta", alunoData&&alunoData.data_vencimento||"", "date") : ""}
+      </div>
+    </div>
+
+    <div class="ficha-section">
+      <div class="ficha-section-title">🏅 Histórico de Corrida</div>
+      <div class="form-grid-2">
+        ${inp("provas","Provas que participa", f.provas)}
+        ${inp("academia","Academia / Local de Treino", f.academia)}
+        ${inp("tempo_5k","Tempo 5K (HH:MM:SS)", f.tempo_5k, "time")}
+        ${inp("tempo_10k","Tempo 10K (HH:MM:SS)", f.tempo_10k, "time")}
+        ${inp("tempo_21k","Tempo 21K (HH:MM:SS)", f.tempo_21k, "time")}
+        ${inp("tempo_42k","Tempo 42K (HH:MM:SS)", f.tempo_42k, "time")}
+        ${inp("tempo_taf","Tempo TAF (HH:MM:SS)", f.tempo_taf, "time")}
+        ${inp("tempo_corrida","Tempo de corrida (HH:MM:SS)", f.tempo_corrida, "time")}
+        ${inp("maior_km","Maior km semanal", f.maior_km)}
+        ${inp("treino_atual","Treino atual", f.treino_atual)}
+        ${inp("prova_alvo","Prova alvo", f.prova_alvo)}
+      </div>
+    </div>
+
+    <div class="ficha-section">
+      <div class="ficha-section-title">🩺 Saúde e Patologias</div>
+      <div class="form-grid-2">
+        ${sel("patologias","Patologias", f.patologias,
+          ["Nenhuma","Hipertensão","Diabetes","Cardiopatia","Artrose","Osteoporose","Asma","Outra"])}
+        ${inp("patologia_outros_desc","Descreva a patologia", f.patologia_outros_desc)}
+        ${sel("tabagismo","Tabagismo", f.tabagismo, ["Nunca fumou","Ex-fumante","Fumante"])}
+      </div>
+      <div style="margin-top:8px;font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--text-3);text-transform:uppercase;margin-bottom:10px;">
+        Questões de Saúde (Anamnese)
+      </div>
+      ${_AQ_CAMPOS.map(c => snRow(c.key, c.label, c.detKey)).join("")}
+      <div style="margin-top:10px;">
+        <div class="field-label">Observações gerais de saúde</div>
+        <textarea class="field-input field-textarea" id="fa_historico_saude" style="min-height:80px;">${escHtml(f.historico_saude||"")}</textarea>
+      </div>
+    </div>
+
+    <div class="ficha-section">
+      <div class="ficha-section-title">🏃 Atividade Física e Objetivos</div>
+      <div class="form-grid-2">
+        ${inp("tempo_pratica","Tempo de prática (ex: 2 anos)", f.tempo_pratica)}
+        ${inp("horas_semanais","Horas semanais disponíveis", f.horas_semanais)}
+        ${inp("tempo_diario","Tempo diário disponível", f.tempo_diario)}
+        ${inp("dias_disponiveis","Dias disponíveis p/ treino", f.dias_disponiveis)}
+        ${ta("historico_atividades","Histórico de atividades", f.historico_atividades)}
+        ${ta("atividades_atuais","Atividades físicas atuais", f.atividades_atuais)}
+        ${ta("objetivos","Objetivos", f.objetivos||f.objetivo||"")}
+      </div>
+    </div>
+
+    <div class="ficha-section">
+      <div class="ficha-section-title">🥗 Alimentação e Suplementação</div>
+      <div class="form-grid-2">
+        <div>
+          <div class="field-label">Alimentação adequada</div>
+          ${_snHtml("alim_adequada", f.alim_adequada)}
+        </div>
+        <div>
+          <div class="field-label">Acompanha nutricionista</div>
+          ${_snHtml("nutricionista", f.nutricionista)}
+        </div>
+        <div>
+          <div class="field-label">Faz suplementação</div>
+          ${_snHtml("suplementacao", f.suplementacao)}
+        </div>
+        ${inp("suplementos_desc","Quais suplementos", f.suplementos_desc)}
+        ${ta("alim_desc","Descrição da alimentação", f.alim_desc)}
+      </div>
+    </div>
+
+    <div class="ficha-section">
+      <div class="ficha-section-title">📝 Observações Finais</div>
+      <div class="form-grid-2">
+        ${inp("idade","Idade (anos)", f.idade, "number")}
+      </div>
+      <div style="margin-top:10px;">
+        <div class="field-label">Observações adicionais</div>
+        <textarea class="field-input field-textarea" id="fa_observacoes" style="min-height:80px;">${escHtml(f.observacoes||"")}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+function _initFichaInteractivity() {
+  // Máscara de tempo em todos os campos time-input
+  document.querySelectorAll(".time-input").forEach(el => _aplicarMascaraTempo(el));
+}
+
+function _coletarPayloadFicha(payload) {
+  // Campos de texto/data/number
+  const camposInput = [
+    "nome","email","nascimento","telefone","peso","altura","trabalho",
+    "nivel_condicionamento","modalidade","clube","proxima_prova","data_vencimento",
+    "provas","academia","tempo_5k","tempo_10k","tempo_21k","tempo_42k","tempo_taf",
+    "tempo_corrida","maior_km","treino_atual","prova_alvo",
+    "patologias","patologia_outros_desc","tabagismo","tempo_pratica",
+    "horas_semanais","tempo_diario","dias_disponiveis",
+    "suplementos_desc","alim_desc","historico_atividades","atividades_atuais",
+    "objetivos","historico_saude","observacoes",
+    "menarca","intervalo_ciclo","maior_intervalo","ultima_menstruacao","idade",
+    // detalhes das AQ
+    "aqd_doenca_grave","aqd_hospitalizacao","aqd_medicacoes_regulares","aqd_medicamentos_peso",
+    "aqd_alergias","aqd_desmaio_pos_exercicio","aqd_dor_peito","aqd_palpitacao",
+    "aqd_sopro_cardiaco","aqd_hist_morte_subita","aqd_cardiomiopatia_fam","aqd_doenca_viral",
+    "aqd_restricao_medica","aqd_convulsao","aqd_dor_cabeca","aqd_formigamento",
+    "aqd_aperto_nervo","aqd_sint_respiratorios","aqd_asma","aqd_alergias_temporarias",
+    "aqd_equipamentos_suporte","aqd_distensao_muscular","aqd_ossos_quebrados","aqd_dor_articulacoes"
+  ];
+  camposInput.forEach(c => {
+    const el = $("fa_" + c);
+    if (el) payload[c] = el.value.trim();
+  });
+  // Sim/não: AQ + alimentação
+  const snCampos = [
+    "aq_doenca_grave","aq_hospitalizacao","aq_medicacoes_regulares","aq_medicamentos_peso",
+    "aq_alergias","aq_desmaio_pos_exercicio","aq_dor_peito","aq_palpitacao",
+    "aq_sopro_cardiaco","aq_hist_morte_subita","aq_cardiomiopatia_fam","aq_doenca_viral",
+    "aq_restricao_medica","aq_convulsao","aq_dor_cabeca","aq_formigamento",
+    "aq_aperto_nervo","aq_sint_respiratorios","aq_asma","aq_alergias_temporarias",
+    "aq_equipamentos_suporte","aq_distensao_muscular","aq_ossos_quebrados","aq_dor_articulacoes",
+    "alim_adequada","nutricionista","suplementacao"
+  ];
+  snCampos.forEach(c => { payload[c] = _snRead(c); });
+  payload.data_nascimento = payload.nascimento;
+}
+
+// ════════════════════════════════════════════════════════════
+//  ABRIR FICHA — ALUNO (próprio)
+// ════════════════════════════════════════════════════════════
+function abrirFichaProprioAluno() {
+  _fichaModalModo = "aluno";
+  const f = state.aluno || {};
+  const u = state.usuario || {};
+  setText("modalAnamneseNome", f.nome || u.nome || u.usuario || "Minha Ficha");
+  const btn = $("btnSalvarFichaAdmin");
+  if (btn) btn.textContent = "💾 Salvar Minha Ficha";
+  $("modalAnamneseBody").innerHTML = _buildFichaHtml(f, false, null);
+  $("modalAnamnese").classList.remove("hidden");
+  setTimeout(_initFichaInteractivity, 50);
+}
+
+async function salvarFichaProprioAluno() {
+  const u = state.usuario;
+  if (!u) return;
+  const payload = { action: "salvarFichaAluno", id_aluno: u.id_aluno };
+  _coletarPayloadFicha(payload);
+
+  const btn = $("btnSalvarFichaAdmin");
+  if (btn) { btn.disabled = true; btn.textContent = "Salvando…"; }
+  const res = await callAPI(payload);
+  if (btn) { btn.disabled = false; btn.textContent = "💾 Salvar Minha Ficha"; }
+
+  if (!res.ok) { showToast("Erro: " + (res.erro || "Falha ao salvar.")); return; }
+
+  // Atualiza state local
+  _CAMPOS_FICHA_COMPLETA.forEach(c => { if (payload[c] !== undefined) state.aluno[c] = payload[c]; });
+
+  showToast("✓ Ficha salva com sucesso!");
+  fecharModal("modalAnamnese");
+  _fichaModalModo = "admin";
+  const btnReset = $("btnSalvarFichaAdmin");
+  if (btnReset) btnReset.textContent = "Salvar Ficha";
+
+  const f = state.aluno;
+  setText("alunoSidebarName", f.nome || u.nome || u.usuario || "—");
+  setText("alunoStatPeso",    f.peso   ? f.peso   + " kg" : "—");
+  setText("alunoStatAltura",  f.altura ? f.altura + " m"  : "—");
+  setText("alunoStatNivel",   f.nivel_condicionamento || "—");
+  setText("alunoStatProva",   f.proxima_prova ? formatDate(f.proxima_prova) : "—");
+  setText("alunoSidebarObj",  f.objetivos || f.objetivo || "—");
+  setText("alunoNomeTopbar",  f.nome || u.nome || u.usuario || "—");
+  renderAlunoFicha();
+  mobSyncPerfil();
+  mobRenderFicha();
+}
+
+// ════════════════════════════════════════════════════════════
+//  ABRIR FICHA — ADMIN (editar aluno)
 // ════════════════════════════════════════════════════════════
 function abrirFichaAdmin(id_aluno) {
   const aluno = state.todosAlunos.find(a => String(a.id_aluno) === String(id_aluno)) || state.alunoAdmin;
   if (!aluno) return;
+  _fichaModalModo = "admin";
   state.alunoAdmin = aluno;
   const f = aluno.ficha || {};
+  const btn = $("btnSalvarFichaAdmin");
+  if (btn) btn.textContent = "Salvar Ficha";
   setText("modalAnamneseNome", aluno.nome || aluno.usuario);
-
-  const inp = (id, lbl, val, type="text") => `
-    <div>
-      <div class="field-label">${lbl}</div>
-      <input class="field-input" id="fa_${id}" type="${type}" value="${escHtml(val || "")}"/>
-    </div>`;
-
-  $("modalAnamneseBody").innerHTML = `
-    <div class="form-block">
-      <div class="form-block-title">Dados Básicos</div>
-      <div class="form-grid-2">
-        ${inp("nome","Nome",f.nome)} ${inp("email","E-mail",f.email,"email")}
-        ${inp("nascimento","Nascimento",f.nascimento||f.data_nascimento,"date")}
-        ${inp("telefone","Telefone",f.telefone)}
-        ${inp("peso","Peso (kg)",f.peso,"number")} ${inp("altura","Altura (m)",f.altura,"number")}
-        ${inp("nivel_condicionamento","Nível",f.nivel_condicionamento)}
-        ${inp("modalidade","Modalidade",f.modalidade)}
-        ${inp("clube","Clube",f.clube)}
-        ${inp("proxima_prova","Próxima Prova",f.proxima_prova,"date")}
-        ${inp("data_vencimento","📅 Data de Vencimento",aluno.data_vencimento||"","date")}
-      </div>
-    </div>
-    <div class="form-block">
-      <div class="form-block-title">Performance</div>
-      <div class="form-grid-2">
-        ${inp("provas","Provas",f.provas)}
-        ${inp("tempo_5k","Tempo 5K",f.tempo_5k)}
-        ${inp("tempo_10k","Tempo 10K",f.tempo_10k)}
-        ${inp("tempo_21k","Tempo 21K",f.tempo_21k)}
-        ${inp("tempo_42k","Tempo 42K",f.tempo_42k)}
-        ${inp("maior_km","Maior km semanal",f.maior_km)}
-        ${inp("prova_alvo","Prova alvo",f.prova_alvo)}
-      </div>
-    </div>
-    <div class="form-block">
-      <div class="form-block-title">Objetivos e Saúde</div>
-      <div class="span-2" style="grid-column:span 2;">
-        <div class="field-label">Objetivos</div>
-        <textarea class="field-input field-textarea" id="fa_objetivos">${escHtml(f.objetivos||f.objetivo||"")}</textarea>
-      </div>
-      <div class="form-grid-2">
-        ${inp("patologias","Patologias",f.patologias)}
-        ${inp("tabagismo","Tabagismo",f.tabagismo)}
-        ${inp("historico_saude","Histórico de Saúde",f.historico_saude)}
-        ${inp("trabalho","Trabalho",f.trabalho)}
-      </div>
-    </div>
-  `;
+  $("modalAnamneseBody").innerHTML = _buildFichaHtml(f, true, aluno);
   $("modalAnamnese").classList.remove("hidden");
+  setTimeout(_initFichaInteractivity, 50);
 }
 
 async function salvarFichaAdmin() {
   const aluno = state.alunoAdmin;
   if (!aluno) return;
-  const campos = ["nome","email","nascimento","telefone","peso","altura","nivel_condicionamento",
-    "modalidade","clube","proxima_prova","provas","tempo_5k","tempo_10k","tempo_21k","tempo_42k",
-    "maior_km","prova_alvo","objetivos","patologias","tabagismo","historico_saude","trabalho"];
   const payload = { action: "salvarFichaAluno", id_aluno: aluno.id_aluno };
-  campos.forEach(c => { const el = $("fa_" + c); if (el) payload[c] = el.value; });
-  payload.data_nascimento = payload.nascimento;
-
-  // Salva data_vencimento na aba Contas via back-end
-  const elVenc = $("fa_data_vencimento");
-  if (elVenc) payload.data_vencimento = elVenc.value;
+  _coletarPayloadFicha(payload);
 
   const res = await callAPI(payload);
   if (!res.ok) { showToast("Erro: " + res.erro); return; }
   showToast("✓ Ficha salva!");
   fecharModal("modalAnamnese");
 
-  // Atualiza state local
   const idx = state.todosAlunos.findIndex(a => String(a.id_aluno) === String(aluno.id_aluno));
   if (idx >= 0) {
-    campos.forEach(c => { if (payload[c] !== undefined) state.todosAlunos[idx].ficha[c] = payload[c]; });
-    // Atualiza data_vencimento no objeto do aluno (nível conta)
+    _CAMPOS_FICHA_COMPLETA.forEach(c => { if (payload[c] !== undefined) state.todosAlunos[idx].ficha[c] = payload[c]; });
     if (payload.data_vencimento !== undefined)
       state.todosAlunos[idx].data_vencimento = payload.data_vencimento;
     state.alunoAdmin = state.todosAlunos[idx];
@@ -3163,52 +3999,77 @@ async function salvarFichaAdmin() {
 // ════════════════════════════════════════════════════════════
 async function iniciarAluno() {
   showScreen("aluno");
+  aplicarMarca(getMarca());
 
   if (IS_MOBILE()) { initMobile("aluno"); return; }
 
-  const res = await callAPI({ action: "buscarDadosAluno", id_aluno: state.usuario.id_aluno });
-  if (!res.ok) { showToast("Erro ao carregar dados: " + res.erro); return; }
+  // Mostra skeleton enquanto carrega
+  const areaEl = $("alunoTreinoArea");
+  if (areaEl) areaEl.innerHTML = `<div class="no-treino"><div class="no-treino-icon" style="animation:spin 1.2s linear infinite;">⟳</div>Carregando treinos…</div>`;
 
-  state.aluno   = res.ficha  || {};
-  state.treinos = res.treinos || [];
+  let res;
+  try {
+    res = await callAPI({ action: "buscarDadosAluno", id_aluno: state.usuario.id_aluno });
+  } catch (e) {
+    res = { ok: false, erro: "Erro de conexão." };
+  }
 
-  // Sidebar
+  if (!res.ok) {
+    if (areaEl) areaEl.innerHTML = `<div class="no-treino"><div class="no-treino-icon">⚠</div>${escHtml(res.erro || "Erro ao carregar dados.")}</div>`;
+    showToast("Erro ao carregar dados: " + (res.erro || ""));
+    return;
+  }
+
+  // Fallbacks robustos — nunca quebra mesmo com servidor retornando null
+  state.aluno   = (res.ficha  && typeof res.ficha  === "object") ? res.ficha  : {};
+  state.treinos = Array.isArray(res.treinos) ? res.treinos : [];
+
+  // Sidebar — todos os campos com fallback "—"
   const f = state.aluno;
   const u = state.usuario;
-  setText("alunoSidebarName", f.nome || u.nome || u.usuario);
-  setText("alunoSidebarUser", "@" + u.usuario);
+  setText("alunoSidebarName", f.nome || u.nome || u.usuario || "—");
+  setText("alunoSidebarUser", "@" + (u.usuario || ""));
   setText("alunoStatPeso",    f.peso   ? f.peso   + " kg" : "—");
   setText("alunoStatAltura",  f.altura ? f.altura + " m"  : "—");
   setText("alunoStatNivel",   f.nivel_condicionamento || "—");
   setText("alunoStatProva",   f.proxima_prova ? formatDate(f.proxima_prova) : "—");
   setText("alunoSidebarObj",  f.objetivos || f.objetivo || "—");
-  setText("alunoNomeTopbar",  f.nome || u.nome || u.usuario);
+  setText("alunoNomeTopbar",  f.nome || u.nome || u.usuario || "—");
 
-  // Botão modo corrida — só aparece se houver treino hoje
+  // Botão modo corrida — verificar existência antes de manipular
   const treinoHoje = state.treinos.find(t => t.data_treino === hoje());
-  if (treinoHoje) $("btnRunMode").style.display = "flex";
+  const btnRun = $("btnRunMode");
+  if (btnRun) btnRun.style.display = (treinoHoje) ? "flex" : "none";
+
+  state.semanaOffset   = 0;
+  state.diaSelecionado = null;
 
   renderWeekStrip();
-  // Seleciona hoje se tiver treino, senão primeiro dia da semana
+
+  // Seleciona hoje se tiver treino, senão primeiro dia da semana atual
   const defaultDay = treinoHoje ? hoje() : getWeekDays(0)[0];
   selecionarDia(defaultDay);
+
+  // Renderiza ficha do aluno abaixo da área de treino
+  renderAlunoFicha();
 }
 
 // Week strip desktop
 function renderWeekStrip() {
-  const days = getWeekDays(state.semanaOffset);
   const strip = $("weekStrip");
   if (!strip) return;
 
   // Remove pills antigas (mantém botões nav)
   strip.querySelectorAll(".day-pill").forEach(p => p.remove());
 
-  const treinosDates = new Set(state.treinos.map(t => t.data_treino));
-  const hj = hoje();
-  const ref = strip.querySelector("#btnNextWeek");
+  const days = getWeekDays(state.semanaOffset);
+  const treinosDates = new Set((state.treinos || []).map(t => t.data_treino));
+  const hj  = hoje();
+  // Âncora de inserção: btn de avanço, ou null (append ao final)
+  const ref = $("btnNextWeek") || null;
 
-  days.forEach((date, i) => {
-    const [, m, d] = date.split("-");
+  days.forEach(date => {
+    const [, , d] = date.split("-");
     const pill = document.createElement("div");
     pill.className = "day-pill" +
       (treinosDates.has(date) ? " has-treino" : "") +
@@ -3216,12 +4077,18 @@ function renderWeekStrip() {
       (date === hj ? " today" : "");
     pill.innerHTML = `<span class="dp-wd">${WEEKDAY_LABELS[new Date(date + "T12:00:00").getDay()]}</span><span class="dp-num">${parseInt(d)}</span>`;
     pill.onclick = () => selecionarDia(date);
-    strip.insertBefore(pill, ref);
+    if (ref && ref.parentNode === strip) {
+      strip.insertBefore(pill, ref);
+    } else {
+      strip.appendChild(pill);
+    }
   });
 
   setText("weekLabel", formatDate(days[0]) + " – " + formatDate(days[6]));
-  if ($("btnNextWeek")) $("btnNextWeek").disabled = state.semanaOffset >= 2;
-  if ($("btnPrevWeek")) $("btnPrevWeek").disabled = false;
+  const btnNext = $("btnNextWeek");
+  const btnPrev = $("btnPrevWeek");
+  if (btnNext) btnNext.disabled = state.semanaOffset >= 2;
+  if (btnPrev) btnPrev.disabled = state.semanaOffset <= -4;
 }
 
 function navegarSemana(delta) {
@@ -3231,14 +4098,18 @@ function navegarSemana(delta) {
 }
 
 function selecionarDia(date) {
+  if (!date) return;
   state.diaSelecionado = date;
   renderWeekStrip();
-  const treino = state.treinos.find(t => t.data_treino === date) || null;
+  const treino = (state.treinos || []).find(t => t.data_treino === date) || null;
   renderTreinoAluno(treino, date);
 
-  // Modo corrida disponível se treino pendente
+  // Modo corrida disponível apenas se treino pendente
   const btnRun = $("btnRunMode");
-  if (btnRun) btnRun.style.display = (treino && treino.status !== "Concluído") ? "flex" : "none";
+  if (btnRun) {
+    const isPend = treino && String(treino.status || "").toLowerCase() !== "concluído" && String(treino.status || "").toLowerCase() !== "concluido";
+    btnRun.style.display = isPend ? "flex" : "none";
+  }
 }
 
 function renderTreinoAluno(treino, date) {
@@ -3273,8 +4144,8 @@ function renderTreinoAluno(treino, date) {
   el.innerHTML = `
     <div class="treino-card">
       <div class="treino-header">
-        <div>
-          <div class="treino-date">${formatDate(date)}</div>
+        <div class="treino-date-row">
+          <span class="treino-date">${formatDate(date)}</span>
           ${classif ? classifBadgeHtml(classif) : ""}
         </div>
         <span class="pill ${isPend ? "pill-pend" : "pill-ok"}">${treino.status || "Pendente"}</span>
@@ -3287,9 +4158,9 @@ function renderTreinoAluno(treino, date) {
 }
 
 async function enviarFeedbackAluno(id_treino) {
-  const ta      = $("feedbackTa_" + id_treino);
+  const ta       = $("feedbackTa_" + id_treino);
   const feedback = (ta?.value || "").trim();
-  const treino   = state.treinos.find(t => t.id_treino === id_treino);
+  const treino   = (state.treinos || []).find(t => t.id_treino === id_treino);
   if (!treino) return;
 
   const res = await callAPI({ action: "enviarFeedback", id_treino, feedback_aluno: feedback });
@@ -3305,7 +4176,7 @@ async function enviarFeedbackAluno(id_treino) {
 //  MODO CORRIDA
 // ════════════════════════════════════════════════════════════
 function abrirRunMode() {
-  const treino = state.treinos.find(t => t.data_treino === state.diaSelecionado);
+  const treino = (state.treinos || []).find(t => t.data_treino === state.diaSelecionado);
   if (!treino) return;
   const desc = limpiarDesc(treino.descricao_treino) || treino.descricao_treino || "";
   setText("runModeDate", formatDate(state.diaSelecionado));
@@ -3341,14 +4212,14 @@ function bipe(freq = 880, dur = .15, vol = .3) {
 }
 
 function buildTimerHtmlAluno(treinoId) {
-  const r = 52;
+  const r = 32;
   const circ = 2 * Math.PI * r;
   return `
     <div class="timer-wrap" id="timerWrap_${treinoId}">
       <div class="timer-ring-wrap">
-        <svg class="timer-ring-svg" width="120" height="120" viewBox="0 0 120 120">
-          <circle class="timer-ring-bg"  cx="60" cy="60" r="${r}"/>
-          <circle class="timer-ring-fg"  cx="60" cy="60" r="${r}"
+        <svg class="timer-ring-svg" width="72" height="72" viewBox="0 0 72 72">
+          <circle class="timer-ring-bg"  cx="36" cy="36" r="${r}"/>
+          <circle class="timer-ring-fg"  cx="36" cy="36" r="${r}"
             id="timerRing_${treinoId}"
             stroke-dasharray="${circ}"
             stroke-dashoffset="0"/>
@@ -3358,14 +4229,16 @@ function buildTimerHtmlAluno(treinoId) {
           <div class="timer-label">DESCANSO</div>
         </div>
       </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
-        ${TIMER_DEFAULTS.map(s => `<button class="classif-pill-btn" style="color:var(--text-2);border-color:var(--border);font-size:10px;" onclick="timerSetSecs(${s},'${treinoId}')">${s}s</button>`).join("")}
-      </div>
-      <div class="timer-controls">
-        <button class="timer-btn timer-btn-start" id="timerBtnStart_${treinoId}"
-          onclick="timerToggle('${treinoId}')">▶ Iniciar</button>
-        <button class="timer-btn timer-btn-reset"
-          onclick="timerReset('${treinoId}')">↺ Reset</button>
+      <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          ${TIMER_DEFAULTS.map(s => `<button class="classif-pill-btn" style="color:var(--text-2);border-color:var(--border);font-size:9px;padding:3px 8px;" onclick="timerSetSecs(${s},'${treinoId}')">${s}s</button>`).join("")}
+        </div>
+        <div class="timer-controls">
+          <button class="timer-btn timer-btn-start" id="timerBtnStart_${treinoId}"
+            onclick="timerToggle('${treinoId}')">▶ Iniciar</button>
+          <button class="timer-btn timer-btn-reset"
+            onclick="timerReset('${treinoId}')">↺</button>
+        </div>
       </div>
     </div>`;
 }
@@ -3420,7 +4293,7 @@ function timerReset(id) {
 }
 
 function timerRenderUpdate(id, restante, total) {
-  const r    = 52;
+  const r    = 32;
   const circ = 2 * Math.PI * r;
   const pct  = total > 0 ? restante / total : 0;
   const ring = $("timerRing_" + id);
@@ -3501,44 +4374,77 @@ const IS_MOBILE = () => window.innerWidth <= 768;
 
 let mobCurrentPage = "home";
 
-function mobNav(page) {
+function mobNavTo(page) {
   document.querySelectorAll(".mob-page").forEach(p => p.classList.remove("active"));
   document.querySelectorAll(".mob-nav-item").forEach(b => b.classList.remove("active"));
   mobCurrentPage = page;
-  const map = { home:"mobPageHome", ficha:"mobPageFicha", alunos:"mobPageAlunos", alunoDetalhe:"mobPageAlunoDetalhe", perfil:"mobPagePerfil" };
-  const bnMap = { home:"mobBnHome", ficha:"mobBnFicha", alunos:"mobBnAlunos", perfil:"mobBnPerfil" };
+  const map   = { home:"mobPageHome", ficha:"mobPageFicha", crono:"mobPageCrono", alunos:"mobPageAlunos", alunoDetalhe:"mobPageAlunoDetalhe", perfil:"mobPagePerfil" };
+  const bnMap = { home:"mobBnHome", ficha:"mobBnFicha", crono:"mobBnCrono", alunos:"mobBnAlunos", perfil:"mobBnPerfil" };
   const pg = $(map[page]); if (pg) pg.classList.add("active");
   const bn = bnMap[page] ? $(bnMap[page]) : null; if (bn) bn.classList.add("active");
 }
 
 function initMobile(tipo) {
   aplicarMarca(getMarca());
+
+  // Elementos de nav controlados por classe, não por style.display inline
+  // (evita conflito com CSS @media que usa !important)
+  const bnAlunos = $("mobBnAlunos");
+  const bnFicha  = $("mobBnFicha");
+  const bnHome   = $("mobBnHome");
+  const bnCrono  = $("mobBnCrono");
+  const btnCfg   = $("mobBtnConfig");
+
   if (tipo === "admin") {
-    $("mobBnAlunos").style.display = "flex";
-    $("mobBnFicha").style.display  = "none";
-    $("mobBnHome").style.display   = "none";
-    $("mobBtnConfig").style.display= "flex";
-    mobNav("alunos");
+    if (bnAlunos) bnAlunos.classList.remove("hidden");
+    if (bnFicha)  bnFicha.classList.add("hidden");
+    if (bnHome)   bnHome.classList.add("hidden");
+    if (bnCrono)  bnCrono.classList.add("hidden");
+    if (btnCfg)   btnCfg.classList.remove("hidden");
+    mobNavTo("alunos");
     mobCarregarAlunos();
   } else {
-    $("mobBnAlunos").style.display = "none";
-    mobNav("home");
+    if (bnAlunos) bnAlunos.classList.add("hidden");
+    if (bnFicha)  bnFicha.classList.remove("hidden");
+    if (bnHome)   bnHome.classList.remove("hidden");
+    if (bnCrono)  bnCrono.classList.remove("hidden");
+    if (btnCfg)   btnCfg.classList.add("hidden");
+    mobNavTo("home");
     mobCarregarAluno();
   }
 }
 
 async function mobCarregarAluno() {
-  const res = await callAPI({ action: "buscarDadosAluno", id_aluno: state.usuario.id_aluno });
-  if (!res.ok) { showToast("Erro: " + res.erro); return; }
-  state.aluno   = res.ficha  || {};
-  state.treinos = res.treinos || [];
+  // Skeleton de loading
+  const cardEl = $("mobTreinoCard");
+  if (cardEl) cardEl.innerHTML = `<div class="mob-treino-card"><div class="mob-treino-body" style="color:var(--text-3);text-align:center;padding:32px;font-family:'JetBrains Mono',monospace;font-size:12px;"><div style="font-size:28px;margin-bottom:12px;animation:spin 1.2s linear infinite;">⟳</div>Carregando…</div></div>`;
+
+  let res;
+  try {
+    res = await callAPI({ action: "buscarDadosAluno", id_aluno: state.usuario.id_aluno });
+  } catch (e) {
+    res = { ok: false, erro: "Erro de conexão." };
+  }
+
+  if (!res.ok) {
+    if (cardEl) cardEl.innerHTML = `<div class="mob-treino-card"><div class="mob-treino-body" style="color:var(--red);text-align:center;padding:24px;">⚠ ${escHtml(res.erro || "Erro ao carregar dados.")}</div></div>`;
+    showToast("Erro: " + (res.erro || "Falha de conexão"));
+    return;
+  }
+
+  // Fallbacks robustos
+  state.aluno   = (res.ficha && typeof res.ficha === "object") ? res.ficha : {};
+  state.treinos = Array.isArray(res.treinos) ? res.treinos : [];
+
   mobSyncPerfil();
   mobRenderWeekStrip();
+
   // Seleciona hoje
   const hj = hoje();
-  const t  = state.treinos.find(t => t.data_treino === hj);
   state.diaSelecionado = hj;
-  mobRenderTreino(t || null, hj);
+  const t = state.treinos.find(t => t.data_treino === hj) || null;
+  mobRenderTreino(t, hj);
+
   // Ficha
   mobRenderFicha();
 }
@@ -3567,19 +4473,24 @@ function mobRenderWeekStrip() {
   strip.querySelectorAll(".mob-day-pill").forEach(p => p.remove());
 
   const days = getWeekDays(state.semanaOffset);
-  const treinosDates = new Set(state.treinos.map(t => t.data_treino));
-  const btnNext = $("mobBtnNext");
+  const treinosDates = new Set((state.treinos || []).map(t => t.data_treino));
+  const btnNext = $("mobBtnNext") || null;
 
-  days.forEach((date, i) => {
-    const [,,d] = date.split("-");
-    const pill  = document.createElement("div");
+  days.forEach(date => {
+    const [,, d] = date.split("-");
+    const pill = document.createElement("div");
     pill.className = "mob-day-pill" +
       (treinosDates.has(date) ? " has-treino" : "") +
       (date === state.diaSelecionado ? " active" : "");
-    pill.innerHTML = `<span class="mob-dp-wd">${WEEKDAY_LABELS[new Date(date+"T12:00:00").getDay()]}</span><span class="mob-dp-num">${parseInt(d)}</span>`;
+    pill.innerHTML = `<span class="mob-dp-wd">${WEEKDAY_LABELS[new Date(date + "T12:00:00").getDay()]}</span><span class="mob-dp-num">${parseInt(d)}</span>`;
     pill.onclick = () => mobSelecionarDia(date);
-    strip.insertBefore(pill, btnNext);
+    if (btnNext && btnNext.parentNode === strip) {
+      strip.insertBefore(pill, btnNext);
+    } else {
+      strip.appendChild(pill);
+    }
   });
+
   if (btnNext) btnNext.disabled = state.semanaOffset >= 2;
 }
 
@@ -3589,9 +4500,10 @@ function mobNavSemana(delta) {
 }
 
 function mobSelecionarDia(date) {
+  if (!date) return;
   state.diaSelecionado = date;
   mobRenderWeekStrip();
-  const t = state.treinos.find(t => t.data_treino === date) || null;
+  const t = (state.treinos || []).find(t => t.data_treino === date) || null;
   mobRenderTreino(t, date);
 }
 
@@ -3621,14 +4533,14 @@ function mobRenderTreino(treino, date) {
   el.innerHTML = `
     <div class="mob-treino-card">
       <div class="mob-treino-header">
-        <div>
-          <div class="mob-treino-date">${formatDate(date)}</div>
+        <div class="treino-date-row">
+          <span class="mob-treino-date">${formatDate(date)}</span>
           ${classif ? classifBadgeHtml(classif) : ""}
         </div>
         <span class="pill ${isPend ? "pill-pend" : "pill-ok"}">${treino.status || "Pendente"}</span>
       </div>
       ${buildRitmosHTML(treino)}
-      <div class="mob-treino-body">${escHtml(desc)}</div>
+      <div class="mob-treino-body" style="line-height:1.6;">${escHtml(desc)}</div>
       ${timerHtml}
       ${feedHtml}
     </div>`;
@@ -3639,7 +4551,7 @@ async function mobEnviarFeedback(id_treino) {
   const res = await callAPI({ action: "enviarFeedback", id_treino, feedback_aluno: feedback });
   if (!res.ok) { showToast("Erro: " + res.erro); return; }
   showToast("✓ Feedback enviado!");
-  const t = state.treinos.find(t => t.id_treino === id_treino);
+  const t = (state.treinos || []).find(t => t.id_treino === id_treino);
   if (t) { t.status = "Concluído"; t.feedback_aluno = feedback; }
   mobRenderTreino(t, state.diaSelecionado);
 }
@@ -3650,21 +4562,27 @@ function mobRenderFicha() {
   if (!el) return;
   const row = (l, v) => `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-3);">${l}</span><span style="font-weight:600;text-align:right;max-width:60%;">${escHtml(v||"—")}</span></div>`;
   el.innerHTML = `
-    <div class="mob-section-title">Dados Pessoais</div>
-    ${row("Nome",      f.nome)}
-    ${row("E-mail",    f.email)}
-    ${row("Telefone",  f.telefone)}
-    ${row("Peso",      f.peso ? f.peso + " kg" : "")}
-    ${row("Altura",    f.altura ? f.altura + " m" : "")}
-    ${row("Nível",     f.nivel_condicionamento)}
-    ${row("Modalidade",f.modalidade)}
-    ${row("Clube",     f.clube)}
-    <div class="mob-section-title" style="margin-top:16px;">Performance</div>
-    ${row("5K", f.tempo_5k)} ${row("10K", f.tempo_10k)}
-    ${row("21K", f.tempo_21k)} ${row("42K", f.tempo_42k)}
-    ${row("Próxima Prova", f.proxima_prova ? formatDate(f.proxima_prova) : "")}
-    <div class="mob-section-title" style="margin-top:16px;">Objetivo</div>
-    <div style="font-size:13px;color:var(--text-2);line-height:1.8;padding:8px 0;">${escHtml(f.objetivos||f.objetivo||"—")}</div>
+    <div style="padding:16px 16px 8px;display:flex;align-items:center;justify-content:space-between;">
+      <div class="mob-section-title" style="margin:0;">Minha Ficha</div>
+      <button class="btn btn-lime btn-sm" onclick="abrirFichaProprioAluno()">✏ Editar</button>
+    </div>
+    <div style="padding:0 16px 80px;">
+      <div class="mob-section-title" style="margin-top:8px;">Dados Pessoais</div>
+      ${row("Nome",      f.nome)}
+      ${row("E-mail",    f.email)}
+      ${row("Telefone",  f.telefone)}
+      ${row("Peso",      f.peso ? f.peso + " kg" : "")}
+      ${row("Altura",    f.altura ? f.altura + " m" : "")}
+      ${row("Nível",     f.nivel_condicionamento)}
+      ${row("Modalidade",f.modalidade)}
+      ${row("Clube",     f.clube)}
+      <div class="mob-section-title" style="margin-top:16px;">Performance</div>
+      ${row("5K", f.tempo_5k)} ${row("10K", f.tempo_10k)}
+      ${row("21K", f.tempo_21k)} ${row("42K", f.tempo_42k)}
+      ${row("Próxima Prova", f.proxima_prova ? formatDate(f.proxima_prova) : "")}
+      <div class="mob-section-title" style="margin-top:16px;">Objetivo</div>
+      <div style="font-size:13px;color:var(--text-2);line-height:1.8;padding:8px 0;">${escHtml(f.objetivos||f.objetivo||"—")}</div>
+    </div>
   `;
 }
 
@@ -3725,7 +4643,7 @@ function mobVerAluno(id_aluno) {
 
   $("mobAlunoDetalhe").innerHTML = `
     <div class="mob-detail-header">
-      <button class="mob-back-btn" onclick="mobNav('alunos')">←</button>
+      <button class="mob-back-btn" onclick="mobNavTo('alunos')">←</button>
       <div>
         <div class="mob-detail-name">${escHtml(f.nome||aluno.nome||aluno.usuario)}</div>
         <div class="mob-detail-user">@${escHtml(aluno.usuario)}</div>
@@ -3786,7 +4704,7 @@ function mobVerAluno(id_aluno) {
     </div>
     <div style="padding:0 16px 80px;">${histHtml}</div>
   `;
-  mobNav("alunoDetalhe");
+  mobNavTo("alunoDetalhe");
 }
 
 async function mobSalvarTreino(id_aluno) {
@@ -3962,6 +4880,150 @@ function classifBadgeHtml(classif) {
 
 function gerarIdLocal() {
   return "L" + Date.now() + Math.floor(Math.random()*9999);
+}
+
+// ════════════════════════════════════════════════════════════
+//  CRONÔMETRO
+// ════════════════════════════════════════════════════════════
+const _crono = {
+  running:   false,
+  startTs:   0,        // timestamp quando play foi pressionado
+  elapsed:   0,        // ms acumulados antes da última pausa
+  laps:      [],       // [{n, total, split}]
+  lapBase:   0,        // elapsed na última volta marcada
+  raf:       null,
+};
+
+// Circumference da ring: 2π×82 ≈ 515.22 (desktop), 2π×72 ≈ 452.39 (mobile)
+const CRONO_CIRC_DESK = 515.22;
+const CRONO_CIRC_MOB  = 452.39;
+// Anel gira completamente a cada 60 s
+const CRONO_CYCLE_MS  = 60000;
+
+function _cronoMs() {
+  if (!_crono.running) return _crono.elapsed;
+  return _crono.elapsed + (Date.now() - _crono.startTs);
+}
+
+function _cronoFmt(ms, showMs) {
+  const total_s = Math.floor(ms / 1000);
+  const h = Math.floor(total_s / 3600);
+  const m = Math.floor((total_s % 3600) / 60);
+  const s = total_s % 60;
+  const cs = Math.floor((ms % 1000) / 10); // centésimos
+  const time = h > 0
+    ? `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`
+    : `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+  return showMs ? { time, cs: "." + String(cs).padStart(2,"0") } : { time, cs: "" };
+}
+
+function _cronoRender() {
+  const ms   = _cronoMs();
+  const fmt  = _cronoFmt(ms, true);
+  const frac = (ms % CRONO_CYCLE_MS) / CRONO_CYCLE_MS;
+  const offset = CRONO_CIRC_DESK * (1 - frac);
+  const offsetMob = CRONO_CIRC_MOB * (1 - frac);
+
+  // Desktop
+  const d = $("cronoDigits"), m2 = $("cronoMs"), fg = $("cronoRingFg");
+  if (d)  d.textContent  = fmt.time;
+  if (m2) m2.textContent = fmt.cs;
+  if (fg) {
+    fg.style.strokeDashoffset = offset;
+    fg.classList.toggle("paused", !_crono.running && _crono.elapsed > 0);
+  }
+
+  // Mobile
+  const dM = $("cronoDigitsMob"), mM = $("cronsMsMob"), fgM = $("cronoRingFgMob");
+  if (dM)  dM.textContent  = fmt.time;
+  if (mM)  mM.textContent  = fmt.cs;
+  if (fgM) {
+    fgM.style.strokeDashoffset = offsetMob;
+    fgM.classList.toggle("paused", !_crono.running && _crono.elapsed > 0);
+  }
+
+  // Botão play/pause
+  const icon = _crono.running ? "⏸" : "▶";
+  ["cronoBtnPlay","cronoBtnPlayMob"].forEach(id => {
+    const b = $(id); if (b) b.textContent = icon;
+  });
+}
+
+function _cronoTick() {
+  _cronoRender();
+  if (_crono.running) _crono.raf = requestAnimationFrame(_cronoTick);
+}
+
+function cronoToggle() {
+  if (_crono.running) {
+    // Pausar
+    _crono.elapsed += Date.now() - _crono.startTs;
+    _crono.running  = false;
+    cancelAnimationFrame(_crono.raf);
+    _cronoRender();
+  } else {
+    // Play
+    _crono.startTs  = Date.now();
+    _crono.running  = true;
+    _crono.raf      = requestAnimationFrame(_cronoTick);
+  }
+}
+
+function cronoReset() {
+  cancelAnimationFrame(_crono.raf);
+  _crono.running = false;
+  _crono.elapsed = 0;
+  _crono.startTs = 0;
+  _crono.lapBase = 0;
+  _crono.laps    = [];
+  _cronoRender();
+  _cronoRenderLaps();
+}
+
+function cronoLap() {
+  const ms    = _cronoMs();
+  if (ms < 100) return; // ignora se quase zero
+  const split = ms - _crono.lapBase;
+  _crono.lapBase = ms;
+  _crono.laps.push({ n: _crono.laps.length + 1, total: ms, split });
+  _cronoRenderLaps();
+}
+
+function _cronoRenderLaps() {
+  const laps = _crono.laps;
+  const count = laps.length;
+
+  // Identifica melhor e pior split
+  let best = Infinity, worst = 0;
+  laps.forEach(l => {
+    if (l.split < best)  best  = l.split;
+    if (l.split > worst) worst = l.split;
+  });
+
+  const html = count === 0
+    ? `<div class="crono-empty">Nenhuma volta marcada</div>`
+    : [...laps].reverse().map(l => {
+        const isBest  = count > 1 && l.split === best;
+        const isWorst = count > 1 && l.split === worst;
+        const cls = isBest ? "crono-lap-best" : isWorst ? "crono-lap-worst" : "";
+        const delta = l.n > 1
+          ? (l.split - laps[l.n-2].split > 0 ? "+" : "") +
+            _cronoFmt(Math.abs(l.split - (l.n > 1 ? laps[l.n-2].split : l.split)), false).time
+          : "";
+        return `<div class="crono-lap-row">
+          <span class="crono-lap-num">#${String(l.n).padStart(2,"0")}</span>
+          <span class="crono-lap-time ${cls}">${_cronoFmt(l.split, false).time}</span>
+          <span class="crono-lap-delta">${delta}</span>
+          <span class="crono-lap-time" style="color:var(--text-3);font-size:10px;">${_cronoFmt(l.total, false).time}</span>
+        </div>`;
+      }).join("");
+
+  ["cronoLapList","cronoLapListMob"].forEach(id => {
+    const el = $(id); if (el) el.innerHTML = html;
+  });
+  ["cronoLapsCount","cronoLapsCountMob"].forEach(id => {
+    const el = $(id); if (el) el.textContent = count > 0 ? count + " volta(s)" : "";
+  });
 }
 
 // ════════════════════════════════════════════════════════════
