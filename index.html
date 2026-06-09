@@ -408,6 +408,13 @@ body {
   border-color: rgba(248,113,113,.3);
 }
 .btn-danger:hover { background: rgba(248,113,113,.2); }
+.fin-rel-tab {
+  padding: 7px 16px; border-radius: 8px 8px 0 0; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); border-bottom: none; cursor: pointer;
+  background: var(--bg-card); color: var(--text-2); transition: all .15s;
+}
+.fin-rel-tab:hover { background: var(--bg-hover); color: var(--text-1); }
+.fin-rel-tab-active { background: var(--bg-hover); color: var(--text-1); border-color: var(--border-lg); }
 .btn-sm { padding: 7px 12px; font-size: 11px; }
 .btn-icon { width: 34px; height: 34px; padding: 0; border-radius: 8px; font-size: 15px; }
 
@@ -1463,6 +1470,12 @@ body {
 .al-filter-btn.f-inativo.active { background: rgba(248,113,113,.1); color: var(--red); border-color: rgba(248,113,113,.3); }
 .al-filter-btn.f-vencido.active { background: rgba(245,166,35,.1); color: var(--amber); border-color: rgba(245,166,35,.3); }
 
+/* ── Badges de vencimento ────────────────────────────────── */
+.venc-badge-ok      { background:rgba(200,241,53,.12); color:var(--lime);   border:1px solid rgba(200,241,53,.25); }
+.venc-badge-alerta  { background:rgba(245,166,35,.12); color:var(--amber);  border:1px solid rgba(245,166,35,.25); }
+.venc-badge-vencido { background:rgba(248,113,113,.12);color:var(--red);    border:1px solid rgba(248,113,113,.25); }
+.venc-badge-livre   { background:rgba(74,74,106,.15);  color:var(--text-3); border:1px solid var(--border); }
+
 /* ── formPrescricaoCard desktop: 2 colunas ───────────────── */
 @media (min-width: 769px) {
   .prescricao-layout {
@@ -1543,6 +1556,12 @@ body {
       <button class="si-btn" id="siBtnTemplates" onclick="siNav('templates')" title="">
         📋<span class="si-tooltip">Templates</span>
       </button>
+      <button class="si-btn" id="siBtnVencimentos" onclick="siNav('vencimentos')" title="">
+        📅<span class="si-tooltip">Vencimentos</span>
+      </button>
+      <button class="si-btn" id="siBtnFinanceiro" onclick="siNav('financeiro')" title="">
+        💰<span class="si-tooltip">Financeiro</span>
+      </button>
       <button class="si-btn" id="siBtnConfig" onclick="abrirConfigMarca()" title="">
         ⚙<span class="si-tooltip">Configurações</span>
       </button>
@@ -1587,6 +1606,209 @@ body {
       <div id="tplGrid" class="tpl-grid"></div>
     </div>
 
+    <!-- Vencimentos view -->
+    <div id="vencimentosView" class="hidden" style="flex:1;overflow-y:auto;padding:28px;flex-direction:column;gap:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <h2 style="font-size:18px;font-weight:800;letter-spacing:-.02em;">📅 Vencimentos &amp; Renovações</h2>
+        <button class="btn btn-lime btn-sm" onclick="siNav('atletas')">← Voltar</button>
+      </div>
+
+      <!-- Filtros e busca -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <input id="vencBusca" type="text" class="al-search" placeholder="Buscar atleta…"
+          style="max-width:220px;" oninput="vencFiltrar()"/>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="al-filter-btn active" id="vfTodos"   onclick="vencSetFiltro('todos')">Todos</button>
+          <button class="al-filter-btn"        id="vfAtivos"  onclick="vencSetFiltro('ativo')">Ativos</button>
+          <button class="al-filter-btn f-vencido" id="vfVencidos" onclick="vencSetFiltro('vencido')">⏰ Vencidos</button>
+          <button class="al-filter-btn f-inativo" id="vfInativos" onclick="vencSetFiltro('inativo')">Inativos</button>
+          <button class="al-filter-btn" id="vfSemData" onclick="vencSetFiltro('semdata')" style="border-color:rgba(74,74,106,.5);color:var(--text-3);">Sem data</button>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="vencCarregarLista()" style="margin-left:auto;">↺ Atualizar</button>
+      </div>
+
+      <!-- Painel de ação do atleta selecionado -->
+      <div id="vencPainelAtleta" style="display:none;background:rgba(56,217,245,.04);border:1px solid rgba(56,217,245,.18);border-radius:12px;padding:18px 20px;flex-direction:column;gap:14px;">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div id="vencAvatarSel" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:var(--lime);flex-shrink:0;">?</div>
+          <div>
+            <div id="vencNomeSel" style="font-weight:700;font-size:15px;color:var(--text-1);">—</div>
+            <div id="vencUserSel" style="font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',monospace;"></div>
+          </div>
+          <div id="vencBadgeSel" style="margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:99px;"></div>
+        </div>
+
+        <!-- Renovação rápida -->
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Renovação Rápida</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-sm" style="background:rgba(56,217,245,.1);color:var(--cyan);border-color:rgba(56,217,245,.3);" onclick="vencRenovarRapido(this,30)">+30 dias</button>
+            <button class="btn btn-sm" style="background:rgba(56,217,245,.1);color:var(--cyan);border-color:rgba(56,217,245,.3);" onclick="vencRenovarRapido(this,60)">+60 dias</button>
+            <button class="btn btn-sm" style="background:rgba(56,217,245,.1);color:var(--cyan);border-color:rgba(56,217,245,.3);" onclick="vencRenovarRapido(this,90)">+90 dias</button>
+            <button class="btn btn-sm" style="background:rgba(167,139,250,.1);color:var(--purple);border-color:rgba(167,139,250,.3);" onclick="vencRenovarRapido(this,180)">+6 meses</button>
+            <button class="btn btn-sm" style="background:rgba(167,139,250,.1);color:var(--purple);border-color:rgba(167,139,250,.3);" onclick="vencRenovarRapido(this,365)">+1 ano</button>
+          </div>
+        </div>
+
+        <!-- Data manual -->
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Definir Data Manualmente</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <div id="vencDataAtualSel" style="font-size:13px;font-family:'JetBrains Mono',monospace;color:var(--text-3);">—</div>
+            <input id="vencInputDataSel" type="date" class="field-input" style="max-width:170px;border-color:rgba(56,217,245,.3);"/>
+            <button id="btnVencSalvarSel" class="btn btn-sm btn-lime" onclick="vencSalvarManualSel()">💾 Salvar</button>
+            <button class="btn btn-sm btn-ghost" onclick="vencLimparSel()" style="color:var(--red);border-color:rgba(248,113,113,.3);">✕ Limpar</button>
+          </div>
+        </div>
+
+        <!-- Status da conta -->
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Status da Conta</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="btnVencInativar" class="btn btn-sm" style="background:rgba(248,113,113,.1);color:var(--red);border-color:rgba(248,113,113,.3);" onclick="vencInativar()">⛔ Inativar</button>
+            <button id="btnVencReativar" class="btn btn-sm" style="background:rgba(200,241,53,.1);color:var(--lime);border-color:rgba(200,241,53,.3);" onclick="vencReativar()">✓ Reativar</button>
+          </div>
+        </div>
+
+        <!-- Pagamento e Recibo -->
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Pagamento</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-sm" style="background:rgba(200,241,53,.1);color:var(--lime);border-color:rgba(200,241,53,.3);" onclick="abrirModalRegistrarPagamento(_vencAlunoSel?.id_aluno)">💳 Registrar Pagamento</button>
+            <button class="btn btn-sm btn-ghost" onclick="vencGerarReciboUltimoPagamento()">🧾 Recibo Último Pag.</button>
+          </div>
+        </div>
+
+        <!-- Histórico -->
+        <div>
+          <button onclick="toggleVencHistSel()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text-3);display:flex;align-items:center;gap:6px;padding:0;">
+            <span id="vencHistArrowSel">▶</span> histórico de renovações
+          </button>
+          <div id="vencHistBoxSel" style="display:none;margin-top:8px;background:var(--bg-base);border:1px solid var(--border);border-radius:8px;padding:10px 12px;max-height:120px;overflow-y:auto;">
+            <div id="vencHistConteudoSel" style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text-3);line-height:1.8;word-break:break-all;">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela de atletas -->
+      <div id="vencListaContainer" style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead>
+            <tr style="background:var(--bg-base);">
+              <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Atleta</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Vencimento</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Situação</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Conta</th>
+            </tr>
+          </thead>
+          <tbody id="vencTbody">
+            <tr><td colspan="4" style="padding:24px;text-align:center;color:var(--text-3);">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    </div>
+
+    <!-- Financeiro view -->
+    <div id="financeiroView" class="hidden" style="flex:1;overflow-y:auto;padding:28px;flex-direction:column;gap:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <h2 style="font-size:18px;font-weight:800;letter-spacing:-.02em;">💰 Controle Financeiro</h2>
+        <button class="btn btn-lime btn-sm" onclick="siNav('atletas')">← Voltar</button>
+      </div>
+
+      <!-- Totais -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+        <div class="card" style="text-align:center;">
+          <div class="card-title">Total do Mês</div>
+          <div style="font-size:28px;font-weight:800;color:var(--lime);font-family:'JetBrains Mono',monospace;" id="finTotalMes">R$ 0</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="card-title">Total Geral</div>
+          <div style="font-size:28px;font-weight:800;color:var(--cyan);font-family:'JetBrains Mono',monospace;" id="finTotalGeral">R$ 0</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="card-title">Pagamentos do Mês</div>
+          <div style="font-size:28px;font-weight:800;color:var(--purple);font-family:'JetBrains Mono',monospace;" id="finQtdMes">0</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="card-title">A Vencer (30d)</div>
+          <div style="font-size:28px;font-weight:800;color:var(--amber);font-family:'JetBrains Mono',monospace;" id="finQtdAVencer">0</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="card-title">Vencidos</div>
+          <div style="font-size:28px;font-weight:800;color:var(--red);font-family:'JetBrains Mono',monospace;" id="finQtdVencidos">0</div>
+        </div>
+      </div>
+
+      <!-- Abas de relatório -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:2px;">
+        <button id="finTabPagamentos" class="fin-rel-tab fin-rel-tab-active" onclick="finMudarAba('pagamentos')">💳 Pagamentos</button>
+        <button id="finTabAVencer"    class="fin-rel-tab"                   onclick="finMudarAba('avencer')">🟡 A Vencer</button>
+        <button id="finTabVencidos"   class="fin-rel-tab"                   onclick="finMudarAba('vencidos')">🔴 Vencidos</button>
+      </div>
+
+      <!-- Filtros -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <input id="finBusca" type="text" class="al-search" placeholder="Buscar atleta…"
+          style="max-width:220px;" oninput="finFiltrar()"/>
+        <!-- Filtro de mês (visível apenas em Pagamentos) -->
+        <select id="finFiltroMes" class="field-input" style="max-width:180px;" onchange="finFiltrar()">
+          <option value="">Todos os meses</option>
+        </select>
+        <!-- Filtro de mês de vencimento (visível em A Vencer / Vencidos) -->
+        <select id="finFiltroMesVenc" class="field-input" style="max-width:200px;display:none;" onchange="finFiltrar()">
+          <option value="">Todos os meses</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="finCarregarLista()">↺ Atualizar</button>
+        <button class="btn btn-lime btn-sm" onclick="abrirModalRegistrarPagamento()">＋ Registrar Pagamento</button>
+        <button class="btn btn-ghost btn-sm" onclick="finExportarRelatorio()" title="Exportar relatório atual em PDF">⬇ Exportar</button>
+      </div>
+
+      <!-- Painel: Pagamentos -->
+      <div id="finPainelPagamentos">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="background:var(--bg-base);">
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Atleta</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Valor</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Plano</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Pagamento</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Vencimento</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Método</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="finTbody">
+              <tr><td colspan="7" style="padding:24px;text-align:center;color:var(--text-3);">Carregando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Painel: A Vencer / Vencidos -->
+      <div id="finPainelVencimentos" style="display:none;">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="background:var(--bg-base);">
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Atleta</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Usuário</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Vencimento</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Situação</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Último Plano</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="finTbodyVenc">
+              <tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text-3);">Carregando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- Workspace -->
     <div class="workspace" id="workspace">
       <div class="ws-empty" id="wsEmpty">
@@ -1615,7 +1837,7 @@ body {
           <!-- Tabs -->
           <div class="ws-tabs">
             <button class="ws-tab active" id="tabPrescricao"   onclick="wsTab('prescricao')">Prescrição</button>
-            <button class="ws-tab"        id="tabEvolucao"     onclick="wsTab('evolucao')">Balança Corporal</button>
+            <button class="ws-tab"        id="tabEvolucao"     onclick="wsTab('evolucao')">Acompanhe seu Peso</button>
             <button class="ws-tab"        id="tabFicha"        onclick="wsTab('ficha')">Ficha do Atleta</button>
             <button class="ws-tab"        id="tabPace"         onclick="wsTab('pace')">Calculadora</button>
           </div>
@@ -1693,10 +1915,10 @@ body {
             <div id="wsHistoricoTreinos"></div>
           </div>
 
-          <!-- ── TAB: Balança Corporal ── -->
+          <!-- ── TAB: Acompanhe seu Peso ── -->
           <div class="ws-pane" id="paneEvolucao">
             <div class="card" style="margin-bottom:16px;">
-              <div class="card-title">Balança Corporal</div>
+              <div class="card-title">Acompanhe seu Peso</div>
               <div class="peso-stats" id="wsPesoStats"></div>
               <div class="peso-chart-wrap">
                 <canvas id="wsPesoChart"></canvas>
@@ -1962,6 +2184,90 @@ body {
   <div class="run-mode-desc" id="runModeDesc">—</div>
 </div>
 
+<!-- Modal: Registrar Pagamento -->
+<div id="modalRegistrarPagamento" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:540px;">
+    <div class="modal-header">
+      <div class="modal-title">💰 Registrar <span>Pagamento</span></div>
+      <button class="modal-close" onclick="fecharModal('modalRegistrarPagamento')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-block">
+        <div class="form-block-title">Atleta</div>
+        <select class="field-input" id="pagAlunoSel" onchange="pagAlunoSelecionado()">
+          <option value="">— Selecionar atleta —</option>
+        </select>
+        <div id="pagVencAtual" style="font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',monospace;margin-top:4px;"></div>
+      </div>
+      <div class="form-block">
+        <div class="form-block-title">Pagamento</div>
+        <div class="form-grid-2">
+          <div>
+            <div class="field-label">Valor (R$)</div>
+            <input class="field-input" id="pagValor" type="number" step="0.01" placeholder="150.00"/>
+          </div>
+          <div>
+            <div class="field-label">Data do Pagamento</div>
+            <input class="field-input" id="pagData" type="date"/>
+          </div>
+          <div>
+            <div class="field-label">Plano</div>
+            <select class="field-input" id="pagPlano">
+              <option value="Mensal">Mensal (30 dias)</option>
+              <option value="Bimestral">Bimestral (60 dias)</option>
+              <option value="Trimestral">Trimestral (90 dias)</option>
+              <option value="Semestral">Semestral (180 dias)</option>
+              <option value="Anual">Anual (365 dias)</option>
+              <option value="Avulso">Avulso</option>
+              <option value="Personalizado">Personalizado</option>
+            </select>
+          </div>
+          <div>
+            <div class="field-label">Método de Pagamento</div>
+            <select class="field-input" id="pagMetodo">
+              <option value="Pix">Pix</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartão Débito">Cartão Débito</option>
+              <option value="Cartão Crédito">Cartão Crédito</option>
+              <option value="Transferência">Transferência</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+        </div>
+        <div id="pagRenovarWrap">
+          <div class="field-label">Renovação automática</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;" id="pagRenovarOpts">
+            <button class="btn btn-sm btn-ghost" data-dias="30"  onclick="pagSetDias(this,30)">+30d</button>
+            <button class="btn btn-sm btn-ghost" data-dias="60"  onclick="pagSetDias(this,60)">+60d</button>
+            <button class="btn btn-sm btn-ghost" data-dias="90"  onclick="pagSetDias(this,90)">+90d</button>
+            <button class="btn btn-sm btn-ghost" data-dias="180" onclick="pagSetDias(this,180)">+180d</button>
+            <button class="btn btn-sm btn-ghost" data-dias="365" onclick="pagSetDias(this,365)">+1 ano</button>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:11px;color:var(--text-3);">Ou definir data manualmente:</span>
+            <input class="field-input" id="pagDataVenc" type="date" style="max-width:170px;"/>
+          </div>
+        </div>
+        <div>
+          <div class="field-label">Observação</div>
+          <input class="field-input" id="pagObs" type="text" placeholder="Observação opcional…"/>
+        </div>
+      </div>
+      <div style="background:rgba(200,241,53,.06);border:1px solid rgba(200,241,53,.15);border-radius:10px;padding:12px;">
+        <div style="font-size:11px;font-weight:700;color:var(--lime);letter-spacing:.08em;margin-bottom:6px;">GERAR RECIBO</div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="pagGerarRecibo" checked style="accent-color:var(--lime);width:14px;height:14px;"/>
+          <span style="font-size:12px;color:var(--text-2);">Gerar recibo PDF automaticamente ao registrar</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modalRegistrarPagamento')">Cancelar</button>
+      <button class="btn btn-lime" id="btnConfPagamento" onclick="confirmarRegistrarPagamento()">💳 Registrar Pagamento</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast"></div>
 
@@ -2179,10 +2485,61 @@ body {
         <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text-2);" id="gerAlunoInfo">—</div>
       </div>
       <!-- Vencimento do Atleta -->
-      <div style="background:rgba(56,217,245,.06);border:1px solid rgba(56,217,245,.2);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;">
-        <div style="font-size:13px;font-weight:700;color:var(--cyan);">📅 Data de Vencimento</div>
-        <div style="font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',monospace;line-height:1.6;">Ao salvar a ficha completa, a data de vencimento é gravada. Para edição rápida, use a Ficha do Atleta.</div>
-        <div style="font-size:12px;color:var(--text-2);font-family:'JetBrains Mono',monospace;" id="gerVencimentoInfo">—</div>
+      <div id="painelVencimento" style="background:rgba(56,217,245,.05);border:1px solid rgba(56,217,245,.18);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px;">
+
+        <!-- Cabeçalho + badge de status -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+          <div style="font-size:13px;font-weight:700;color:var(--cyan);">📅 Vencimento da Assinatura</div>
+          <div id="vencStatusBadge" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:99px;white-space:nowrap;"></div>
+        </div>
+
+        <!-- Data atual + countdown -->
+        <div id="vencInfoBox" style="background:var(--bg-base);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:10px;color:var(--text-3);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;">Data atual</div>
+            <div id="vencDataAtual" style="font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text-1);">—</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:10px;color:var(--text-3);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;">Dias restantes</div>
+            <div id="vencDiasVal" style="font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace;">—</div>
+          </div>
+        </div>
+
+        <!-- Renovação rápida -->
+        <div>
+          <div style="font-size:10px;color:var(--text-3);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Renovação rápida</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn btn-sm" style="background:rgba(56,217,245,.1);color:var(--cyan);border-color:rgba(56,217,245,.3);" onclick="renovarRapido(this,30)">+30 dias</button>
+            <button class="btn btn-sm" style="background:rgba(56,217,245,.1);color:var(--cyan);border-color:rgba(56,217,245,.3);" onclick="renovarRapido(this,60)">+60 dias</button>
+            <button class="btn btn-sm" style="background:rgba(56,217,245,.1);color:var(--cyan);border-color:rgba(56,217,245,.3);" onclick="renovarRapido(this,90)">+90 dias</button>
+            <button class="btn btn-sm" style="background:rgba(167,139,250,.1);color:var(--purple);border-color:rgba(167,139,250,.3);" onclick="renovarRapido(this,180)">+6 meses</button>
+            <button class="btn btn-sm" style="background:rgba(167,139,250,.1);color:var(--purple);border-color:rgba(167,139,250,.3);" onclick="renovarRapido(this,365)">+1 ano</button>
+          </div>
+          <div style="font-size:10px;color:var(--text-3);font-family:'JetBrains Mono',monospace;margin-top:6px;line-height:1.5;">
+            Estende a partir da data atual (se futura) ou de hoje.
+          </div>
+        </div>
+
+        <!-- Data manual -->
+        <div>
+          <div style="font-size:10px;color:var(--text-3);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Definir data manualmente</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <input class="field-input" id="vencInputData" type="date" style="max-width:180px;border-color:rgba(56,217,245,.3);"/>
+            <button id="btnSalvarVencimento" class="btn btn-sm" style="background:rgba(56,217,245,.12);color:var(--cyan);border-color:rgba(56,217,245,.35);white-space:nowrap;" onclick="salvarVencimentoManual()">💾 Salvar</button>
+            <button class="btn btn-sm btn-ghost" style="font-size:10px;" onclick="limparVencimento()">✕ Limpar</button>
+          </div>
+        </div>
+
+        <!-- Histórico de renovações -->
+        <div>
+          <button onclick="toggleHistoricoVenc()" style="background:none;border:none;color:var(--text-3);font-size:11px;font-family:'JetBrains Mono',monospace;cursor:pointer;padding:0;display:flex;align-items:center;gap:6px;">
+            <span id="vencHistoricoArrow">▶</span> histórico de renovações
+          </button>
+          <div id="vencHistoricoBox" style="display:none;margin-top:8px;background:var(--bg-base);border:1px solid var(--border);border-radius:8px;padding:10px 12px;max-height:120px;overflow-y:auto;">
+            <div id="vencHistoricoConteudo" style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text-3);line-height:1.8;word-break:break-all;">—</div>
+          </div>
+        </div>
+
       </div>
       <!-- Inativar / Reativar -->
       <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;">
@@ -2256,7 +2613,7 @@ body {
 //  Arquitetura: state → render → events
 // ════════════════════════════════════════════════════════════
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxd9zWKG6LYxxMULfIKUytQ6oq3_PVr2IcagCOwZtfYWn4ejt3E3-rouGxLvA5u_FREKw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbztBd_9_9oB9wE6LVskwjSfCu6nmKCqlO-TIC__VqdctsyaaBSO_vmYeO8ni6zCMtFGwA/exec";
 
 // ── DOM helpers ───────────────────────────────────────────
 const $ = id => document.getElementById(id);
@@ -2299,21 +2656,174 @@ const CLASSIF_LISTA  = [
 const MARCA_KEY = "trainOS_marca_v2";
 const TEMA_KEY  = "trainOS_tema";
 
-// ── Helper: checa se aluno está vencido (client-side apenas para UI) ──
+// ════════════════════════════════════════════════════════════
+//  MÓDULO DE VENCIMENTO — client side
+// ════════════════════════════════════════════════════════════
+
+// Checa se aluno está vencido (UI)
 function isAlunoVencido(aluno) {
   const v = aluno.data_vencimento;
   if (!v) return false;
-  return hoje() > String(v);
+  return hoje() > String(v).substring(0, 10);
 }
 
-// ── Formata data_vencimento para exibição amigável ────────────
+// Formata YYYY-MM-DD → DD/MM/AAAA
 function fmtVencimento(aluno) {
   const v = aluno.data_vencimento;
   if (!v) return null;
-  const partes = String(v).split("-");
-  if (partes.length === 3) return partes[2] + "/" + partes[1] + "/" + partes[0];
-  return v;
+  const str = String(v).trim();
+  if (!str || str === "Invalid Date" || str === "0") return null;
+  const p = str.substring(0, 10).split("-");
+  if (p.length !== 3 || p[0].length !== 4) return null;
+  return `${p[2]}/${p[1]}/${p[0]}`;
 }
+
+// Dias restantes (negativo = vencido)
+function _diasRestantes(dataVenc) {
+  if (!dataVenc) return null;
+  const base = new Date(hoje() + "T12:00:00");
+  const alvo = new Date(String(dataVenc).substring(0, 10) + "T12:00:00");
+  return Math.round((alvo - base) / 86400000);
+}
+
+// Renderiza o painel de vencimento no modal
+function renderizarPainelVencimento(aluno) {
+  const v       = aluno.data_vencimento ? String(aluno.data_vencimento).substring(0, 10) : "";
+  const dias    = v ? _diasRestantes(v) : null;
+  const vencido = v && isAlunoVencido(aluno);
+  const alerta  = v && !vencido && dias !== null && dias <= 7;
+
+  // Badge
+  const badge = $("vencStatusBadge");
+  if (badge) {
+    if (!v)          { badge.className = "venc-badge-livre";   badge.textContent = "Sem vencimento"; }
+    else if (vencido){ badge.className = "venc-badge-vencido"; badge.textContent = "⚠ Vencido"; }
+    else if (alerta) { badge.className = "venc-badge-alerta";  badge.textContent = "⏰ Vence em breve"; }
+    else             { badge.className = "venc-badge-ok";      badge.textContent = "✓ Ativo"; }
+  }
+
+  // Data atual
+  const elData = $("vencDataAtual");
+  if (elData) {
+    elData.textContent = v ? fmtVencimento(aluno) : "Não definida";
+    elData.style.color = vencido ? "var(--red)" : v ? "var(--cyan)" : "var(--text-3)";
+  }
+
+  // Countdown
+  const elDias = $("vencDiasVal");
+  if (elDias) {
+    if (dias === null)   { elDias.textContent = "—";                    elDias.style.color = "var(--text-3)"; }
+    else if (dias < 0)   { elDias.textContent = Math.abs(dias)+" atrás"; elDias.style.color = "var(--red)"; }
+    else if (dias === 0) { elDias.textContent = "Hoje!";                elDias.style.color = "var(--amber)"; }
+    else                 { elDias.textContent = dias;                   elDias.style.color = alerta ? "var(--amber)" : "var(--lime)"; }
+  }
+
+  // Input manual
+  const elInput = $("vencInputData");
+  if (elInput) elInput.value = v;
+
+  // Histórico
+  const elHist = $("vencHistoricoConteudo");
+  if (elHist) {
+    const hist = aluno.historico_renovacoes || "";
+    if (hist) {
+      elHist.innerHTML = hist.split("|").map(h => `<div>${escHtml(h.trim())}</div>`).join("");
+    } else {
+      elHist.textContent = "Nenhuma renovação registrada.";
+    }
+  }
+
+  // Fecha o histórico ao abrir novo aluno
+  const hBox = $("vencHistoricoBox");
+  const hArr = $("vencHistoricoArrow");
+  if (hBox) hBox.style.display = "none";
+  if (hArr) hArr.textContent = "▶";
+}
+
+function toggleHistoricoVenc() {
+  const box = $("vencHistoricoBox");
+  const arr = $("vencHistoricoArrow");
+  if (!box) return;
+  const aberto = box.style.display !== "none";
+  box.style.display = aberto ? "none" : "block";
+  if (arr) arr.textContent = aberto ? "▶" : "▼";
+}
+
+// Helper: sincroniza state + re-renderiza painel após qualquer mudança
+function _atualizarEstadoVencimento(novaData, historico) {
+  const idx = (state.todosAlunos || []).findIndex(a => String(a.id_aluno) === _gerenciarAlunoId);
+  if (idx >= 0) {
+    state.todosAlunos[idx].data_vencimento = novaData;
+    if (historico !== undefined) state.todosAlunos[idx].historico_renovacoes = historico;
+  }
+  if (state.alunoAdmin && String(state.alunoAdmin.id_aluno) === _gerenciarAlunoId) {
+    state.alunoAdmin.data_vencimento = novaData;
+    if (historico !== undefined) state.alunoAdmin.historico_renovacoes = historico;
+  }
+  const aluno = (state.todosAlunos || []).find(a => String(a.id_aluno) === _gerenciarAlunoId)
+                || state.alunoAdmin || {};
+  renderizarPainelVencimento(aluno);
+  renderAthleteList(state.todosAlunos);
+  if (IS_MOBILE()) mobRenderAlunos(state.todosAlunos);
+}
+
+// Renovação rápida (+N dias)
+async function renovarRapido(btn, dias) {
+  if (!_gerenciarAlunoId) return;
+  if (!confirm("Renovar por " + dias + " dias?")) return;
+  var orig = btn.textContent;
+  btn.disabled = true; btn.textContent = "...";
+  var res;
+  try {
+    res = await callAPI({ action: "renovarVencimento", id_aluno: _gerenciarAlunoId, dias: dias });
+  } catch(e) {
+    btn.disabled = false; btn.textContent = orig;
+    showToast("Erro de conexão ao renovar.");
+    console.error("renovarRapido erro:", e);
+    return;
+  }
+  btn.disabled = false; btn.textContent = orig;
+  if (!res || !res.ok) { showToast("⚠ " + (res ? res.erro : "sem resposta")); console.error("renovarVencimento:", res); return; }
+  _atualizarEstadoVencimento(res.data_vencimento, res.historico_renovacoes);
+  showToast("✓ " + res.msg);
+}
+
+// Salvar data manualmente
+async function salvarVencimentoManual() {
+  if (!_gerenciarAlunoId) { showToast("Nenhum atleta selecionado."); return; }
+  var elData = $("vencInputData");
+  var data = elData ? elData.value : "";
+  if (!data) { showToast("Informe uma data antes de salvar."); return; }
+  var btn = $("btnSalvarVencimento");
+  if (btn) { btn.disabled = true; btn.textContent = "..."; }
+  var res;
+  try {
+    res = await callAPI({ action: "atualizarVencimento", id_aluno: _gerenciarAlunoId, data_vencimento: data });
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.textContent = "💾 Salvar"; }
+    showToast("Erro de conexão ao salvar vencimento.");
+    console.error("salvarVencimentoManual erro:", e);
+    return;
+  }
+  if (btn) { btn.disabled = false; btn.textContent = "💾 Salvar"; }
+  if (!res || !res.ok) { showToast("⚠ " + (res ? res.erro : "sem resposta")); console.error("atualizarVencimento:", res); return; }
+  _atualizarEstadoVencimento(res.data_vencimento, res.historico_renovacoes);
+  showToast("✓ " + res.msg);
+}
+
+// Limpar vencimento
+async function limparVencimento() {
+  if (!_gerenciarAlunoId) return;
+  if (!confirm("Remover a data de vencimento deste atleta?")) return;
+  const res = await callAPI({ action: "atualizarVencimento", id_aluno: _gerenciarAlunoId, data_vencimento: "" });
+  if (!res || !res.ok) { showToast("⚠ " + (res ? res.erro : "sem resposta")); return; }
+  _atualizarEstadoVencimento("", "");
+  showToast("✓ Data de vencimento removida.");
+}
+
+// Mantém retrocompat (chamadas antigas em outros lugares do código)
+async function executarAtualizarVencimento() { return salvarVencimentoManual(); }
+async function executarLimparVencimento()    { return limparVencimento(); }
 
 // ════════════════════════════════════════════════════════════
 //  API
@@ -2579,15 +3089,885 @@ function siNav(view) {
   if (view === "atletas") {
     $("siBtnAtletas").classList.add("active");
     $("templatesView").classList.add("hidden");
+    $("vencimentosView").classList.add("hidden");
+    $("vencimentosView").style.display = "none";
+    $("financeiroView").classList.add("hidden");
+    $("financeiroView").style.display = "none";
     $("athleteList").style.display = "";
     $("workspace").style.display   = "";
   } else if (view === "templates") {
     $("siBtnTemplates").classList.add("active");
     $("templatesView").classList.remove("hidden");
+    $("vencimentosView").classList.add("hidden");
+    $("vencimentosView").style.display = "none";
+    $("financeiroView").classList.add("hidden");
+    $("financeiroView").style.display = "none";
     $("athleteList").style.display = "none";
     $("workspace").style.display   = "none";
     carregarTemplates();
+  } else if (view === "vencimentos") {
+    $("siBtnVencimentos").classList.add("active");
+    $("vencimentosView").classList.remove("hidden");
+    $("vencimentosView").style.display = "flex";
+    $("financeiroView").classList.add("hidden");
+    $("financeiroView").style.display = "none";
+    $("templatesView").classList.add("hidden");
+    $("athleteList").style.display = "none";
+    $("workspace").style.display   = "none";
+    vencCarregarLista();
+  } else if (view === "financeiro") {
+    $("siBtnFinanceiro").classList.add("active");
+    $("financeiroView").classList.remove("hidden");
+    $("financeiroView").style.display = "flex";
+    $("vencimentosView").classList.add("hidden");
+    $("vencimentosView").style.display = "none";
+    $("templatesView").classList.add("hidden");
+    $("athleteList").style.display = "none";
+    $("workspace").style.display   = "none";
+    finCarregarLista();
   }
+}
+
+// ════════════════════════════════════════════════════════════
+//  HELPER: badge colorido de vencimento
+// ════════════════════════════════════════════════════════════
+function _vencBadgeHtml(dataVenc) {
+  if (!dataVenc) return "";
+  const venc  = String(dataVenc).substring(0,10);
+  const hoje_ = new Date().toISOString().substring(0,10);
+  const dias  = Math.round((new Date(venc+"T12:00:00") - new Date(hoje_+"T12:00:00")) / 86400000);
+  if (hoje_ > venc) {
+    return `<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);border-radius:8px;padding:6px 12px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;"></span>
+      <span style="font-size:11px;font-weight:700;color:var(--red);">VENCIDO em ${formatDate(venc)}</span>
+    </div>`;
+  } else if (dias <= 7) {
+    return `<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);border-radius:8px;padding:6px 12px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;"></span>
+      <span style="font-size:11px;font-weight:700;color:var(--amber);">⏰ Vence em ${dias === 0 ? "HOJE" : dias + " dia(s)"} — ${formatDate(venc)}</span>
+    </div>`;
+  } else if (dias <= 30) {
+    return `<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:8px;padding:6px 12px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:var(--amber);opacity:.7;flex-shrink:0;"></span>
+      <span style="font-size:11px;font-weight:600;color:var(--amber);">Vence em ${dias} dia(s) — ${formatDate(venc)}</span>
+    </div>`;
+  } else {
+    return `<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(200,241,53,.08);border:1px solid rgba(200,241,53,.2);border-radius:8px;padding:6px 12px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:var(--lime);flex-shrink:0;"></span>
+      <span style="font-size:11px;font-weight:700;color:var(--lime);">✓ Ativo até ${formatDate(venc)}</span>
+    </div>`;
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  ABA VENCIMENTOS & RENOVAÇÕES
+// ════════════════════════════════════════════════════════════
+var _vencFiltroAtual = "todos";
+var _vencAlunoSel    = null; // aluno selecionado no painel
+
+function vencSetFiltro(tipo) {
+  _vencFiltroAtual = tipo;
+  ["vfTodos","vfAtivos","vfVencidos","vfInativos","vfSemData"].forEach(id => {
+    const el = $(id);
+    if (el) el.classList.remove("active");
+  });
+  const mapa = { todos:"vfTodos", ativo:"vfAtivos", vencido:"vfVencidos", inativo:"vfInativos", semdata:"vfSemData" };
+  if ($( mapa[tipo] )) $(mapa[tipo]).classList.add("active");
+  vencFiltrar();
+}
+
+async function vencCarregarLista() {
+  const tbody = $("vencTbody");
+  if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="padding:24px;text-align:center;color:var(--text-3);">Carregando…</td></tr>`;
+  // Usa dados já carregados se disponíveis
+  if (state.todosAlunos && state.todosAlunos.length > 0) {
+    vencFiltrar();
+    return;
+  }
+  try {
+    const res = await callAPI({ action: "buscarTodosAlunos" });
+    if (!res || !res.ok) { showToast("⚠ Erro ao carregar atletas."); return; }
+    state.todosAlunos = res.alunos || [];
+    vencFiltrar();
+  } catch(e) {
+    showToast("Erro de conexão.");
+  }
+}
+
+function vencFiltrar() {
+  const busca  = ($("vencBusca")?.value || "").toLowerCase();
+  const filtro = _vencFiltroAtual;
+  const hoje   = new Date().toISOString().substring(0, 10);
+
+  let lista = (state.todosAlunos || []).filter(a => {
+    const nome = (a.nome || a.usuario || "").toLowerCase();
+    const user = (a.usuario || "").toLowerCase();
+    if (busca && !nome.includes(busca) && !user.includes(busca)) return false;
+    const status  = String(a.status || "").toLowerCase();
+    const venc    = String(a.data_vencimento || "").substring(0, 10);
+    const vencido = venc && hoje > venc;
+    if (filtro === "ativo")    return status === "ativo";
+    if (filtro === "inativo")  return status === "inativo";
+    if (filtro === "vencido")  return vencido;
+    if (filtro === "semdata")  return !venc;
+    return true;
+  });
+
+  vencRenderTabela(lista, hoje);
+}
+
+function vencRenderTabela(lista, hoje) {
+  const tbody = $("vencTbody");
+  if (!tbody) return;
+  if (!lista.length) {
+    tbody.innerHTML = `<tr><td colspan="4" style="padding:24px;text-align:center;color:var(--text-3);">Nenhum atleta encontrado.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = lista.map(a => {
+    const venc    = String(a.data_vencimento || "").substring(0, 10);
+    const status  = String(a.status || "").toLowerCase();
+    const vencido = venc && hoje > venc;
+    const dias    = venc ? Math.round((new Date(venc+"T12:00:00") - new Date(hoje+"T12:00:00")) / 86400000) : null;
+    const ini     = (a.nome || a.usuario || "?").charAt(0).toUpperCase();
+    const selecionado = _vencAlunoSel && String(_vencAlunoSel.id_aluno) === String(a.id_aluno);
+
+    // Badge vencimento
+    let vencBadge = "";
+    if (!venc)        vencBadge = `<span style="font-size:10px;color:var(--text-3);">—</span>`;
+    else if (vencido) vencBadge = `<span style="font-size:10px;font-weight:700;color:var(--red);">🔴 ${formatDate(venc)}</span>`;
+    else if (dias !== null && dias <= 7)
+                      vencBadge = `<span style="font-size:10px;font-weight:700;color:var(--amber);">🟡 ${formatDate(venc)}</span>`;
+    else if (dias !== null && dias <= 30)
+                      vencBadge = `<span style="font-size:10px;font-weight:700;color:var(--amber);">🟡 ${formatDate(venc)}</span>`;
+    else              vencBadge = `<span style="font-size:10px;font-weight:700;color:var(--lime);">🟢 ${formatDate(venc)}</span>`;
+
+    // Badge situação
+    let sitBadge = "";
+    if (!venc)        sitBadge = `<span style="font-size:10px;color:var(--text-3);">Sem data</span>`;
+    else if (vencido) sitBadge = `<span class="venc-badge-vencido" style="font-size:10px;padding:2px 8px;border-radius:99px;">🔴 Vencido</span>`;
+    else if (dias !== null && dias <= 7)
+                      sitBadge = `<span class="venc-badge-alerta" style="font-size:10px;padding:2px 8px;border-radius:99px;">🟡 Vence em ${dias}d</span>`;
+    else if (dias !== null && dias <= 30)
+                      sitBadge = `<span class="venc-badge-alerta" style="font-size:10px;padding:2px 8px;border-radius:99px;">🟡 ${dias}d</span>`;
+    else              sitBadge = `<span class="venc-badge-ok" style="font-size:10px;padding:2px 8px;border-radius:99px;">🟢 Ativo</span>`;
+
+    // Cor da borda esquerda da linha
+    const rowBorderColor = !venc ? "transparent"
+      : vencido ? "var(--red)"
+      : (dias !== null && dias <= 30) ? "var(--amber)"
+      : "var(--lime)";
+
+    // Badge conta
+    const contaBadge = status === "inativo"
+      ? `<span class="badge badge-inativo" style="font-size:10px;">Inativo</span>`
+      : `<span class="badge badge-ok" style="font-size:10px;">Ativo</span>`;
+
+    return `<tr onclick="vencSelecionarAtleta('${escHtml(String(a.id_aluno))}')"
+      style="cursor:pointer;${selecionado ? "background:rgba(56,217,245,.07);" : ""}border-left:3px solid ${rowBorderColor};"
+      onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background='${selecionado ? "rgba(56,217,245,.07)" : ""}'"
+    >
+      <td style="padding:10px 14px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:30px;height:30px;border-radius:50%;background:var(--bg-base);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--lime);flex-shrink:0;">${escHtml(ini)}</div>
+          <div>
+            <div style="font-weight:600;font-size:13px;">${escHtml(a.nome || a.usuario)}</div>
+            <div style="font-size:10px;color:var(--text-3);font-family:'JetBrains Mono',monospace;">@${escHtml(a.usuario)}</div>
+          </div>
+        </div>
+      </td>
+      <td style="padding:10px 14px;">${vencBadge}</td>
+      <td style="padding:10px 14px;">${sitBadge}</td>
+      <td style="padding:10px 14px;">${contaBadge}</td>
+    </tr>`;
+  }).join("");
+}
+
+function vencSelecionarAtleta(id_aluno) {
+  const aluno = (state.todosAlunos || []).find(a => String(a.id_aluno) === String(id_aluno));
+  if (!aluno) return;
+  _vencAlunoSel = aluno;
+  vencAtualizarPainel();
+  // Re-renderiza tabela p/ destacar selecionado
+  vencFiltrar();
+}
+
+function vencAtualizarPainel() {
+  const a = _vencAlunoSel;
+  if (!a) return;
+
+  const painel = $("vencPainelAtleta");
+  if (painel) { painel.style.display = "flex"; painel.style.flexDirection = "column"; }
+
+  const hoje = new Date().toISOString().substring(0, 10);
+  const venc = String(a.data_vencimento || "").substring(0, 10);
+  const status = String(a.status || "").toLowerCase();
+  const vencido = venc && hoje > venc;
+  const dias = venc ? Math.round((new Date(venc+"T12:00:00") - new Date(hoje+"T12:00:00")) / 86400000) : null;
+
+  const ini = (a.nome || a.usuario || "?").charAt(0).toUpperCase();
+  const avatar = $("vencAvatarSel"); if (avatar) avatar.textContent = ini;
+  const nomeEl = $("vencNomeSel");   if (nomeEl) nomeEl.textContent = a.nome || a.usuario;
+  const userEl = $("vencUserSel");   if (userEl) userEl.textContent = "@" + a.usuario;
+
+  // Badge status
+  const badge = $("vencBadgeSel");
+  if (badge) {
+    if (!venc)        { badge.className = "venc-badge-livre";   badge.textContent = "Sem vencimento"; }
+    else if (vencido) { badge.className = "venc-badge-vencido"; badge.textContent = "⚠ Vencido"; }
+    else if (dias !== null && dias <= 7)
+                      { badge.className = "venc-badge-alerta";  badge.textContent = "⏰ Vence em " + dias + "d"; }
+    else              { badge.className = "venc-badge-ok";      badge.textContent = "✓ Ativo"; }
+    badge.style.cssText += ";font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:99px;";
+  }
+
+  // Data atual
+  const dataAtualEl = $("vencDataAtualSel");
+  if (dataAtualEl) {
+    dataAtualEl.textContent = venc ? "Atual: " + formatDate(venc) : "Sem data definida";
+    dataAtualEl.style.color = vencido ? "var(--red)" : venc ? "var(--cyan)" : "var(--text-3)";
+  }
+
+  // Input com data atual
+  const inp = $("vencInputDataSel");
+  if (inp) inp.value = venc || "";
+
+  // Botões inativar/reativar
+  const btnInat = $("btnVencInativar");
+  const btnReat = $("btnVencReativar");
+  if (btnInat) btnInat.style.display = status === "inativo" ? "none" : "";
+  if (btnReat) btnReat.style.display = status === "ativo"   ? "none" : "";
+
+  // Histórico
+  const histEl = $("vencHistConteudoSel");
+  if (histEl) {
+    const hist = a.historico_renovacoes || "";
+    if (hist) {
+      histEl.innerHTML = hist.split(" | ").map(h => `<div>${escHtml(h)}</div>`).join("");
+    } else {
+      histEl.textContent = "Nenhum histórico.";
+    }
+  }
+}
+
+function toggleVencHistSel() {
+  const box = $("vencHistBoxSel");
+  const arr = $("vencHistArrowSel");
+  if (!box) return;
+  const aberto = box.style.display !== "none";
+  box.style.display = aberto ? "none" : "block";
+  if (arr) arr.textContent = aberto ? "▶" : "▼";
+}
+
+async function vencRenovarRapido(btn, dias) {
+  if (!_vencAlunoSel) { showToast("Selecione um atleta primeiro."); return; }
+  if (!confirm("Renovar por " + dias + " dias para " + (_vencAlunoSel.nome || _vencAlunoSel.usuario) + "?")) return;
+  const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = "...";
+  let res;
+  try {
+    res = await callAPI({ action: "renovarVencimento", id_aluno: _vencAlunoSel.id_aluno, dias: dias });
+  } catch(e) {
+    btn.disabled = false; btn.textContent = orig;
+    showToast("Erro de conexão."); return;
+  }
+  btn.disabled = false; btn.textContent = orig;
+  if (!res || !res.ok) { showToast("⚠ " + (res ? res.erro : "sem resposta")); return; }
+  _vencSincronizarEstado(res.data_vencimento, res.historico_renovacoes);
+  showToast("✓ " + res.msg);
+}
+
+async function vencSalvarManualSel() {
+  if (!_vencAlunoSel) { showToast("Selecione um atleta primeiro."); return; }
+  const data = $("vencInputDataSel")?.value;
+  if (!data) { showToast("Informe uma data antes de salvar."); return; }
+  const btn = $("btnVencSalvarSel");
+  if (btn) { btn.disabled = true; btn.textContent = "..."; }
+  let res;
+  try {
+    res = await callAPI({ action: "atualizarVencimento", id_aluno: _vencAlunoSel.id_aluno, data_vencimento: data });
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.textContent = "💾 Salvar"; }
+    showToast("Erro de conexão."); return;
+  }
+  if (btn) { btn.disabled = false; btn.textContent = "💾 Salvar"; }
+  if (!res || !res.ok) { showToast("⚠ " + (res ? res.erro : "sem resposta")); return; }
+  _vencSincronizarEstado(res.data_vencimento, res.historico_renovacoes);
+  if (res.reativado) showToast("✓ " + res.msg);
+  else showToast("✓ " + res.msg);
+}
+
+async function vencLimparSel() {
+  if (!_vencAlunoSel) return;
+  if (!confirm("Remover a data de vencimento de " + (_vencAlunoSel.nome || _vencAlunoSel.usuario) + "?")) return;
+  const res = await callAPI({ action: "atualizarVencimento", id_aluno: _vencAlunoSel.id_aluno, data_vencimento: "" });
+  if (!res || !res.ok) { showToast("⚠ " + (res ? res.erro : "sem resposta")); return; }
+  _vencSincronizarEstado("", "");
+  showToast("✓ Data de vencimento removida.");
+}
+
+async function vencInativar() {
+  if (!_vencAlunoSel) return;
+  if (!confirm("Inativar a conta de " + (_vencAlunoSel.nome || _vencAlunoSel.usuario) + "?")) return;
+  const res = await callAPI({ action: "inativarAluno", id_aluno: _vencAlunoSel.id_aluno });
+  if (!res || !res.ok) { showToast("⚠ " + (res ? res.erro : "sem resposta")); return; }
+  // Atualiza estado local
+  const idx = (state.todosAlunos || []).findIndex(a => String(a.id_aluno) === String(_vencAlunoSel.id_aluno));
+  if (idx >= 0) state.todosAlunos[idx].status = "inativo";
+  _vencAlunoSel.status = "inativo";
+  vencAtualizarPainel();
+  vencFiltrar();
+  showToast("✓ Atleta inativado.");
+}
+
+async function vencReativar() {
+  if (!_vencAlunoSel) return;
+  if (!confirm("Reativar a conta de " + (_vencAlunoSel.nome || _vencAlunoSel.usuario) + "?")) return;
+  const res = await callAPI({ action: "reativarAluno", id_aluno: _vencAlunoSel.id_aluno });
+  if (!res || !res.ok) { showToast("⚠ " + (res ? res.erro : "sem resposta")); return; }
+  const idx = (state.todosAlunos || []).findIndex(a => String(a.id_aluno) === String(_vencAlunoSel.id_aluno));
+  if (idx >= 0) state.todosAlunos[idx].status = "ativo";
+  _vencAlunoSel.status = "ativo";
+  vencAtualizarPainel();
+  vencFiltrar();
+  showToast("✓ Atleta reativado.");
+}
+
+async function vencGerarReciboUltimoPagamento() {
+  if (!_vencAlunoSel) { showToast("Selecione um atleta primeiro."); return; }
+  // Busca último pagamento do atleta
+  const res = await callAPI({ action: "buscarFinanceiro", id_aluno: _vencAlunoSel.id_aluno });
+  if (!res || !res.ok || !(res.pagamentos||[]).length) {
+    showToast("Nenhum pagamento encontrado para este atleta.");
+    return;
+  }
+  const pag = res.pagamentos[0]; // Já vem ordenado por data desc
+  gerarReciboPagamento(pag);
+}
+
+// Sincroniza estado global + painel + tabela
+function _vencSincronizarEstado(novaData, historico) {
+  if (!_vencAlunoSel) return;
+  const id = String(_vencAlunoSel.id_aluno);
+
+  // Atualiza em todosAlunos
+  const idx = (state.todosAlunos || []).findIndex(a => String(a.id_aluno) === id);
+  if (idx >= 0) {
+    state.todosAlunos[idx].data_vencimento = novaData;
+    if (historico !== undefined) state.todosAlunos[idx].historico_renovacoes = historico;
+    _vencAlunoSel = state.todosAlunos[idx];
+  } else {
+    _vencAlunoSel.data_vencimento = novaData;
+    if (historico !== undefined) _vencAlunoSel.historico_renovacoes = historico;
+  }
+
+  // Também sincroniza o estado do workspace se for o mesmo aluno
+  if (state.alunoAdmin && String(state.alunoAdmin.id_aluno) === id) {
+    state.alunoAdmin.data_vencimento = novaData;
+    if (historico !== undefined) state.alunoAdmin.historico_renovacoes = historico;
+    if (typeof renderizarPainelVencimento === "function") renderizarPainelVencimento(state.alunoAdmin);
+  }
+
+  vencAtualizarPainel();
+  vencFiltrar();
+}
+
+// ════════════════════════════════════════════════════════════
+//  CONTROLE FINANCEIRO
+// ════════════════════════════════════════════════════════════
+var _finPagamentos  = [];
+var _finVencimentos = [];
+var _finAba         = "pagamentos"; // "pagamentos" | "avencer" | "vencidos"
+var _pagDiasSel     = 0;
+
+function finMudarAba(aba) {
+  _finAba = aba;
+  // Atualiza classes dos botões
+  ["pagamentos","avencer","vencidos"].forEach(a => {
+    const btn = $("finTab" + (a==="pagamentos"?"Pagamentos":a==="avencer"?"AVencer":"Vencidos"));
+    if (btn) btn.className = "fin-rel-tab" + (a === aba ? " fin-rel-tab-active" : "");
+  });
+  // Mostra/oculta painéis e filtros
+  const isPag = aba === "pagamentos";
+  $("finPainelPagamentos").style.display  = isPag ? "" : "none";
+  $("finPainelVencimentos").style.display = isPag ? "none" : "";
+  $("finFiltroMes").style.display         = isPag ? "" : "none";
+  $("finFiltroMesVenc").style.display     = isPag ? "none" : "";
+  finFiltrar();
+}
+
+async function finCarregarLista() {
+  const tbody     = $("finTbody");
+  const tbodyVenc = $("finTbodyVenc");
+  if (tbody)     tbody.innerHTML     = `<tr><td colspan="7" style="padding:24px;text-align:center;color:var(--text-3);">Carregando…</td></tr>`;
+  if (tbodyVenc) tbodyVenc.innerHTML = `<tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text-3);">Carregando…</td></tr>`;
+  try {
+    // Carrega pagamentos e vencimentos em paralelo
+    const [resFin, resVenc] = await Promise.all([
+      callAPI({ action: "buscarFinanceiro" }),
+      callAPI({ action: "buscarVencimentos" })
+    ]);
+    if (!resFin || !resFin.ok) { showToast("⚠ Erro ao carregar financeiro."); return; }
+    _finPagamentos  = resFin.pagamentos   || [];
+    _finVencimentos = (resVenc && resVenc.ok) ? (resVenc.vencimentos || []) : [];
+
+    // Atualiza totais
+    const fmtBRL = v => "R$ " + parseFloat(v||0).toFixed(2).replace(".",",");
+    setText("finTotalMes",   fmtBRL(resFin.total_mes));
+    setText("finTotalGeral", fmtBRL(resFin.total_geral));
+
+    const hoje   = new Date().toISOString().substring(0,10);
+    const anoMes = hoje.substring(0,7);
+    const em30   = new Date(); em30.setDate(em30.getDate() + 30);
+    const em30Str = em30.toISOString().substring(0,10);
+
+    const qtdMes      = _finPagamentos.filter(p => (p.data_pagamento||"").substring(0,7) === anoMes).length;
+    const qtdAVencer  = _finVencimentos.filter(v => { const d=(v.data_vencimento||"").substring(0,10); return d >= hoje && d <= em30Str; }).length;
+    const qtdVencidos = _finVencimentos.filter(v => { const d=(v.data_vencimento||"").substring(0,10); return d && d < hoje; }).length;
+    setText("finQtdMes",      String(qtdMes));
+    setText("finQtdAVencer",  String(qtdAVencer));
+    setText("finQtdVencidos", String(qtdVencidos));
+
+    // Preenche filtro de meses — pagamentos
+    const meses = [...new Set(_finPagamentos.map(p => (p.data_pagamento||"").substring(0,7)).filter(Boolean))].sort().reverse();
+    const selMes = $("finFiltroMes");
+    if (selMes) {
+      const cur = selMes.value;
+      selMes.innerHTML = `<option value="">Todos os meses</option>` +
+        meses.map(m => { const [y,mo]=m.split("-"); const label=new Date(+y,+mo-1,1).toLocaleString("pt-BR",{month:"long",year:"numeric"}); return `<option value="${m}" ${m===cur?"selected":""}>${label}</option>`; }).join("");
+    }
+
+    // Preenche filtro de meses — vencimentos (por mês do vencimento)
+    const mesesVenc = [...new Set(_finVencimentos.map(v => (v.data_vencimento||"").substring(0,7)).filter(Boolean))].sort().reverse();
+    const selMesV = $("finFiltroMesVenc");
+    if (selMesV) {
+      const curV = selMesV.value;
+      selMesV.innerHTML = `<option value="">Todos os meses</option>` +
+        mesesVenc.map(m => { const [y,mo]=m.split("-"); const label=new Date(+y,+mo-1,1).toLocaleString("pt-BR",{month:"long",year:"numeric"}); return `<option value="${m}" ${m===curV?"selected":""}>${label}</option>`; }).join("");
+    }
+
+    finFiltrar();
+  } catch(e) { showToast("Erro de conexão."); }
+}
+
+function finFiltrar() {
+  const busca   = ($("finBusca")?.value || "").toLowerCase();
+  const mes     = $("finFiltroMes")?.value     || "";
+  const mesVenc = $("finFiltroMesVenc")?.value || "";
+  const hoje    = new Date().toISOString().substring(0,10);
+  const em30    = new Date(); em30.setDate(em30.getDate() + 30);
+  const em30Str = em30.toISOString().substring(0,10);
+
+  if (_finAba === "pagamentos") {
+    let lista = _finPagamentos.filter(p => {
+      if (busca && !(p.nome||"").toLowerCase().includes(busca) && !(p.usuario||"").toLowerCase().includes(busca)) return false;
+      if (mes && (p.data_pagamento||"").substring(0,7) !== mes) return false;
+      return true;
+    });
+    finRenderTabela(lista);
+  } else {
+    let lista = _finVencimentos.filter(v => {
+      const d = (v.data_vencimento||"").substring(0,10);
+      if (busca && !(v.nome||"").toLowerCase().includes(busca) && !(v.usuario||"").toLowerCase().includes(busca)) return false;
+      if (mesVenc && d.substring(0,7) !== mesVenc) return false;
+      if (_finAba === "avencer")  return d >= hoje && d <= em30Str;
+      if (_finAba === "vencidos") return d && d < hoje;
+      return true;
+    });
+    finRenderTabelaVenc(lista);
+  }
+}
+
+function finRenderTabela(lista) {
+  const tbody = $("finTbody");
+  if (!tbody) return;
+  if (!lista.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="padding:24px;text-align:center;color:var(--text-3);">Nenhum pagamento encontrado.</td></tr>`;
+    return;
+  }
+  const hoje = new Date().toISOString().substring(0,10);
+  tbody.innerHTML = lista.map(p => {
+    const venc    = (p.data_vencimento||"").substring(0,10);
+    const vencido = venc && hoje > venc;
+    const diasVenc = venc ? Math.round((new Date(venc+"T12:00:00") - new Date(hoje+"T12:00:00")) / 86400000) : null;
+    let vencBadge = "";
+    if (!venc)        vencBadge = `<span style="font-size:10px;color:var(--text-3);">—</span>`;
+    else if (vencido) vencBadge = `<span style="font-size:10px;font-weight:700;color:var(--red);">🔴 ${formatDate(venc)}</span>`;
+    else if (diasVenc !== null && diasVenc <= 7)
+                      vencBadge = `<span style="font-size:10px;font-weight:700;color:var(--amber);">🟡 ${formatDate(venc)}</span>`;
+    else              vencBadge = `<span style="font-size:10px;font-weight:700;color:var(--lime);">🟢 ${formatDate(venc)}</span>`;
+    return `<tr onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+      <td style="padding:10px 14px;">
+        <div style="font-weight:600;font-size:13px;">${escHtml(p.nome||p.usuario)}</div>
+        <div style="font-size:10px;color:var(--text-3);font-family:'JetBrains Mono',monospace;">@${escHtml(p.usuario||"")}</div>
+      </td>
+      <td style="padding:10px 14px;font-weight:700;color:var(--lime);font-family:'JetBrains Mono',monospace;">R$ ${parseFloat(p.valor||0).toFixed(2).replace(".",",")}</td>
+      <td style="padding:10px 14px;font-size:11px;color:var(--text-2);">${escHtml(p.plano||"—")}</td>
+      <td style="padding:10px 14px;font-size:11px;color:var(--text-2);font-family:'JetBrains Mono',monospace;">${formatDate(p.data_pagamento)}</td>
+      <td style="padding:10px 14px;">${vencBadge}</td>
+      <td style="padding:10px 14px;font-size:11px;color:var(--text-2);">${escHtml(p.metodo_pagamento||"—")}</td>
+      <td style="padding:10px 14px;display:flex;gap:6px;">
+        <button class="btn btn-sm btn-ghost" style="font-size:10px;" onclick="gerarReciboPDF('${p.id_pagamento}')">🧾 Recibo</button>
+        <button class="btn btn-sm btn-danger" style="font-size:10px;" onclick="excluirPagamento('${p.id_pagamento}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+function finRenderTabelaVenc(lista) {
+  const tbody = $("finTbodyVenc");
+  if (!tbody) return;
+  if (!lista.length) {
+    const label = _finAba === "avencer" ? "Nenhum atleta a vencer nos próximos 30 dias." : "Nenhum atleta vencido.";
+    tbody.innerHTML = `<tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text-3);">${label}</td></tr>`;
+    return;
+  }
+  const hoje = new Date().toISOString().substring(0,10);
+  // Busca último plano de cada aluno nos pagamentos
+  const ultimoPlano = {};
+  _finPagamentos.forEach(p => {
+    if (!ultimoPlano[p.id_aluno] || p.data_pagamento > ultimoPlano[p.id_aluno].data_pagamento)
+      ultimoPlano[p.id_aluno] = p;
+  });
+  tbody.innerHTML = lista.map(v => {
+    const d        = (v.data_vencimento||"").substring(0,10);
+    const diasAte  = d ? Math.round((new Date(d+"T12:00:00") - new Date(hoje+"T12:00:00")) / 86400000) : null;
+    const vencido  = d && d < hoje;
+    let situacao   = "";
+    if (!d) situacao = `<span style="color:var(--text-3);font-size:11px;">Sem data</span>`;
+    else if (vencido) {
+      const diasAtras = Math.abs(diasAte);
+      situacao = `<span style="font-weight:700;color:var(--red);font-size:11px;">🔴 Vencido há ${diasAtras}d</span>`;
+    } else {
+      situacao = `<span style="font-weight:700;color:var(--amber);font-size:11px;">🟡 Vence em ${diasAte}d</span>`;
+    }
+    const ult = ultimoPlano[v.id_aluno];
+    const planoDesc = ult ? `${escHtml(ult.plano||"—")} · R$ ${parseFloat(ult.valor||0).toFixed(2).replace(".",",")}` : "—";
+    return `<tr onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+      <td style="padding:10px 14px;">
+        <div style="font-weight:600;font-size:13px;">${escHtml(v.nome||v.usuario)}</div>
+      </td>
+      <td style="padding:10px 14px;font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',monospace;">@${escHtml(v.usuario||"")}</td>
+      <td style="padding:10px 14px;font-size:11px;color:var(--text-2);font-family:'JetBrains Mono',monospace;">${d ? formatDate(d) : "—"}</td>
+      <td style="padding:10px 14px;">${situacao}</td>
+      <td style="padding:10px 14px;font-size:11px;color:var(--text-2);">${planoDesc}</td>
+      <td style="padding:10px 14px;display:flex;gap:6px;">
+        <button class="btn btn-sm btn-lime" style="font-size:10px;" onclick="abrirModalRegistrarPagamento('${escHtml(v.id_aluno)}')">💳 Renovar</button>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+// Exporta o relatório atual em PDF usando jsPDF
+async function finExportarRelatorio() {
+  if (typeof window.jspdf === "undefined" && typeof window.jsPDF === "undefined") {
+    showToast("⚠ jsPDF não carregado. Verifique a conexão."); return;
+  }
+  const { jsPDF } = window.jspdf || window;
+  const doc  = new jsPDF({ unit:"mm", format:"a4" });
+  const W    = doc.internal.pageSize.getWidth();
+  const hoje = new Date().toISOString().substring(0,10);
+  const fmtD = s => { if (!s) return "—"; const p=String(s).substring(0,10).split("-"); return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:s; };
+
+  const titulos = { pagamentos:"Relatório de Pagamentos", avencer:"Relatório — Atletas a Vencer (30 dias)", vencidos:"Relatório — Atletas com Plano Vencido" };
+  const titulo  = titulos[_finAba] || "Relatório Financeiro";
+
+  // Cabeçalho
+  doc.setFillColor(13,13,18); doc.rect(0,0,W,18,"F");
+  doc.setFontSize(13); doc.setTextColor(200,241,53); doc.setFont(undefined,"bold");
+  doc.text("TrainOS — " + titulo, W/2, 11, { align:"center" });
+  doc.setFontSize(8); doc.setTextColor(120,120,140); doc.setFont(undefined,"normal");
+  doc.text("Gerado em: " + fmtD(hoje), W-12, 16, { align:"right" });
+
+  // Filtro aplicado
+  const mesPag  = $("finFiltroMes")?.value     || "";
+  const mesVenc = $("finFiltroMesVenc")?.value || "";
+  const filtroLabel = _finAba==="pagamentos" && mesPag ? `Mês: ${mesPag}` : (_finAba!=="pagamentos" && mesVenc ? `Mês de vencimento: ${mesVenc}` : "Todos os meses");
+  doc.setFontSize(8); doc.setTextColor(160,160,180);
+  doc.text("Filtro: " + filtroLabel, 12, 24);
+
+  let y = 30;
+  doc.setDrawColor(50,50,70);
+
+  if (_finAba === "pagamentos") {
+    const busca = ($("finBusca")?.value||"").toLowerCase();
+    const mes   = $("finFiltroMes")?.value||"";
+    const lista = _finPagamentos.filter(p => {
+      if (busca && !(p.nome||"").toLowerCase().includes(busca) && !(p.usuario||"").toLowerCase().includes(busca)) return false;
+      if (mes && (p.data_pagamento||"").substring(0,7) !== mes) return false;
+      return true;
+    });
+    // Cabeçalho tabela
+    const cols = [["Atleta",55],["Valor",28],["Plano",30],["Pagamento",28],["Vencimento",28],["Método",28]];
+    doc.setFillColor(30,30,40); doc.rect(10, y, W-20, 7, "F");
+    doc.setFontSize(7); doc.setFont(undefined,"bold"); doc.setTextColor(200,241,53);
+    let cx = 12;
+    cols.forEach(([label,w]) => { doc.text(label, cx, y+5); cx += w; });
+    y += 8;
+    doc.setFont(undefined,"normal"); doc.setTextColor(220,220,230); doc.setFontSize(8);
+    let total = 0;
+    lista.forEach((p,i) => {
+      if (y > 270) { doc.addPage(); y = 15; }
+      if (i%2===0) { doc.setFillColor(22,22,32); doc.rect(10,y-1,W-20,7,"F"); }
+      cx = 12;
+      const vals = [
+        p.nome||p.usuario||"—",
+        "R$ "+parseFloat(p.valor||0).toFixed(2).replace(".",","),
+        p.plano||"—",
+        fmtD(p.data_pagamento),
+        fmtD(p.data_vencimento),
+        p.metodo_pagamento||"—"
+      ];
+      vals.forEach((val,vi) => { doc.text(String(val).substring(0,20), cx, y+5); cx += cols[vi][1]; });
+      y += 7; total += parseFloat(p.valor||0);
+    });
+    y += 4;
+    doc.setDrawColor(200,241,53); doc.line(10, y, W-10, y); y += 5;
+    doc.setFont(undefined,"bold"); doc.setTextColor(200,241,53); doc.setFontSize(9);
+    doc.text("Total: R$ " + total.toFixed(2).replace(".",",") + "   |   " + lista.length + " registro(s)", 12, y);
+  } else {
+    const busca    = ($("finBusca")?.value||"").toLowerCase();
+    const mesVencF = $("finFiltroMesVenc")?.value||"";
+    const em30     = new Date(); em30.setDate(em30.getDate()+30); const em30Str = em30.toISOString().substring(0,10);
+    const lista    = _finVencimentos.filter(v => {
+      const d = (v.data_vencimento||"").substring(0,10);
+      if (busca && !(v.nome||"").toLowerCase().includes(busca) && !(v.usuario||"").toLowerCase().includes(busca)) return false;
+      if (mesVencF && d.substring(0,7)!==mesVencF) return false;
+      if (_finAba==="avencer")  return d >= hoje && d <= em30Str;
+      if (_finAba==="vencidos") return d && d < hoje;
+      return true;
+    });
+    const ultimoPlano = {};
+    _finPagamentos.forEach(p => {
+      if (!ultimoPlano[p.id_aluno]||p.data_pagamento>ultimoPlano[p.id_aluno].data_pagamento) ultimoPlano[p.id_aluno]=p;
+    });
+    const cols = [["Atleta",55],["Usuário",35],["Vencimento",32],["Situação",40],["Último Plano",35]];
+    doc.setFillColor(30,30,40); doc.rect(10,y,W-20,7,"F");
+    doc.setFontSize(7); doc.setFont(undefined,"bold"); doc.setTextColor(200,241,53);
+    let cx = 12;
+    cols.forEach(([label,w]) => { doc.text(label, cx, y+5); cx += w; });
+    y += 8;
+    doc.setFont(undefined,"normal"); doc.setTextColor(220,220,230); doc.setFontSize(8);
+    lista.forEach((v,i) => {
+      if (y > 270) { doc.addPage(); y = 15; }
+      if (i%2===0) { doc.setFillColor(22,22,32); doc.rect(10,y-1,W-20,7,"F"); }
+      const d       = (v.data_vencimento||"").substring(0,10);
+      const diasAte = d ? Math.round((new Date(d+"T12:00:00")-new Date(hoje+"T12:00:00"))/86400000) : null;
+      const sit     = !d ? "Sem data" : d < hoje ? "Vencido há "+Math.abs(diasAte)+"d" : "Vence em "+diasAte+"d";
+      const ult     = ultimoPlano[v.id_aluno];
+      const plDesc  = ult ? (ult.plano||"—") + " R$"+parseFloat(ult.valor||0).toFixed(2) : "—";
+      const vals    = [v.nome||v.usuario||"—", "@"+(v.usuario||""), fmtD(d), sit, plDesc];
+      cx = 12;
+      vals.forEach((val,vi) => { doc.text(String(val).substring(0,22), cx, y+5); cx += cols[vi][1]; });
+      y += 7;
+    });
+    y += 4;
+    doc.setDrawColor(200,241,53); doc.line(10,y,W-10,y); y += 5;
+    doc.setFont(undefined,"bold"); doc.setTextColor(200,241,53); doc.setFontSize(9);
+    doc.text("Total: " + lista.length + " atleta(s)", 12, y);
+  }
+
+  const nomeArq = "Relatorio_" + _finAba + "_" + hoje.replace(/-/g,"") + ".pdf";
+  doc.save(nomeArq);
+  showToast("✅ Relatório exportado: " + nomeArq);
+}
+
+// Modal de registrar pagamento
+function abrirModalRegistrarPagamento(idAluno) {
+  // Preenche select de alunos
+  const sel = $("pagAlunoSel");
+  if (sel) {
+    sel.innerHTML = `<option value="">— Selecionar atleta —</option>` +
+      (state.todosAlunos||[]).map(a => `<option value="${a.id_aluno}" ${idAluno&&a.id_aluno===idAluno?"selected":""}>${escHtml(a.nome||a.usuario)} (@${escHtml(a.usuario)})</option>`).join("");
+    if (idAluno) sel.value = idAluno;
+  }
+  $("pagData").value = hoje();
+  _pagDiasSel = 0;
+  // Reset botões dias
+  document.querySelectorAll("#pagRenovarOpts .btn").forEach(b => {
+    b.classList.remove("btn-lime"); b.classList.add("btn-ghost");
+  });
+  pagAlunoSelecionado();
+  $("modalRegistrarPagamento").classList.remove("hidden");
+}
+
+function pagAlunoSelecionado() {
+  const id = $("pagAlunoSel")?.value;
+  const el = $("pagVencAtual");
+  if (!el) return;
+  if (!id) { el.textContent = ""; return; }
+  const aluno = (state.todosAlunos||[]).find(a => String(a.id_aluno) === String(id));
+  if (!aluno) { el.textContent = ""; return; }
+  const venc = aluno.data_vencimento || "";
+  const hoje_ = new Date().toISOString().substring(0,10);
+  const dias = venc ? Math.round((new Date(venc+"T12:00:00") - new Date(hoje_+"T12:00:00")) / 86400000) : null;
+  if (!venc)               el.innerHTML = `Sem vencimento definido`;
+  else if (hoje_ > venc)   el.innerHTML = `<span style="color:var(--red);">🔴 Vencido em ${formatDate(venc)}</span>`;
+  else if (dias !== null && dias <= 7) el.innerHTML = `<span style="color:var(--amber);">🟡 Vence em ${dias} dia(s) — ${formatDate(venc)}</span>`;
+  else                     el.innerHTML = `<span style="color:var(--lime);">🟢 Ativo até ${formatDate(venc)}</span>`;
+}
+
+function pagSetDias(btn, dias) {
+  _pagDiasSel = dias;
+  document.querySelectorAll("#pagRenovarOpts .btn").forEach(b => {
+    b.classList.remove("btn-lime"); b.classList.add("btn-ghost");
+  });
+  btn.classList.remove("btn-ghost"); btn.classList.add("btn-lime");
+  // Limpa campo de data manual
+  $("pagDataVenc").value = "";
+}
+
+async function confirmarRegistrarPagamento() {
+  const id_aluno        = $("pagAlunoSel")?.value;
+  const valor           = $("pagValor")?.value;
+  const plano           = $("pagPlano")?.value;
+  const data_pagamento  = $("pagData")?.value;
+  const metodo          = $("pagMetodo")?.value;
+  const obs             = $("pagObs")?.value;
+  const data_venc_manual= $("pagDataVenc")?.value;
+  const gerarRecibo_    = $("pagGerarRecibo")?.checked;
+
+  if (!id_aluno) { showToast("Selecione um atleta."); return; }
+  if (!valor || parseFloat(valor) <= 0) { showToast("Informe um valor válido."); return; }
+  if (!data_pagamento) { showToast("Informe a data do pagamento."); return; }
+
+  const btn = $("btnConfPagamento");
+  if (btn) { btn.disabled = true; btn.textContent = "Registrando…"; }
+
+  const payload = {
+    action: "registrarPagamento",
+    id_aluno, valor, plano, data_pagamento,
+    metodo_pagamento: metodo,
+    observacao: obs,
+  };
+  if (data_venc_manual) {
+    payload.data_vencimento = data_venc_manual;
+  } else if (_pagDiasSel > 0) {
+    payload.renovar_dias = _pagDiasSel;
+  }
+
+  let res;
+  try {
+    res = await callAPI(payload);
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.textContent = "💳 Registrar Pagamento"; }
+    showToast("Erro de conexão."); return;
+  }
+  if (btn) { btn.disabled = false; btn.textContent = "💳 Registrar Pagamento"; }
+  if (!res || !res.ok) { showToast("⚠ " + (res ? res.erro : "sem resposta")); return; }
+
+  // Atualiza vencimento no estado local se retornou nova data
+  if (res.data_vencimento) {
+    const idx = (state.todosAlunos||[]).findIndex(a => String(a.id_aluno) === String(id_aluno));
+    if (idx >= 0) state.todosAlunos[idx].data_vencimento = res.data_vencimento;
+    if (state.alunoAdmin && String(state.alunoAdmin.id_aluno) === String(id_aluno))
+      state.alunoAdmin.data_vencimento = res.data_vencimento;
+    renderAthleteList(state.todosAlunos);
+  }
+
+  fecharModal("modalRegistrarPagamento");
+  showToast("✓ " + res.msg);
+
+  // Gera recibo
+  if (gerarRecibo_) {
+    const aluno = (state.todosAlunos||[]).find(a => String(a.id_aluno) === String(id_aluno));
+    gerarReciboPagamento({
+      id_pagamento: res.id_pagamento,
+      nome: aluno?.nome || aluno?.usuario || "",
+      usuario: aluno?.usuario || "",
+      valor: parseFloat(valor),
+      plano, data_pagamento,
+      metodo_pagamento: metodo,
+      data_vencimento: res.data_vencimento || "",
+      observacao: obs,
+    });
+  }
+
+  // Recarrega lista financeiro se visível
+  finCarregarLista();
+}
+
+async function excluirPagamento(id_pagamento) {
+  if (!confirm("Excluir este registro de pagamento?")) return;
+  const res = await callAPI({ action: "excluirPagamento", id_pagamento });
+  if (!res || !res.ok) { showToast("⚠ " + (res ? res.erro : "sem resposta")); return; }
+  showToast("✓ Pagamento excluído.");
+  finCarregarLista();
+}
+
+// Gera recibo a partir de id_pagamento buscando os dados
+async function gerarReciboPDF(id_pagamento) {
+  const pag = _finPagamentos.find(p => p.id_pagamento === id_pagamento);
+  if (!pag) { showToast("Pagamento não encontrado."); return; }
+  gerarReciboPagamento(pag);
+}
+
+// Gera o PDF do recibo
+function gerarReciboPagamento(pag) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "mm", format: "a5" });
+  const W   = doc.internal.pageSize.getWidth();
+  const m   = getMarca();
+  const personal = m.pdfNome || "Personal Trainer";
+  const contato  = m.pdfContato || "";
+
+  // Cabeçalho
+  doc.setFillColor(7,7,15);
+  doc.rect(0,0,W,40,"F");
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(18);
+  doc.setTextColor(200,241,53);
+  doc.text(m.logoTexto || "TrainOS", W/2, 16, { align:"center" });
+  doc.setFontSize(9);
+  doc.setTextColor(150,150,180);
+  doc.text("RECIBO DE PAGAMENTO", W/2, 24, { align:"center" });
+  doc.setFontSize(8);
+  doc.text(personal + (contato ? "  ·  " + contato : ""), W/2, 31, { align:"center" });
+
+  let y = 50;
+  doc.setTextColor(30,30,40);
+  doc.setFont("helvetica","normal");
+
+  const linha = (lbl, val) => {
+    doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(80,80,120);
+    doc.text(lbl.toUpperCase(), 14, y);
+    doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(20,20,30);
+    doc.text(String(val||"—"), 14, y+5);
+    y += 13;
+  };
+
+  doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(80,80,120);
+  doc.text("─────────────────────────────────────────", 14, y-4);
+  y += 2;
+
+  linha("Atleta",           pag.nome || pag.usuario);
+  linha("Usuário",          "@" + (pag.usuario||""));
+  linha("Plano / Serviço",  pag.plano || "Assessoria de Corrida");
+  linha("Data de Pagamento",formatDate(pag.data_pagamento));
+  if (pag.data_vencimento) linha("Próximo Vencimento", formatDate(pag.data_vencimento));
+  linha("Método",           pag.metodo_pagamento || "—");
+  if (pag.observacao) linha("Observação", pag.observacao);
+
+  y += 4;
+  // Valor em destaque
+  doc.setFillColor(200,241,53);
+  doc.roundedRect(14, y, W-28, 18, 3, 3, "F");
+  doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(5,5,10);
+  doc.text("VALOR PAGO", 22, y+7);
+  doc.setFontSize(16);
+  doc.text("R$ " + parseFloat(pag.valor||0).toFixed(2).replace(".",","), W-16, y+11, { align:"right" });
+  y += 28;
+
+  // Rodapé
+  doc.setFillColor(7,7,15);
+  const ph = doc.internal.pageSize.getHeight();
+  doc.rect(0, ph-20, W, 20, "F");
+  doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(100,100,140);
+  doc.text("Recibo gerado em " + new Date().toLocaleDateString("pt-BR") + " — TrainOS", W/2, ph-10, { align:"center" });
+  doc.text("ID: " + (pag.id_pagamento||""), W/2, ph-5, { align:"center" });
+
+  const nomePDF = "Recibo_" + (pag.nome||pag.usuario||"atleta").replace(/\s+/g,"_") + "_" + (pag.data_pagamento||"").replace(/-/g,"") + ".pdf";
+  doc.save(nomePDF);
+  showToast("🧾 Recibo gerado!");
 }
 
 // ── Lista de atletas ──────────────────────────────────────
@@ -2608,8 +3988,16 @@ function renderAthleteList(lista) {
         : `<span class="badge badge-nenhum">Sem treino</span>`;
     const inativo  = String(a.status || "").toLowerCase() === "inativo"
       ? `<span class="badge badge-inativo">Inativo</span>` : "";
-    const vencBadge = isAlunoVencido(a)
-      ? `<span class="badge" style="background:rgba(245,166,35,.15);color:var(--amber);border-color:rgba(245,166,35,.3);">⏰ Vencido</span>` : "";
+    const vencBadge = (() => {
+      const venc = String(a.data_vencimento||"").substring(0,10);
+      if (!venc) return "";
+      const hoje_ = new Date().toISOString().substring(0,10);
+      const dias  = Math.round((new Date(venc+"T12:00:00") - new Date(hoje_+"T12:00:00")) / 86400000);
+      if (hoje_ > venc) return `<span class="badge" style="background:rgba(248,113,113,.15);color:var(--red);border-color:rgba(248,113,113,.3);">🔴 Vencido</span>`;
+      if (dias <= 7)    return `<span class="badge" style="background:rgba(245,166,35,.15);color:var(--amber);border-color:rgba(245,166,35,.3);">🟡 ${dias}d</span>`;
+      if (dias <= 30)   return `<span class="badge" style="background:rgba(245,166,35,.08);color:var(--amber);border-color:rgba(245,166,35,.2);">🟡 ${dias}d</span>`;
+      return "";
+    })();
     const fbBadge = temFeedbackNaoLido(a)
       ? `<span class="badge badge-fb">Novo FB</span>` : "";
     return `<div class="athlete-card" id="ac_${a.id_aluno}"
@@ -2787,7 +4175,7 @@ async function salvarTreino(id_aluno) {
   renderAthleteList(state.todosAlunos);
 }
 
-// ── Workspace: Balança Corporal (Chart.js) ────────────────
+// ── Workspace: Acompanhe seu Peso (Chart.js) ────────────────
 async function wsCarregarPeso(id_aluno) {
   const res = await callAPI({ action: "buscarHistoricoPeso", id_aluno });
   if (!res.ok) return;
@@ -2893,6 +4281,7 @@ function renderWsFicha(aluno) {
         ${aluno.data_vencimento ? field("📅 Vencimento", formatDate(aluno.data_vencimento)) : ""}
       </div>
     </div>
+    <div style="margin-top:4px;margin-bottom:14px;">${_vencBadgeHtml(aluno.data_vencimento)}</div>
     <div class="card" style="margin-bottom:14px;">
       <div class="card-title">Performance</div>
       <div class="form-grid-2">
@@ -3323,17 +4712,8 @@ function abrirGerenciarAluno(id_aluno) {
   $("btnInativarAluno").style.opacity = status === "inativo" ? ".4" : "1";
   $("btnReativarAluno").style.opacity = status !== "inativo" ? ".4" : "1";
 
-  // Info de vencimento
-  const infoVenc = $("gerVencimentoInfo");
-  if (infoVenc) {
-    const vStr = fmtVencimento(aluno);
-    const vencido = isAlunoVencido(aluno);
-    if (vStr) {
-      infoVenc.innerHTML = `Vence em: <strong style="color:${vencido?"var(--red)":"var(--cyan)"};">${vStr}</strong>${vencido?" &nbsp;<span style=\"color:var(--red);\">⚠ Vencido</span>":""}`;
-    } else {
-      infoVenc.textContent = "Sem data de vencimento definida.";
-    }
-  }
+  // Painel de vencimento
+  renderizarPainelVencimento(aluno);
 
   $("modalGerenciarAluno").classList.remove("hidden");
 }
@@ -3372,6 +4752,8 @@ async function executarReativarAluno() {
   renderAthleteList(state.todosAlunos);
   if (IS_MOBILE()) mobRenderAlunos(state.todosAlunos);
 }
+
+
 
 async function executarExcluirAlunoGer() {
   const aluno = state.todosAlunos.find(a => String(a.id_aluno) === _gerenciarAlunoId);
@@ -3527,6 +4909,7 @@ function renderAlunoFicha() {
         ${field("Modalidade", f.modalidade)}
         ${field("Clube",      f.clube)}
       </div>
+      ${state.usuario?.data_vencimento ? `<div style="margin-top:8px;">${_vencBadgeHtml(state.usuario.data_vencimento)}</div>` : ""}
     </div>
 
     <div class="card" style="margin-bottom:14px;">
@@ -3677,13 +5060,13 @@ function _snHtml(prefix, val) {
 }
 
 const _CAMPOS_FICHA_COMPLETA = [
-  "nome","email","nascimento","data_nascimento","telefone","peso","altura","trabalho",
-  "nivel_condicionamento","modalidade","clube",
+  "nome","email","nascimento","data_nascimento","telefone","idade","peso","altura","trabalho",
+  "nivel_condicionamento","modalidade","clube","proxima_prova",
   "provas","tempo_5k","tempo_10k","tempo_21k","tempo_42k","tempo_taf",
-  "tempo_corrida","maior_km","treino_atual","prova_alvo","proxima_prova","academia",
+  "tempo_corrida","maior_km","treino_atual","prova_alvo","academia",
   "patologias","patologia_outros_desc","tabagismo","tempo_pratica",
   "historico_atividades","atividades_atuais","horas_semanais","tempo_diario",
-  "objetivos","dias_disponiveis",
+  "objetivos","objetivo","dias_disponiveis",
   "alim_adequada","alim_desc","nutricionista","suplementacao","suplementos_desc",
   "aq_doenca_grave","aqd_doenca_grave","aq_hospitalizacao","aqd_hospitalizacao",
   "aq_medicacoes_regulares","aqd_medicacoes_regulares","aq_medicamentos_peso","aqd_medicamentos_peso",
@@ -3697,8 +5080,8 @@ const _CAMPOS_FICHA_COMPLETA = [
   "aq_asma","aqd_asma","aq_alergias_temporarias","aqd_alergias_temporarias",
   "aq_equipamentos_suporte","aqd_equipamentos_suporte","aq_distensao_muscular","aqd_distensao_muscular",
   "aq_ossos_quebrados","aqd_ossos_quebrados","aq_dor_articulacoes","aqd_dor_articulacoes",
-  "historico_saude","observacoes",
-  "menarca","intervalo_ciclo","maior_intervalo","ultima_menstruacao","idade"
+  "menarca","intervalo_ciclo","maior_intervalo","ultima_menstruacao",
+  "historico_saude","observacoes"
 ];
 
 const _AQ_CAMPOS = [
@@ -3868,10 +5251,13 @@ function _initFichaInteractivity() {
 }
 
 function _coletarPayloadFicha(payload) {
-  // Campos de texto/data/number
+  // Campos de texto/data/number.
+  // NOTA: "data_vencimento" foi removido desta lista e tratado separadamente
+  // abaixo — evita que o modo aluno (sem o campo no DOM) envie "" e apague
+  // um vencimento existente na planilha.
   const camposInput = [
     "nome","email","nascimento","telefone","peso","altura","trabalho",
-    "nivel_condicionamento","modalidade","clube","proxima_prova","data_vencimento",
+    "nivel_condicionamento","modalidade","clube","proxima_prova",
     "provas","academia","tempo_5k","tempo_10k","tempo_21k","tempo_42k","tempo_taf",
     "tempo_corrida","maior_km","treino_atual","prova_alvo",
     "patologias","patologia_outros_desc","tabagismo","tempo_pratica",
@@ -3891,6 +5277,18 @@ function _coletarPayloadFicha(payload) {
     const el = $("fa_" + c);
     if (el) payload[c] = el.value.trim();
   });
+  // Espelha objetivos → objetivo para retrocompatibilidade no GS
+  if (payload.objetivos !== undefined) payload.objetivo = payload.objetivos;
+
+  // ── data_vencimento: só inclui no payload se o campo existir no DOM ──
+  // No formulário do aluno (isAdmin=false) o campo não é renderizado,
+  // portanto data_vencimento NÃO entra no payload e o vencimento existente
+  // na planilha nunca é sobrescrito com string vazia.
+  const elVenc = $("fa_data_vencimento");
+  if (elVenc) {
+    payload.data_vencimento = elVenc.value.trim();
+  }
+
   // Sim/não: AQ + alimentação
   const snCampos = [
     "aq_doenca_grave","aq_hospitalizacao","aq_medicacoes_regulares","aq_medicamentos_peso",
@@ -3923,7 +5321,7 @@ function abrirFichaProprioAluno() {
 async function salvarFichaProprioAluno() {
   const u = state.usuario;
   if (!u) return;
-  const payload = { action: "salvarFichaAluno", id_aluno: u.id_aluno };
+  const payload = { action: "salvarMinhaFicha", id_aluno: u.id_aluno };
   _coletarPayloadFicha(payload);
 
   const btn = $("btnSalvarFichaAdmin");
@@ -3975,19 +5373,35 @@ function abrirFichaAdmin(id_aluno) {
 async function salvarFichaAdmin() {
   const aluno = state.alunoAdmin;
   if (!aluno) return;
+
   const payload = { action: "salvarFichaAluno", id_aluno: aluno.id_aluno };
   _coletarPayloadFicha(payload);
 
+  const btn = $("btnSalvarFichaAdmin");
+  if (btn) { btn.disabled = true; btn.textContent = "Salvando…"; }
+
   const res = await callAPI(payload);
-  if (!res.ok) { showToast("Erro: " + res.erro); return; }
+
+  if (btn) { btn.disabled = false; btn.textContent = "Salvar Ficha"; }
+
+  if (!res.ok) { showToast("Erro: " + (res.erro || "Falha ao salvar.")); return; }
+
   showToast("✓ Ficha salva!");
   fecharModal("modalAnamnese");
 
+  // Atualiza estado local — ficha e data_vencimento
   const idx = state.todosAlunos.findIndex(a => String(a.id_aluno) === String(aluno.id_aluno));
   if (idx >= 0) {
-    _CAMPOS_FICHA_COMPLETA.forEach(c => { if (payload[c] !== undefined) state.todosAlunos[idx].ficha[c] = payload[c]; });
-    if (payload.data_vencimento !== undefined)
+    // Garante que o objeto ficha existe antes de escrever nele
+    if (!state.todosAlunos[idx].ficha) state.todosAlunos[idx].ficha = {};
+    _CAMPOS_FICHA_COMPLETA.forEach(c => {
+      if (payload[c] !== undefined) state.todosAlunos[idx].ficha[c] = payload[c];
+    });
+    // Só atualiza data_vencimento na raiz do aluno se o campo foi enviado
+    // (ou seja, o input existia no DOM do formulário admin)
+    if (payload.data_vencimento !== undefined) {
       state.todosAlunos[idx].data_vencimento = payload.data_vencimento;
+    }
     state.alunoAdmin = state.todosAlunos[idx];
     renderWsFicha(state.alunoAdmin);
     renderAthleteList(state.todosAlunos);
@@ -4840,8 +6254,10 @@ function hoje() {
 
 function formatDate(s) {
   if (!s) return "—";
-  const d = new Date(String(s) + (String(s).length === 10 ? "T12:00:00" : ""));
-  if (isNaN(d)) return String(s);
+  const str = String(s).trim();
+  if (!str || str === "Invalid Date" || str === "0") return "—";
+  const d = new Date(str + (str.length === 10 ? "T12:00:00" : ""));
+  if (isNaN(d)) return "—";
   return d.toLocaleDateString("pt-BR", { day:"2-digit", month:"short", year:"numeric" });
 }
 
