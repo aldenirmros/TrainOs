@@ -104,6 +104,10 @@ body {
   z-index: 5;
   opacity: .5;
 }
+/* Mobile logado: mob-nav ocupa o bottom, footer some */
+@media (max-width: 768px) {
+  body.logado .app-footer-fixed { display: none !important; }
+}
 
 /* ════════════════════════════════════════════════════════════
    LOGIN SCREEN
@@ -2476,6 +2480,34 @@ body {
             <div style="font-size:12px;color:var(--text-3);font-family:'JetBrains Mono',monospace;" id="mobPerfilUser">—</div>
           </div>
         </div>
+        <!-- Badge de vencimento -->
+        <div id="mobPerfilVencBadge" style="margin-bottom:16px;display:flex;justify-content:center;min-height:28px;"></div>
+
+        <!-- Calculadora de Pace -->
+        <div class="card" style="margin-top:20px;margin-bottom:16px;">
+          <div style="font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:12px;">🏃 Calculadora de Pace</div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:8px;">
+            <div>
+              <div class="field-label">Distância</div>
+              <input class="field-input" id="mobPaceDistancia" type="number" placeholder="10" min=".1" step=".1" oninput="mobCalcPace()" style="font-family:'JetBrains Mono',monospace;"/>
+            </div>
+            <div>
+              <div class="field-label">Unidade</div>
+              <select class="field-input" id="mobPaceUnidade" onchange="mobCalcPace()" style="width:68px;">
+                <option value="km">km</option>
+                <option value="m">m</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <div class="field-label">Tempo (hh:mm:ss)</div>
+            <input class="field-input" id="mobPaceTempo" type="text" placeholder="00:42:00" oninput="mobCalcPace()" maxlength="8" style="font-family:'JetBrains Mono',monospace;letter-spacing:.08em;"/>
+          </div>
+          <div id="mobPaceResultado" class="pace-result hidden">
+            <span class="pace-val" id="mobPaceValor">—</span>
+            <span class="pace-extra" id="mobPaceExtra"></span>
+          </div>
+        </div>
         <button class="mob-btn-full" style="background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.25);" onclick="handleLogout()">↩ Sair</button>
       </div>
     </div>
@@ -2686,6 +2718,35 @@ body {
       </div>
     </div>
 
+
+    <!-- Page: Peso / Evolução (aluno mobile) -->
+    <div class="mob-page" id="mobPagePeso">
+      <div class="mob-admin-page-header">
+        <h3>⚖️ Evolução de Peso</h3>
+      </div>
+      <div class="mob-admin-page-body">
+        <div id="mobPesoStats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;"></div>
+        <div class="card" style="padding:14px;margin-bottom:14px;">
+          <div style="position:relative;height:180px;"><canvas id="mobPesoChart"></canvas></div>
+        </div>
+        <div class="card" style="margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--text-2);margin-bottom:10px;">➕ Registrar Peso</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+            <div>
+              <div class="field-label">Peso (kg)</div>
+              <input class="field-input" id="mobPesoValor" type="number" step="0.1" min="30" max="300" placeholder="75.5" style="font-family:'JetBrains Mono',monospace;"/>
+            </div>
+            <div>
+              <div class="field-label">Data</div>
+              <input class="field-input" id="mobPesoData" type="date"/>
+            </div>
+          </div>
+          <button class="mob-btn-full" onclick="mobAlunoRegistrarPeso()">💾 Salvar</button>
+        </div>
+        <div id="mobPesoLista" style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+    </div>
+
   </div><!-- /mob-pages -->
 
   <!-- Bottom nav (hidden until login) -->
@@ -2699,6 +2760,9 @@ body {
     </button>
     <button class="mob-nav-item" id="mobBnFicha" onclick="mobNavTo('ficha')">
       <span class="nav-icon">📋</span>Ficha
+    </button>
+    <button class="mob-nav-item" id="mobBnPeso" onclick="mobNavTo('peso')">
+      <span class="nav-icon">⚖️</span>Peso
     </button>
     <button class="mob-nav-item hidden" id="mobBnAgendamentosAluno" onclick="mobNavTo('agendamentos')">
       <span class="nav-icon">🏁</span>Agenda
@@ -3198,7 +3262,7 @@ body {
 <script>
 // ════════════════════════════════════════════════════════════
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyLcglKkhe7MedyuD2nkKmosYy7a7d1u0U1MQ7AIBZy9cs5ZPpv5WTS8-fYuKq3O8QP2w/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw7T7tfjJp2pOVkbl-Tzn4hJr5VN7zJivNvsFDsfhvqPqQOFLktPCEpQYwBCcRgRvJAAQ/exec";
 
 // ── DOM helpers ───────────────────────────────────────────
 const $ = id => document.getElementById(id);
@@ -3516,49 +3580,87 @@ function aplicarMarca(m) {
 }
 
 function abrirConfigMarca() {
-  if (state.usuario?.tipo !== "admin") return; // somente admin
+  if (state.usuario?.tipo !== "admin") return;
   const m = getMarca();
-  setVal("cfgLogoUrl",   m.logoUrl    || "");
-  setVal("cfgLogoTexto", m.logoTexto  || "");
-  setVal("cfgPdfNome",   m.pdfNome    || "");
-  setVal("cfgPdfContato",m.pdfContato || "");
+  setVal("cfgLogoUrl",     m.logoUrl     || "");
+  setVal("cfgLogoTexto",   m.logoTexto   || "");
+  setVal("cfgPdfNome",     m.pdfNome     || "");
+  setVal("cfgPdfContato",  m.pdfContato  || "");
+  setVal("cfgPdfEndereco", m.pdfEndereco || "");
   const prev = $("cfgLogoPreview");
   const img  = $("cfgLogoPreviewImg");
-  if (m.logoUrl) { img.src = m.logoUrl; prev.style.display = "block"; }
+  const src  = m.logoBase64 || m.logoUrl || "";
+  if (src) { img.src = src; prev.style.display = "flex"; }
   else prev.style.display = "none";
+  window._cfgLogoBase64 = null;
   $("modalConfigMarca").classList.remove("hidden");
 }
 
+function cfgLogoFileChange(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showToast("\u26a0 Imagem muito grande (m\u00e1x 2 MB)."); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const b64 = e.target.result;
+    const img = $("cfgLogoPreviewImg"), prev = $("cfgLogoPreview");
+    img.src = b64; prev.style.display = "flex";
+    setVal("cfgLogoUrl", "");
+    window._cfgLogoBase64 = b64;
+  };
+  reader.readAsDataURL(file);
+}
+
+function cfgLogoUrlChange(input) {
+  const url = input.value.trim();
+  const img = $("cfgLogoPreviewImg"), prev = $("cfgLogoPreview");
+  if (url) { img.src = url; prev.style.display = "flex"; window._cfgLogoBase64 = null; }
+  else prev.style.display = "none";
+}
+
+function cfgLogoRemover() {
+  $("cfgLogoPreviewImg").src = "";
+  $("cfgLogoPreview").style.display = "none";
+  setVal("cfgLogoUrl", "");
+  window._cfgLogoBase64 = null;
+  const fi = $("cfgLogoFile"); if (fi) fi.value = "";
+}
+
+
 async function salvarConfigMarca() {
+  const logoBase64 = window._cfgLogoBase64 || null;
   const m = {
-    logoUrl:    getVal("cfgLogoUrl"),
-    logoTexto:  getVal("cfgLogoTexto") || "TrainOS",
-    pdfNome:    getVal("cfgPdfNome"),
-    pdfContato: getVal("cfgPdfContato"),
+    logoUrl:      logoBase64 ? "" : getVal("cfgLogoUrl"),
+    logoBase64:   logoBase64 || "",
+    logoTexto:    getVal("cfgLogoTexto") || "TrainOS",
+    pdfNome:      getVal("cfgPdfNome"),
+    pdfContato:   getVal("cfgPdfContato"),
+    pdfEndereco:  getVal("cfgPdfEndereco"),
   };
   localStorage.setItem(MARCA_KEY, JSON.stringify(m));
+  window._cfgLogoBase64 = null;
 
-  // Persiste o id do admin para que alunos possam buscar a config na planilha
   if (state.usuario?.id_aluno) {
     localStorage.setItem("trainOS_adminId", state.usuario.id_aluno);
   }
-
   aplicarMarca(m);
 
   if (state.usuario?.tipo === "admin") {
     const res = await callAPI({
-      action:      "salvarConfigPersonal",
-      id_admin:    state.usuario.id_aluno,
-      logo_url:    m.logoUrl,
-      logo_texto:  m.logoTexto,
-      pdf_nome:    m.pdfNome,
-      pdf_contato: m.pdfContato,
+      action:        "salvarConfigPersonal",
+      id_admin:      state.usuario.id_aluno,
+      logo_url:      m.logoUrl,
+      logo_texto:    m.logoTexto,
+      pdf_nome:      m.pdfNome,
+      pdf_contato:   m.pdfContato,
+      pdf_endereco:  m.pdfEndereco,
     });
-    if (res && !res.ok) showToast("⚠ Erro ao salvar no servidor: " + (res.erro || ""));
+    if (res && !res.ok) showToast("\u26a0 Erro ao salvar: " + (res.erro || ""));
   }
   fecharModal("modalConfigMarca");
-  showToast("✓ Marca salva!");
+  showToast("\u2713 Marca salva!");
 }
+
 
 // ════════════════════════════════════════════════════════════
 //  LOGIN / LOGOUT
@@ -3596,10 +3698,11 @@ async function handleLogin() {
     const cfgRes = await callAPI({ action: "buscarConfigPersonal", id_admin: res.usuario.id_aluno });
     if (cfgRes.ok && cfgRes.config) {
       const m = {
-        logoUrl:    cfgRes.config.logo_url    || "",
-        logoTexto:  cfgRes.config.logo_texto  || "TrainOS",
-        pdfNome:    cfgRes.config.pdf_nome    || "",
-        pdfContato: cfgRes.config.pdf_contato || "",
+        logoUrl:     cfgRes.config.logo_url     || "",
+        logoTexto:   cfgRes.config.logo_texto   || "TrainOS",
+        pdfNome:     cfgRes.config.pdf_nome     || "",
+        pdfContato:  cfgRes.config.pdf_contato  || "",
+        pdfEndereco: cfgRes.config.pdf_endereco || "",
       };
       localStorage.setItem(MARCA_KEY, JSON.stringify(m));
     }
@@ -3610,10 +3713,11 @@ async function handleLogin() {
       const cfgRes = await callAPI({ action: "buscarConfigPersonal", id_admin: adminId });
       if (cfgRes.ok && cfgRes.config) {
         const m = {
-          logoUrl:    cfgRes.config.logo_url    || "",
-          logoTexto:  cfgRes.config.logo_texto  || "TrainOS",
-          pdfNome:    cfgRes.config.pdf_nome    || "",
-          pdfContato: cfgRes.config.pdf_contato || "",
+          logoUrl:     cfgRes.config.logo_url     || "",
+          logoTexto:   cfgRes.config.logo_texto   || "TrainOS",
+          pdfNome:     cfgRes.config.pdf_nome     || "",
+          pdfContato:  cfgRes.config.pdf_contato  || "",
+          pdfEndereco: cfgRes.config.pdf_endereco || "",
         };
         localStorage.setItem(MARCA_KEY, JSON.stringify(m));
       }
@@ -4561,71 +4665,146 @@ async function gerarReciboPDF(id_pagamento) {
   gerarReciboPagamento(pag);
 }
 
-// Gera o PDF do recibo
+// Gera o PDF do recibo — layout profissional A5
 function gerarReciboPagamento(pag) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: "mm", format: "a5" });
-  const W   = doc.internal.pageSize.getWidth();
+  const W   = doc.internal.pageSize.getWidth();   // ~148 mm
+  const H   = doc.internal.pageSize.getHeight();  // ~210 mm
   const m   = getMarca();
-  const personal = m.pdfNome || "Personal Trainer";
-  const contato  = m.pdfContato || "";
+  const logoSrc   = m.logoBase64 || (m.logoUrl && m.logoUrl.startsWith("http") ? m.logoUrl : null);
+  const pdfNome   = m.pdfNome     || "Personal Trainer";
+  const contato   = m.pdfContato  || "";
+  const endereco  = m.pdfEndereco || "";
+  const MX        = 10; // margem lateral
 
-  // Cabeçalho
-  doc.setFillColor(7,7,15);
-  doc.rect(0,0,W,40,"F");
-  doc.setFont("helvetica","bold");
-  doc.setFontSize(18);
-  doc.setTextColor(200,241,53);
-  doc.text(m.logoTexto || "TrainOS", W/2, 16, { align:"center" });
+  // ── Cabeçalho ─────────────────────────────────────────
+  doc.setFillColor(10, 10, 16);
+  doc.rect(0, 0, W, 38, "F");
+  // Linha lime no fundo do header
+  doc.setFillColor(190, 230, 40);
+  doc.rect(0, 38, W, 0.8, "F");
+
+  // Logo ou texto
+  let logoOK = false;
+  if (logoSrc) {
+    try { doc.addImage(logoSrc, "PNG", MX, 5, 0, 20); logoOK = true; } catch(e) {}
+  }
+  if (!logoOK) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.setTextColor(190, 230, 40);
+    doc.text(m.logoTexto || "TrainOS", MX, 18);
+  }
+
+  // Nome e contato à direita
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
-  doc.setTextColor(150,150,180);
-  doc.text("RECIBO DE PAGAMENTO", W/2, 24, { align:"center" });
+  doc.setTextColor(220, 220, 235);
+  doc.text(pdfNome, W - MX, 12, { align: "right" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+  doc.setTextColor(120, 120, 155);
+  if (contato)  doc.text(contato,  W - MX, 18, { align: "right" });
+  if (endereco) doc.text(endereco, W - MX, 24, { align: "right" });
+
+  // Título do documento
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
-  doc.text(personal + (contato ? "  ·  " + contato : ""), W/2, 31, { align:"center" });
+  doc.setTextColor(90, 90, 130);
+  doc.text("RECIBO DE PAGAMENTO", W / 2, 33, { align: "center" });
 
-  let y = 50;
-  doc.setTextColor(30,30,40);
-  doc.setFont("helvetica","normal");
+  // ── Bloco do atleta ───────────────────────────────────
+  let y = 46;
+  doc.setFillColor(20, 20, 30);
+  doc.rect(MX, y - 3, W - MX * 2, 18, "F");
 
-  const linha = (lbl, val) => {
-    doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(80,80,120);
-    doc.text(lbl.toUpperCase(), 14, y);
-    doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(20,20,30);
-    doc.text(String(val||"—"), 14, y+5);
-    y += 13;
+  // Inicial
+  doc.setFillColor(190, 230, 40);
+  doc.circle(MX + 8, y + 6, 5.5, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(5, 5, 10);
+  const ini = String(pag.nome || pag.usuario || "?").charAt(0).toUpperCase();
+  doc.text(ini, MX + 8, y + 9.5, { align: "center" });
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(220, 220, 235);
+  doc.text(pag.nome || pag.usuario || "—", MX + 17, y + 5);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+  doc.setTextColor(100, 100, 140);
+  doc.text("@" + (pag.usuario || ""), MX + 17, y + 11);
+  y += 22;
+
+  // ── Detalhes ──────────────────────────────────────────
+  const linha = (lbl, val, destaque) => {
+    doc.setFillColor(255, 255, 255);
+    // sem fill extra, só separador
+    doc.setDrawColor(30, 30, 46);
+    doc.setLineWidth(0.3);
+    doc.line(MX, y + 4, W - MX, y + 4);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(6.5);
+    doc.setTextColor(80, 80, 120);
+    doc.text(String(lbl).toUpperCase(), MX, y);
+
+    doc.setFont("helvetica", destaque ? "bold" : "normal");
+    doc.setFontSize(destaque ? 10 : 8.5);
+    doc.setTextColor(destaque ? 190 : 200, destaque ? 230 : 200, destaque ? 40 : 225);
+    doc.text(String(val || "—"), W - MX, y + 0.5, { align: "right" });
+    y += 9;
   };
 
-  doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(80,80,120);
-  doc.text("─────────────────────────────────────────", 14, y-4);
-  y += 2;
-
-  linha("Atleta",           pag.nome || pag.usuario);
-  linha("Usuário",          "@" + (pag.usuario||""));
-  linha("Plano / Serviço",  pag.plano || "Assessoria de Corrida");
-  linha("Data de Pagamento",formatDate(pag.data_pagamento));
+  linha("Plano / Serviço",    pag.plano || "Assessoria de Corrida");
+  linha("Data de Pagamento",  formatDate(pag.data_pagamento));
   if (pag.data_vencimento) linha("Próximo Vencimento", formatDate(pag.data_vencimento));
-  linha("Método",           pag.metodo_pagamento || "—");
+  linha("Método de Pagamento", pag.metodo_pagamento || "—");
   if (pag.observacao) linha("Observação", pag.observacao);
 
   y += 4;
-  // Valor em destaque
-  doc.setFillColor(200,241,53);
-  doc.roundedRect(14, y, W-28, 18, 3, 3, "F");
-  doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(5,5,10);
-  doc.text("VALOR PAGO", 22, y+7);
-  doc.setFontSize(16);
-  doc.text("R$ " + parseFloat(pag.valor||0).toFixed(2).replace(".",","), W-16, y+11, { align:"right" });
-  y += 28;
 
-  // Rodapé
-  doc.setFillColor(7,7,15);
-  const ph = doc.internal.pageSize.getHeight();
-  doc.rect(0, ph-20, W, 20, "F");
-  doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(100,100,140);
-  doc.text("Recibo gerado em " + new Date().toLocaleDateString("pt-BR") + " — TrainOS", W/2, ph-10, { align:"center" });
-  doc.text("ID: " + (pag.id_pagamento||""), W/2, ph-5, { align:"center" });
+  // ── Valor em destaque ─────────────────────────────────
+  doc.setFillColor(190, 230, 40);
+  doc.roundedRect(MX, y, W - MX * 2, 20, 3, 3, "F");
+  doc.setFillColor(160, 200, 20); // sombra interna
+  doc.rect(MX, y + 14, W - MX * 2, 6, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(5, 10, 5);
+  doc.text("VALOR PAGO", MX + 6, y + 9);
+  doc.setFontSize(18);
+  doc.text("R$ " + parseFloat(pag.valor || 0).toFixed(2).replace(".", ","), W - MX - 5, y + 16, { align: "right" });
+  y += 26;
 
-  const nomePDF = "Recibo_" + (pag.nome||pag.usuario||"atleta").replace(/\s+/g,"_") + "_" + (pag.data_pagamento||"").replace(/-/g,"") + ".pdf";
+  // ── Assinatura ────────────────────────────────────────
+  y = Math.max(y, H - 50);
+  doc.setDrawColor(60, 60, 90);
+  doc.setLineWidth(0.4);
+  doc.line(MX + 5, y + 12, MX + 55, y + 12);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.setTextColor(80, 80, 120);
+  doc.text(pdfNome, MX + 30, y + 17, { align: "center" });
+  doc.text("Assinatura / Carimbo", MX + 30, y + 21, { align: "center" });
+
+  // ── Rodapé ────────────────────────────────────────────
+  doc.setFillColor(10, 10, 16);
+  doc.rect(0, H - 14, W, 14, "F");
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.setTextColor(60, 60, 100);
+  doc.text(
+    "Gerado em " + new Date().toLocaleDateString("pt-BR", { day:"2-digit", month:"long", year:"numeric" }) +
+    "  ·  ID: " + (pag.id_pagamento || ""),
+    W / 2, H - 7, { align: "center" }
+  );
+  doc.text("Documento sem valor fiscal", W / 2, H - 3, { align: "center" });
+
+  const nomePDF = "Recibo_" + (pag.nome || pag.usuario || "atleta").replace(/\s+/g, "_") +
+                  "_" + (pag.data_pagamento || "").replace(/-/g, "") + ".pdf";
   doc.save(nomePDF);
   showToast("🧾 Recibo gerado!");
 }
@@ -6503,7 +6682,8 @@ function mobNavTo(page) {
     vencimentos:          "mobPageVencimentos",
     financeiro:           "mobPageFinanceiro",
     agendamentos:         "mobPageAgendamentos",
-    agendamentosAdmin:    "mobPageAgendamentosAdmin"
+    agendamentosAdmin:    "mobPageAgendamentosAdmin",
+    peso:                 "mobPagePeso"
   };
   const bnMap = {
     home:                 "mobBnHome",
@@ -6515,7 +6695,8 @@ function mobNavTo(page) {
     vencimentos:          "mobBnVencimentos",
     financeiro:           "mobBnFinanceiro",
     agendamentos:         "mobBnAgendamentosAluno",
-    agendamentosAdmin:    "mobBnAgendamentosAdmin"
+    agendamentosAdmin:    "mobBnAgendamentosAdmin",
+    peso:                 "mobBnPeso"
   };
   const pg = $(map[page]); if (pg) pg.classList.add("active");
   const bn = bnMap[page] ? $(bnMap[page]) : null; if (bn) bn.classList.add("active");
@@ -6526,6 +6707,7 @@ function mobNavTo(page) {
   if (page === "financeiro"        && !window._mobFinLoaded)      { window._mobFinLoaded = true;      mobFinCarregar(); }
   if (page === "agendamentos"      && !window._mobAgLoaded)       { window._mobAgLoaded = true;       mobCarregarAgendamentosAluno(); }
   if (page === "agendamentosAdmin" && !window._mobAgAdminLoaded)  { window._mobAgAdminLoaded = true;  mobAgAdminCarregar(); }
+  if (page === "peso") { mobCarregarPeso(); }
 }
 
 function initMobile(tipo) {
@@ -6535,7 +6717,7 @@ function initMobile(tipo) {
   const show = id => { const el=$(id); if(el) el.classList.remove("hidden"); };
 
   // Botões aluno
-  const alunoIds   = ["mobBnHome","mobBnCrono","mobBnFicha","mobBnAgendamentosAluno"];
+  const alunoIds   = ["mobBnHome","mobBnCrono","mobBnFicha","mobBnPeso","mobBnAgendamentosAluno"];
   // Botões admin
   const adminIds   = ["mobBnAlunos","mobBnTemplates","mobBnVencimentos","mobBnFinanceiro","mobBnAgendamentosAdmin"];
 
@@ -6612,6 +6794,11 @@ function mobSyncPerfil() {
   setText("mobPerfilUser",   "@" + (u.usuario || ""));
   const av = $("mobPerfilAvatar");
   if (av) av.textContent = nome.charAt(0).toUpperCase();
+
+  // Badge de vencimento
+  const vd     = u.data_vencimento ? String(u.data_vencimento).substring(0,10) : "";
+  const badgeEl = $("mobPerfilVencBadge");
+  if (badgeEl) badgeEl.innerHTML = vd ? _vencBadgeHtml(vd) : "";
 }
 
 function mobRenderWeekStrip() {
@@ -7179,6 +7366,113 @@ function mobRenderFicha() {
 }
 
 
+
+// ── Mobile Aluno: Evolução de Peso ───────────────────────────
+let _mobPesoChart = null;
+
+async function mobCarregarPeso() {
+  const id_aluno = state.usuario?.id_aluno;
+  if (!id_aluno) return;
+  const res = await callAPI({ action: "buscarHistoricoPeso", id_aluno });
+  if (!res || !res.ok) { showToast("⚠ Erro ao carregar peso."); return; }
+  const registros = (res.registros || []).slice().reverse();
+  const pesos = registros.map(r => parseFloat(r.peso_kg)).filter(Boolean);
+  const ult = pesos.length ? pesos[pesos.length - 1] : null;
+  const mn  = pesos.length ? Math.min(...pesos) : null;
+  const mx  = pesos.length ? Math.max(...pesos) : null;
+
+  const statsEl = $("mobPesoStats");
+  if (statsEl) statsEl.innerHTML = `
+    <div class="card" style="padding:12px;text-align:center;">
+      <div style="font-size:22px;font-weight:800;color:var(--lime);font-family:'JetBrains Mono',monospace;">${ult !== null ? ult.toFixed(1) : "—"}</div>
+      <div style="font-size:10px;color:var(--text-3);margin-top:2px;">Atual (kg)</div>
+    </div>
+    <div class="card" style="padding:12px;text-align:center;">
+      <div style="font-size:22px;font-weight:800;color:var(--cyan);font-family:'JetBrains Mono',monospace;">${mn !== null ? mn.toFixed(1) : "—"}</div>
+      <div style="font-size:10px;color:var(--text-3);margin-top:2px;">Mínimo (kg)</div>
+    </div>
+    <div class="card" style="padding:12px;text-align:center;">
+      <div style="font-size:22px;font-weight:800;color:var(--amber);font-family:'JetBrains Mono',monospace;">${mx !== null ? mx.toFixed(1) : "—"}</div>
+      <div style="font-size:10px;color:var(--text-3);margin-top:2px;">Máximo (kg)</div>
+    </div>`;
+
+  const dataEl = $("mobPesoData");
+  if (dataEl && !dataEl.value) dataEl.value = hoje();
+
+  const canvas = $("mobPesoChart");
+  if (canvas) {
+    if (_mobPesoChart) { _mobPesoChart.destroy(); _mobPesoChart = null; }
+    if (registros.length) {
+      _mobPesoChart = new Chart(canvas, {
+        type: "line",
+        data: {
+          labels: registros.map(r => formatDate(r.data)),
+          datasets: [{
+            label: "Peso (kg)", data: registros.map(r => parseFloat(r.peso_kg)),
+            borderColor: "#c8f135", backgroundColor: "rgba(200,241,53,.08)",
+            borderWidth: 2, pointRadius: 3, pointBackgroundColor: "#c8f135",
+            tension: .35, fill: true,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { bodyFont: { family: "JetBrains Mono" } } },
+          scales: {
+            x: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "#4a4a6a", font: { family: "JetBrains Mono", size: 9 }, maxTicksLimit: 6 } },
+            y: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "#4a4a6a", font: { family: "JetBrains Mono", size: 9 } } },
+          }
+        }
+      });
+    }
+  }
+
+  const lista = $("mobPesoLista");
+  if (lista) {
+    lista.innerHTML = !registros.length
+      ? `<div style="padding:20px;text-align:center;color:var(--text-3);font-size:12px;">Nenhum registro ainda.</div>`
+      : registros.slice().reverse().slice(0, 15).map(r => `
+        <div style="display:flex;justify-content:space-between;align-items:center;
+             padding:10px 12px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;">
+          <span style="font-size:12px;color:var(--text-2);">${formatDate(r.data)}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--lime);font-family:'JetBrains Mono',monospace;">${parseFloat(r.peso_kg).toFixed(1)} kg</span>
+        </div>`).join("");
+  }
+}
+
+async function mobAlunoRegistrarPeso() {
+  const id_aluno = state.usuario?.id_aluno;
+  const peso = getVal("mobPesoValor");
+  const data = getVal("mobPesoData");
+  if (!peso || !data) { showToast("Preencha peso e data."); return; }
+  const res = await callAPI({ action: "registrarPeso", id_aluno, peso_kg: peso, data });
+  if (!res || !res.ok) { showToast("⚠ " + (res?.erro || "Erro ao salvar.")); return; }
+  showToast("✓ Peso registrado!");
+  setVal("mobPesoValor", "");
+  mobCarregarPeso();
+}
+
+// ── Mobile: Calculadora de Pace ───────────────────────────────
+function mobCalcPace() {
+  const dist  = parseFloat(getVal("mobPaceDistancia"));
+  const unid  = getVal("mobPaceUnidade") || "km";
+  const tempo = getVal("mobPaceTempo");
+  const resEl = $("mobPaceResultado");
+  if (!dist || !tempo) { resEl?.classList.add("hidden"); return; }
+  const distKm = unid === "m" ? dist / 1000 : dist;
+  const partes = tempo.split(":").map(Number);
+  let segs = 0;
+  if      (partes.length === 3) segs = partes[0]*3600 + partes[1]*60 + partes[2];
+  else if (partes.length === 2) segs = partes[0]*60 + partes[1];
+  else                          segs = partes[0];
+  if (!segs || !distKm) { resEl?.classList.add("hidden"); return; }
+  const paceSegs = segs / distKm;
+  const pm = Math.floor(paceSegs / 60), ps = Math.round(paceSegs % 60);
+  const vel = (distKm / segs * 3600).toFixed(1);
+  setText("mobPaceValor", `${pm}:${String(ps).padStart(2,"0")}/km`);
+  setText("mobPaceExtra", `${vel} km/h  ·  ${distKm.toFixed(2)} km em ${tempo}`);
+  resEl?.classList.remove("hidden");
+}
+
 // ── Admin mobile: lista e detalhe ─────────────────────────
 function mobRenderAlunos(lista) {
   const el = $("mobAlunoList");
@@ -7355,73 +7649,488 @@ async function mobSalvarTreino(id_aluno) {
   mobVerAluno(id_aluno);
 }
 
-// ════════════════════════════════════════════════════════════
-//  EXPORTAÇÃO PDF
-// ════════════════════════════════════════════════════════════
-function novoPDF() { const { jsPDF } = window.jspdf; return new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" }); }
 
-function pdfHeader(doc, titulo) {
-  const m = getMarca(), W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+// ════════════════════════════════════════════════════════════
+//  EXPORTAÇÃO PDF — TrainOS v3
+// ════════════════════════════════════════════════════════════
+
+// ── Constantes de layout ──────────────────────────────────
+const PDF_M  = 10;    // margem lateral mm
+const PDF_Y0 = 36;    // y inicial após cabeçalho
+const PDF_YF = 10;    // altura do rodapé mm
+
+function novoPDF() {
+  const { jsPDF } = window.jspdf;
+  return new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
+}
+
+// Retorna altura útil disponível
+function pdfH(doc) { return doc.internal.pageSize.getHeight() - PDF_YF - 2; }
+function pdfW(doc) { return doc.internal.pageSize.getWidth(); }
+
+// Verifica se cabe, senão nova página
+function checkPg(doc, y, need) {
+  if (y + (need||8) > pdfH(doc)) { doc.addPage(); return PDF_Y0; }
+  return y;
+}
+
+// ── Cores da paleta ──────────────────────────────────────
+const C = {
+  bg:       [10, 10, 16],
+  bgCard:   [20, 20, 30],
+  bgStripe: [26, 26, 38],
+  lime:     [190, 230, 40],
+  cyan:     [56, 217, 245],
+  text1:    [220, 220, 235],
+  text2:    [150, 150, 175],
+  text3:    [90,  90, 120],
+  white:    [255, 255, 255],
+  amber:    [245, 166, 35],
+};
+
+function setFill(doc, rgb)   { doc.setFillColor(rgb[0], rgb[1], rgb[2]); }
+function setStroke(doc, rgb) { doc.setDrawColor(rgb[0], rgb[1], rgb[2]); }
+function setTxt(doc, rgb)    { doc.setTextColor(rgb[0], rgb[1], rgb[2]); }
+
+// ── Cabeçalho por página ─────────────────────────────────
+function pdfHeader(doc, titulo, subtitulo) {
+  const m = getMarca();
+  const W = pdfW(doc), H = doc.internal.pageSize.getHeight();
   const pages = doc.internal.getNumberOfPages();
+  const logoSrc = m.logoBase64 || (m.logoUrl && m.logoUrl.startsWith("http") ? m.logoUrl : null);
+
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
-    doc.setFillColor(10,10,15); doc.rect(0,0,W,18,"F");
-    if (m.logoUrl) { try { doc.addImage(m.logoUrl,"PNG",8,3,0,12); } catch { pdfLogoTxt(doc,m); } }
-    else pdfLogoTxt(doc,m);
-    doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(200,241,53);
-    doc.text(titulo,W/2,11,{align:"center"});
-    doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(136,136,170);
-    doc.text(`Pág. ${i} / ${pages}`,W-8,11,{align:"right"});
-    doc.setDrawColor(30,30,46); doc.line(0,18,W,18);
-    doc.setFillColor(10,10,15); doc.rect(0,H-10,W,10,"F");
-    doc.setFontSize(7); doc.setTextColor(74,74,106);
-    doc.text(`${m.pdfNome||"TrainOS"}  ·  ${m.pdfContato||""}`,W/2,H-4,{align:"center"});
+
+    // Fundo cabeçalho
+    setFill(doc, C.bg);
+    doc.rect(0, 0, W, 30, "F");
+
+    // Linha divisória lime
+    setFill(doc, C.lime);
+    doc.rect(0, 30, W, 0.7, "F");
+
+    // Logo
+    let logoEndX = PDF_M;
+    if (logoSrc) {
+      try {
+        doc.addImage(logoSrc, "PNG", PDF_M, 4, 0, 22);
+        // Descobre largura real estimando pela altura
+        logoEndX = PDF_M + 36;
+      } catch(e) {
+        logoEndX = _pdfLogoTxt(doc, m, PDF_M) + 4;
+      }
+    } else {
+      logoEndX = _pdfLogoTxt(doc, m, PDF_M) + 4;
+    }
+
+    // Bloco de texto à direita do logo
+    const txtX = W - PDF_M;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    setTxt(doc, C.text1);
+    doc.text(titulo, txtX, 11, { align: "right" });
+
+    if (subtitulo) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      setTxt(doc, C.text2);
+      doc.text(subtitulo, txtX, 17, { align: "right" });
+    }
+
+    // Nome do coach e contato centralizado abaixo do logo
+    const pdfNome     = m.pdfNome     || "";
+    const pdfContato  = m.pdfContato  || "";
+    const pdfEndereco = m.pdfEndereco || "";
+    const infoLines   = [pdfNome, pdfContato, pdfEndereco].filter(Boolean);
+    if (infoLines.length) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7);
+      setTxt(doc, C.text3);
+      infoLines.forEach((line, li) => {
+        doc.text(line, logoEndX, 10 + li * 5);
+      });
+    }
+
+    // Paginação
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    setTxt(doc, C.text3);
+    doc.text(`${i} / ${pages}`, W - PDF_M, 26, { align: "right" });
+
+    // Rodapé
+    setFill(doc, C.bg);
+    doc.rect(0, H - PDF_YF, W, PDF_YF, "F");
+    doc.setFontSize(6.5);
+    setTxt(doc, C.text3);
+    const rodape = [pdfNome, pdfContato, pdfEndereco].filter(Boolean).join("  ·  ");
+    doc.text(rodape || "TrainOS", W / 2, H - 3.5, { align: "center" });
   }
 }
 
-function pdfLogoTxt(doc,m) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(200,241,53); doc.text(m.logoTexto||"TrainOS",8,11); }
-function pdfFld(doc,lbl,val,x,y,w) {
-  const W=w||90; doc.setFont("helvetica","bold"); doc.setFontSize(7); doc.setTextColor(136,136,170); doc.text(String(lbl).toUpperCase(),x,y);
-  doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(30,30,40);
-  const ls=doc.splitTextToSize(String(val||"—"),W-2); doc.text(ls,x,y+4); return y+4+ls.length*4;
+function _pdfLogoTxt(doc, m, x) {
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  setTxt(doc, C.lime);
+  const txt = m.logoTexto || "TrainOS";
+  doc.text(txt, x, 14);
+  return x + doc.getTextWidth(txt);
 }
-function checkPg(doc,y,need) { if (y+(need||10)>doc.internal.pageSize.getHeight()-14) { doc.addPage(); return 24; } return y; }
 
+// ── Campo 2 colunas ──────────────────────────────────────
+// Renderiza label+valor em célula, retorna next Y
+function pdfFld(doc, lbl, val, x, y, colW) {
+  const cw  = colW || 88;
+  const txt = String(val || "—");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(6.5);
+  setTxt(doc, C.text3);
+  doc.text(String(lbl).toUpperCase(), x, y);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  setTxt(doc, C.text1);
+  const ls = doc.splitTextToSize(txt, cw - 2);
+  doc.text(ls, x, y + 3.5);
+  return y + 3.5 + ls.length * 3.8;
+}
+
+// Título de seção
+function pdfSec(doc, y, label) {
+  y = checkPg(doc, y, 10);
+  setFill(doc, C.bgCard);
+  doc.rect(PDF_M, y - 3, pdfW(doc) - PDF_M * 2, 7.5, "F");
+  setFill(doc, C.lime);
+  doc.rect(PDF_M, y - 3, 2, 7.5, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  setTxt(doc, C.lime);
+  doc.text(label.toUpperCase(), PDF_M + 4, y + 1.5);
+  return y + 8;
+}
+
+// Linha sim/não compacta
+function pdfSN(doc, y, lbl, val, det) {
+  y = checkPg(doc, y, 5.5);
+  const s   = String(val || "").toLowerCase();
+  const isSim = s === "sim";
+  const isNao = s === "nao" || s === "não";
+  const cor = isSim ? C.lime : C.text3;
+  const txt = isSim ? "✓" : isNao ? "✗" : "—";
+  const W   = pdfW(doc);
+
+  // zebra muito sutil
+  doc.setFillColor(255, 255, 255);
+  doc.setGState && doc.setGState(new doc.GState({ opacity: 0.02 }));
+  doc.rect(PDF_M, y - 3.5, W - PDF_M * 2, 5.5, "F");
+  doc.setGState && doc.setGState(new doc.GState({ opacity: 1 }));
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+  setTxt(doc, C.text2);
+  const lblLines = doc.splitTextToSize(lbl, W - PDF_M * 2 - 16);
+  doc.text(lblLines, PDF_M + 2, y);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  doc.setTextColor(cor[0], cor[1], cor[2]);
+  doc.text(txt, W - PDF_M - 2, y, { align: "right" });
+
+  let nextY = y + lblLines.length * 3.6 + 1.5;
+  if (det && isSim) {
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(6.5);
+    setTxt(doc, C.text3);
+    const dl = doc.splitTextToSize(det, W - PDF_M * 2 - 6);
+    doc.text(dl, PDF_M + 4, nextY);
+    nextY += dl.length * 3.2 + 1;
+  }
+  return nextY;
+}
+
+// ══════════════════════════════════════════════════════════
+//  FICHA PDF
+// ══════════════════════════════════════════════════════════
 function exportarFichaPDF(id_aluno) {
-  const aluno = state.todosAlunos?.find(a => String(a.id_aluno) === String(id_aluno));
+  const aluno = (state.todosAlunos||[]).find(a => String(a.id_aluno) === String(id_aluno));
   if (!aluno) { showToast("Aluno não encontrado."); return; }
-  const f = aluno.ficha || {}, doc = novoPDF(); let y = 24;
-  const secao = (t) => { y=checkPg(doc,y,14); doc.setFillColor(22,22,31); doc.rect(10,y-4,doc.internal.pageSize.getWidth()-20,8,"F"); doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(200,241,53); doc.text(t.toUpperCase(),13,y+1); y+=8; };
-  secao("Dados Básicos");
-  [["Nome",f.nome],["E-mail",f.email],["Nasc.",f.nascimento||f.data_nascimento],["Telefone",f.telefone],["Peso",f.peso?""+f.peso+" kg":""],["Altura",f.altura?""+f.altura+" m":""],["Nível",f.nivel_condicionamento],["Modalidade",f.modalidade],["Clube",f.clube]].forEach(([l,v])=>{ y=checkPg(doc,y,10); y=pdfFld(doc,l,v,12,y,doc.internal.pageSize.getWidth()-24)+2; });
-  secao("Performance");
-  [["5K",f.tempo_5k],["10K",f.tempo_10k],["21K",f.tempo_21k],["42K",f.tempo_42k],["Maior km",f.maior_km],["Prova alvo",f.prova_alvo]].forEach(([l,v])=>{ y=checkPg(doc,y,10); y=pdfFld(doc,l,v,12,y,doc.internal.pageSize.getWidth()-24)+2; });
-  secao("Objetivos");
-  const lsObj=doc.splitTextToSize(String(f.objetivos||f.objetivo||"—"),doc.internal.pageSize.getWidth()-24); doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(30,30,40); doc.text(lsObj,12,y); y+=lsObj.length*4+4;
-  pdfHeader(doc, `Ficha — ${f.nome||aluno.nome||aluno.usuario}`);
-  doc.save(`Ficha_${(f.nome||aluno.usuario).replace(/\s+/g,"_")}.pdf`);
-  showToast("✓ PDF gerado!");
+  const f   = aluno.ficha || {};
+  const doc = novoPDF();
+  const W   = pdfW(doc);
+  const cW  = (W - PDF_M * 2 - 4) / 2;  // largura de cada coluna
+  const xR  = PDF_M + cW + 4;            // x coluna direita
+  let y = PDF_Y0;
+
+  // Bloco de identificação do atleta
+  setFill(doc, C.bgCard);
+  doc.rect(PDF_M, y - 4, W - PDF_M * 2, 20, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  setTxt(doc, C.text1);
+  doc.text(f.nome || aluno.nome || aluno.usuario || "—", PDF_M + 4, y + 3);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  setTxt(doc, C.text2);
+  const subInfo = [
+    f.email,
+    f.telefone,
+    f.nascimento ? formatDate(f.nascimento) : "",
+    f.modalidade,
+    f.nivel_condicionamento,
+  ].filter(Boolean).join("   ·   ");
+  doc.text(subInfo || "", PDF_M + 4, y + 9);
+
+  // Vencimento
+  const venc = aluno.data_vencimento || "";
+  if (venc) {
+    const vencFmt = formatDate(venc);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    const diasV = Math.round((new Date(venc+"T12:00:00") - new Date()) / 86400000);
+    const vencCor = diasV < 0 ? [220,50,50] : diasV <= 7 ? [245,166,35] : C.lime;
+    doc.setTextColor(vencCor[0], vencCor[1], vencCor[2]);
+    doc.text("VENC.: " + vencFmt, W - PDF_M - 4, y + 3, { align: "right" });
+  }
+  y += 22;
+
+  // ── Renderiza pares de campos em 2 colunas ──
+  function cols2(secLabel, pares) {
+    y = pdfSec(doc, y, secLabel);
+    let col = 0;
+    let yL  = y, yR = y;
+    pares.forEach(([lbl, val]) => {
+      if (col === 0) {
+        yL = checkPg(doc, Math.max(yL, yR), 8);
+        if (yL === PDF_Y0) yR = PDF_Y0;
+        yL = pdfFld(doc, lbl, val, PDF_M, yL, cW) + 3;
+        col = 1;
+      } else {
+        yR = pdfFld(doc, lbl, val, xR, Math.max(yL - 3, yR), cW) + 3;
+        col = 0;
+        y = Math.max(yL, yR);
+      }
+    });
+    y = Math.max(yL, yR) + 2;
+  }
+
+  // Dados Pessoais
+  cols2("Dados Pessoais", [
+    ["Nome",               f.nome],
+    ["E-mail",             f.email],
+    ["Nascimento",         f.nascimento||f.data_nascimento ? formatDate(f.nascimento||f.data_nascimento) : ""],
+    ["Telefone",           f.telefone],
+    ["Peso",               f.peso    ? f.peso    + " kg" : ""],
+    ["Altura",             f.altura  ? f.altura  + " m"  : ""],
+    ["Trabalho",           f.trabalho],
+    ["Tabagismo",          f.tabagismo],
+    ["Nível",              f.nivel_condicionamento],
+    ["Modalidade",         f.modalidade],
+    ["Clube",              f.clube],
+    ["Academia",           f.academia],
+  ]);
+
+  // Histórico de Corrida
+  cols2("Histórico de Corrida", [
+    ["Provas Realizadas",  f.provas],
+    ["Prova Alvo",         f.prova_alvo],
+    ["Próxima Prova",      f.proxima_prova ? formatDate(f.proxima_prova) : ""],
+    ["Tempo 5K",           f.tempo_5k],
+    ["Tempo 10K",          f.tempo_10k],
+    ["Tempo 21K",          f.tempo_21k],
+    ["Tempo 42K",          f.tempo_42k],
+    ["Tempo TAF",          f.tempo_taf],
+    ["Maior km Semanal",   f.maior_km],
+    ["Treino Atual",       f.treino_atual],
+    ["Tempo de Prática",   f.tempo_pratica],
+  ]);
+
+  // Atividade e Objetivos
+  cols2("Atividade Física e Objetivos", [
+    ["Horas Semanais",     f.horas_semanais],
+    ["Tempo Diário",       f.tempo_diario],
+    ["Dias Disponíveis",   f.dias_disponiveis],
+  ]);
+  // Campos longos em largura total
+  [["Histórico de Atividades", f.historico_atividades],
+   ["Atividades Atuais",       f.atividades_atuais],
+   ["Objetivos",               f.objetivos||f.objetivo]
+  ].forEach(([lbl, val]) => {
+    y = checkPg(doc, y, 10);
+    y = pdfFld(doc, lbl, val, PDF_M, y, W - PDF_M * 2) + 3;
+  });
+
+  // Alimentação
+  cols2("Alimentação e Suplementação", [
+    ["Alimentação Adequada",     f.alim_adequada === "sim" ? "✓ Sim" : f.alim_adequada === "nao" ? "✗ Não" : "—"],
+    ["Acompanhamento Nutricional", f.nutricionista === "sim" ? "✓ Sim" : f.nutricionista === "nao" ? "✗ Não" : "—"],
+    ["Faz Suplementação",        f.suplementacao === "sim" ? "✓ Sim" : f.suplementacao === "nao" ? "✗ Não" : "—"],
+  ]);
+  [["Suplementos", f.suplementos_desc], ["Descrição Alimentar", f.alim_desc]].forEach(([lbl, val]) => {
+    y = checkPg(doc, y, 8);
+    y = pdfFld(doc, lbl, val, PDF_M, y, W - PDF_M * 2) + 3;
+  });
+
+  // Patologias
+  cols2("Saúde — Patologias", [
+    ["Patologias", f.patologias],
+  ]);
+  y = checkPg(doc, y, 8);
+  y = pdfFld(doc, "Detalhes", f.patologia_outros_desc, PDF_M, y, W - PDF_M * 2) + 4;
+
+  // AQ — Questionário de Saúde
+  y = pdfSec(doc, y, "Questionário de Saúde (AQ)");
+  _AQ_CAMPOS.forEach(c => {
+    y = pdfSN(doc, y, c.label, f[c.key], f[c.detKey]);
+  });
+  y += 2;
+
+  // Saúde Feminina
+  cols2("Saúde Feminina", [
+    ["Menarca",              f.menarca],
+    ["Intervalo do Ciclo",   f.intervalo_ciclo],
+    ["Maior Intervalo",      f.maior_intervalo],
+    ["Última Menstruação",   f.ultima_menstruacao],
+  ]);
+
+  // Histórico
+  y = pdfSec(doc, y, "Histórico e Observações");
+  [["Histórico de Saúde", f.historico_saude], ["Observações", f.observacoes]].forEach(([lbl, val]) => {
+    y = checkPg(doc, y, 8);
+    y = pdfFld(doc, lbl, val, PDF_M, y, W - PDF_M * 2) + 3;
+  });
+
+  const nomeAtl = f.nome || aluno.nome || aluno.usuario || "atleta";
+  pdfHeader(doc, "Ficha do Atleta", nomeAtl);
+  doc.save("Ficha_" + nomeAtl.replace(/\s+/g, "_") + ".pdf");
+  showToast("✓ Ficha gerada!");
 }
 
+// ══════════════════════════════════════════════════════════
+//  TREINOS PDF
+// ══════════════════════════════════════════════════════════
 function exportarTreinosPDF(id_aluno) {
-  const aluno = state.todosAlunos?.find(a => String(a.id_aluno) === String(id_aluno));
+  const aluno = (state.todosAlunos||[]).find(a => String(a.id_aluno) === String(id_aluno));
   if (!aluno) { showToast("Aluno não encontrado."); return; }
-  const doc = novoPDF(), W = doc.internal.pageSize.getWidth(); let y = 24;
-  (aluno.treinos||[]).slice(0,50).forEach(t => {
-    y=checkPg(doc,y,20);
-    doc.setFillColor(22,22,31); doc.rect(10,y-4,W-20,9,"F");
-    doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(200,241,53);
-    doc.text(formatDate(t.data_treino),13,y+1);
-    doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(80,80,100);
-    doc.text(String(t.status||"Pendente"),W-12,y+1,{align:"right"}); y+=10;
-    const desc=limpiarDesc(t.descricao_treino)||t.descricao_treino||"—";
-    const ls=doc.splitTextToSize(desc,W-24); doc.setTextColor(30,30,40); doc.text(ls,12,y); y+=ls.length*4+6;
-    if (t.feedback_aluno) { doc.setFont("helvetica","bold"); doc.setFontSize(7); doc.setTextColor(200,241,53); doc.text("FEEDBACK",12,y); y+=4; doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(80,80,100); const lf=doc.splitTextToSize(t.feedback_aluno,W-24); doc.text(lf,12,y); y+=lf.length*4+4; }
-    y+=4;
+  const doc = novoPDF();
+  const W   = pdfW(doc);
+  let y     = PDF_Y0;
+  const treinos = (aluno.treinos || []);
+
+  if (!treinos.length) { showToast("Nenhum treino encontrado."); return; }
+
+  // Cabeçalho de atleta
+  setFill(doc, C.bgCard);
+  doc.rect(PDF_M, y - 4, W - PDF_M * 2, 14, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  setTxt(doc, C.text1);
+  doc.text(aluno.nome || aluno.usuario || "—", PDF_M + 4, y + 4);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+  setTxt(doc, C.text2);
+  doc.text(treinos.length + " treino(s) · gerado em " + new Date().toLocaleDateString("pt-BR"), PDF_M + 4, y + 9);
+  y += 18;
+
+  // Agrupa por mês para organizar o documento
+  const meses = {};
+  treinos.forEach(t => {
+    const mes = String(t.data_treino || "").substring(0, 7) || "—";
+    if (!meses[mes]) meses[mes] = [];
+    meses[mes].push(t);
   });
-  pdfHeader(doc,`Treinos — ${aluno.nome||aluno.usuario}`);
-  doc.save(`Treinos_${(aluno.nome||aluno.usuario).replace(/\s+/g,"_")}.pdf`);
-  showToast("✓ PDF gerado!");
+
+  Object.keys(meses).sort().reverse().forEach(mes => {
+    // Título do mês
+    y = checkPg(doc, y, 12);
+    setFill(doc, C.bgStripe);
+    doc.rect(PDF_M, y - 3.5, W - PDF_M * 2, 8, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    setTxt(doc, C.cyan);
+    const [ano, mesN] = mes.split("-");
+    const nomeMes = mesN ? new Date(parseInt(ano), parseInt(mesN)-1, 1).toLocaleDateString("pt-BR", { month:"long", year:"numeric" }) : mes;
+    doc.text(nomeMes.toUpperCase(), PDF_M + 4, y + 1);
+    y += 10;
+
+    meses[mes].forEach(t => {
+      const desc = (limpiarDesc(t.descricao_treino) || t.descricao_treino || "—").trim();
+      const classif = extractClassif(t.descricao_treino || "");
+      const linhasDesc = doc.splitTextToSize(desc, W - PDF_M * 2 - 4);
+      const feedLines  = t.feedback_aluno
+        ? doc.splitTextToSize(t.feedback_aluno, W - PDF_M * 2 - 8)
+        : [];
+      const alturaBloco = 6 + linhasDesc.length * 3.5 + (feedLines.length ? 3 + feedLines.length * 3.2 : 0) + 4;
+
+      y = checkPg(doc, y, alturaBloco);
+
+      // Faixa de data + status
+      const status = String(t.status || "Pendente");
+      const statusCor = status.toLowerCase().includes("conclu") ? C.lime
+                      : status.toLowerCase().includes("descans") ? C.cyan
+                      : C.text3;
+
+      setFill(doc, C.bgCard);
+      doc.rect(PDF_M, y - 3, W - PDF_M * 2, 6.5, "F");
+
+      // Barra lateral colorida (classificação)
+      const CLASSIF_CORES_PDF = {
+        "RTL": [56,217,245], "RTM": [100,200,255], "RTF": [80,160,255],
+        "RTC": [200,241,53], "RTA": [245,166,35],
+      };
+      const barCor = CLASSIF_CORES_PDF[classif] || C.text3;
+      doc.setFillColor(barCor[0], barCor[1], barCor[2]);
+      doc.rect(PDF_M, y - 3, 1.8, 6.5, "F");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      setTxt(doc, C.text1);
+      doc.text(formatDate(t.data_treino), PDF_M + 4, y + 1);
+
+      if (classif) {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(6.5);
+        doc.setTextColor(barCor[0], barCor[1], barCor[2]);
+        doc.text(classif, PDF_M + 38, y + 1);
+      }
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7);
+      doc.setTextColor(statusCor[0], statusCor[1], statusCor[2]);
+      doc.text(status, W - PDF_M - 3, y + 1, { align: "right" });
+      y += 6.5;
+
+      // Descrição do treino
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.8);
+      setTxt(doc, C.text1);
+      doc.text(linhasDesc, PDF_M + 3, y);
+      y += linhasDesc.length * 3.5 + 2;
+
+      // Feedback do aluno
+      if (feedLines.length) {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(6.5);
+        setTxt(doc, C.amber);
+        doc.text("FEEDBACK ALUNO:", PDF_M + 3, y);
+        y += 3.5;
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(7);
+        setTxt(doc, C.text2);
+        doc.text(feedLines, PDF_M + 5, y);
+        y += feedLines.length * 3.2 + 1;
+      }
+
+      // Separador sutil
+      setStroke(doc, C.bgStripe);
+      doc.setLineWidth(0.3);
+      doc.line(PDF_M, y + 1, W - PDF_M, y + 1);
+      y += 4;
+    });
+  });
+
+  const nomeAtl = aluno.nome || aluno.usuario || "atleta";
+  pdfHeader(doc, "Plano de Treinos", nomeAtl);
+  doc.save("Treinos_" + nomeAtl.replace(/\s+/g, "_") + ".pdf");
+  showToast("✓ PDF de treinos gerado!");
 }
 
 // ════════════════════════════════════════════════════════════
@@ -7698,7 +8407,7 @@ function agRenderTabela(lista) {
 }
 
 function agPrescrever(id_aluno, data_corrida) {
-  // Seleciona atleta e abre aba de prescrição
+  ["adminRTL","adminRTM","adminRTF","adminRTC"].forEach(id => setVal(id, ""));
   siNav("atletas");
   const aluno = (state.todosAlunos || []).find(a => String(a.id_aluno) === String(id_aluno));
   if (aluno) {
@@ -7977,10 +8686,10 @@ function mobAgAdminRenderCards(lista) {
 }
 
 function mobAgPrescrever(id_aluno, data_corrida) {
-  // No mobile: vai para o detalhe do aluno
   const aluno = (state.todosAlunos || []).find(a => String(a.id_aluno) === String(id_aluno));
   if (!aluno) { showToast("Atleta não encontrado."); return; }
-  // Armazena a data para uso após carregar o detalhe
+  ["adminRTL","adminRTM","adminRTF","adminRTC",
+   "m_adminRTL","m_adminRTM","m_adminRTF","m_adminRTC"].forEach(id => setVal(id, ""));
   window._agPrescreverData = data_corrida;
   mobVerAluno(id_aluno);
 }
