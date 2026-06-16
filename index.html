@@ -1204,15 +1204,49 @@ body {
 
 /* Aluno layout */
 .aluno-layout { display: flex; flex: 1; min-height: 0; overflow: hidden; }
-.aluno-sidebar {
-  width: 280px; flex-shrink: 0;
+
+/* ── Aluno sidebar de ícones (igual ao admin) ────────────── */
+.aluno-sidebar-icons {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
   background: var(--bg-card);
   border-right: 1px solid var(--border);
-  overflow-y: auto;
-  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  gap: 4px;
+  z-index: 10;
+  overflow: visible;
 }
-.aluno-sidebar-name { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
-.aluno-sidebar-user { font-size: 11px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; margin-bottom: 16px; }
+/* Avatar do aluno no topo da sidebar */
+.aluno-sidebar-avatar {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800; color: var(--lime);
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+/* Reutiliza .si-btn e .si-tooltip do admin — nenhuma redefinição necessária */
+
+/* ── Seções de conteúdo do aluno ─────────────────────────── */
+.aluno-section {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+  flex-direction: column;
+  gap: 0;
+}
+.aluno-section.active { display: flex; }
+
+/* Compatibilidade: aluno-main ainda existe para fallback */
+.aluno-main { flex: 1; overflow-y: auto; padding: 24px 28px; }
+
+/* Stats grid dentro de seção */
 .aluno-stat-grid {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 8px; margin-bottom: 16px;
@@ -1225,12 +1259,8 @@ body {
 }
 .aluno-stat-val { font-size: 16px; font-weight: 700; color: var(--lime); }
 .aluno-stat-lbl { font-size: 9px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
-
-/* Aluno main */
-.aluno-main {
-  flex: 1; overflow-y: auto;
-  padding: 24px 28px;
-}
+.aluno-sidebar-name { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+.aluno-sidebar-user { font-size: 11px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; margin-bottom: 16px; }
 
 /* ── MODO CORRIDA (atleta) ───────────────────────────────── */
 .run-mode-btn {
@@ -2311,16 +2341,16 @@ body {
               </div>
               <!-- Stats resumo -->
               <div id="alunoTesteStats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
-                <div class="aluno-stat"><div class="aluno-stat-val" id="alunoTesteUltPace">—</div><div class="aluno-stat-lbl">Último Pace</div></div>
-                <div class="aluno-stat"><div class="aluno-stat-val" id="alunoTesteUltVo2">—</div><div class="aluno-stat-lbl">Último VO₂max</div></div>
-                <div class="aluno-stat"><div class="aluno-stat-val" id="alunoTesteTotal">—</div><div class="aluno-stat-lbl">Testes</div></div>
+                <div class="aluno-stat"><div class="aluno-stat-val" id="wsTesteUltPace">—</div><div class="aluno-stat-lbl">Último Pace</div></div>
+                <div class="aluno-stat"><div class="aluno-stat-val" id="wsTesteUltVo2">—</div><div class="aluno-stat-lbl">Último VO₂max</div></div>
+                <div class="aluno-stat"><div class="aluno-stat-val" id="wsTesteTotal">—</div><div class="aluno-stat-lbl">Testes</div></div>
               </div>
               <!-- Gráfico -->
               <div class="peso-chart-wrap" style="margin-bottom:16px;">
-                <canvas id="alunoTesteChart"></canvas>
+                <canvas id="wsTesteChart"></canvas>
               </div>
               <!-- Histórico -->
-              <div id="alunoTesteLista" style="font-size:12px;color:var(--text-3);font-family:'JetBrains Mono',monospace;">Carregando…</div>
+              <div id="wsTesteLista" style="font-size:12px;color:var(--text-3);font-family:'JetBrains Mono',monospace;">Carregando…</div>
             </div>
           </div>
 
@@ -2385,102 +2415,209 @@ body {
 
     <!-- Layout aluno -->
     <div class="aluno-layout">
-      <!-- Sidebar -->
-      <aside class="aluno-sidebar">
-        <div class="aluno-sidebar-name" id="alunoSidebarName">—</div>
-        <div class="aluno-sidebar-user" id="alunoSidebarUser">—</div>
-        <div class="aluno-stat-grid">
-          <div class="aluno-stat"><div class="aluno-stat-val" id="alunoStatPeso">—</div><div class="aluno-stat-lbl">Peso</div></div>
-          <div class="aluno-stat"><div class="aluno-stat-val" id="alunoStatAltura">—</div><div class="aluno-stat-lbl">Altura</div></div>
-          <div class="aluno-stat"><div class="aluno-stat-val" id="alunoStatNivel">—</div><div class="aluno-stat-lbl">Nível</div></div>
-          <div class="aluno-stat"><div class="aluno-stat-val" id="alunoStatProva">—</div><div class="aluno-stat-lbl">Próxima Prova</div></div>
-        </div>
-        <div style="margin-top:8px;">
-          <div style="font-size:9px;color:var(--text-3);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;margin-bottom:4px;">OBJETIVO</div>
-          <div style="font-size:12px;color:var(--text-2);line-height:1.6;" id="alunoSidebarObj">—</div>
-        </div>
-        <div id="alunoVencBadge" style="margin-top:14px;"></div>
-      </aside>
 
-      <!-- Main treino -->
-      <main class="aluno-main" id="alunoMain">
+      <!-- ── Sidebar de ícones (aluno) ───────────────────── -->
+      <nav class="aluno-sidebar-icons" id="alunoSidebarIcons">
+        <!-- Avatar -->
+        <div class="aluno-sidebar-avatar" id="alunoSidebarAvatar">?</div>
+
+        <!-- Botões de navegação -->
+        <button class="si-btn active" id="aluBtnTreinos" onclick="alunoNav('treinos')" title="">
+          🏃<span class="si-tooltip">Treinos</span>
+        </button>
+        <button class="si-btn" id="aluBtnCrono" onclick="alunoNav('crono')" title="">
+          ⏱️<span class="si-tooltip">Cronômetro</span>
+        </button>
+        <button class="si-btn" id="aluBtnPeso" onclick="alunoNav('peso')" title="">
+          ⚖️<span class="si-tooltip">Evolução de Peso</span>
+        </button>
+        <button class="si-btn" id="aluBtnTeste" onclick="alunoNav('testes')" title="">
+          📈<span class="si-tooltip">Teste 3km</span>
+        </button>
+        <button class="si-btn" id="aluBtnAgenda" onclick="alunoNav('agenda')" title="">
+          🏁<span class="si-tooltip">Agendamentos</span>
+        </button>
+        <button class="si-btn" id="aluBtnFicha" onclick="alunoNav('ficha')" title="">
+          📋<span class="si-tooltip">Minha Ficha</span>
+        </button>
+        <button class="si-btn" id="aluBtnPace" onclick="alunoNav('pace')" title="">
+          🧮<span class="si-tooltip">Calculadora de Pace</span>
+        </button>
+
+        <div class="si-spacer"></div>
+
+        <!-- Perfil mini info -->
+        <div style="width:44px;display:flex;flex-direction:column;align-items:center;gap:3px;padding-bottom:4px;">
+          <div id="alunoSidebarName" style="font-size:8px;color:var(--text-3);font-family:'JetBrains Mono',monospace;
+               text-align:center;word-break:break-all;line-height:1.3;max-width:40px;overflow:hidden;
+               display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;"></div>
+        </div>
+
+        <!-- Vencimento badge compacto -->
+        <div id="alunoVencBadge" style="width:44px;display:flex;justify-content:center;margin-bottom:4px;"></div>
+
+        <!-- Sair -->
+        <button class="si-btn" onclick="handleLogout()" title="" style="color:var(--red);">
+          ↩<span class="si-tooltip">Sair</span>
+        </button>
+      </nav>
+
+      <!-- ── Seção: Treinos ────────────────────────────────── -->
+      <section class="aluno-section active" id="aluSecTreinos">
         <div id="alunoTreinoArea"></div>
+      </section>
 
-        <!-- Cronômetro -->
-        <div id="cronometroWrap" style="margin-top:24px;">
-          <div class="crono-wrap">
-            <div class="crono-title">⏱ Cronômetro</div>
-            <div class="crono-ring-wrap">
-              <svg class="crono-ring-svg" width="180" height="180" viewBox="0 0 180 180">
-                <circle class="crono-ring-bg" cx="90" cy="90" r="82"/>
-                <circle class="crono-ring-fg" id="cronoRingFg" cx="90" cy="90" r="82"
-                  stroke-dasharray="515.2" stroke-dashoffset="515.2"/>
-              </svg>
-              <div class="crono-center">
-                <div class="crono-digits" id="cronoDigits">00:00</div>
-                <div class="crono-ms" id="cronoMs">.00</div>
-              </div>
-            </div>
-            <div class="crono-controls">
-              <button class="crono-btn crono-btn-sm crono-btn-lap" id="cronoBtnLap" title="Marcar volta" onclick="cronoLap()">🚩</button>
-              <button class="crono-btn crono-btn-play" id="cronoBtnPlay" onclick="cronoToggle()">▶</button>
-              <button class="crono-btn crono-btn-sm" id="cronoBtnReset" title="Zerar" onclick="cronoReset()">↺</button>
-            </div>
-            <div class="crono-laps" id="cronoLaps">
-              <div class="crono-laps-title">
-                <span>Histórico de Voltas</span>
-                <span id="cronoLapsCount" style="color:var(--lime);"></span>
-              </div>
-              <div id="cronoLapList"><div class="crono-empty">Nenhuma volta marcada</div></div>
+      <!-- ── Seção: Cronômetro ─────────────────────────────── -->
+      <section class="aluno-section" id="aluSecCrono">
+        <div class="crono-wrap">
+          <div class="crono-title">⏱ Cronômetro</div>
+          <div class="crono-ring-wrap">
+            <svg class="crono-ring-svg" width="180" height="180" viewBox="0 0 180 180">
+              <circle class="crono-ring-bg" cx="90" cy="90" r="82"/>
+              <circle class="crono-ring-fg" id="cronoRingFg" cx="90" cy="90" r="82"
+                stroke-dasharray="515.2" stroke-dashoffset="515.2"/>
+            </svg>
+            <div class="crono-center">
+              <div class="crono-digits" id="cronoDigits">00:00</div>
+              <div class="crono-ms" id="cronoMs">.00</div>
             </div>
           </div>
-        </div>
-
-        <!-- Ficha do próprio aluno (desktop) -->
-        <div id="alunoFichaArea" style="margin-top:24px;"></div>
-
-        <!-- Meus Agendamentos (desktop aluno) -->
-        <div id="alunoAgendamentosArea" style="margin-top:24px;">
-          <div class="card">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px;flex-wrap:wrap;">
-              <div class="card-title" style="margin-bottom:0;">🏁 Meus Agendamentos de Corrida</div>
-              <button class="btn btn-ghost btn-sm" onclick="toggleFormAgendamento()" id="btnToggleFormAg">＋ Nova Corrida</button>
+          <div class="crono-controls">
+            <button class="crono-btn crono-btn-sm crono-btn-lap" id="cronoBtnLap" title="Marcar volta" onclick="cronoLap()">🚩</button>
+            <button class="crono-btn crono-btn-play" id="cronoBtnPlay" onclick="cronoToggle()">▶</button>
+            <button class="crono-btn crono-btn-sm" id="cronoBtnReset" title="Zerar" onclick="cronoReset()">↺</button>
+          </div>
+          <div class="crono-laps" id="cronoLaps">
+            <div class="crono-laps-title">
+              <span>Histórico de Voltas</span>
+              <span id="cronoLapsCount" style="color:var(--lime);"></span>
             </div>
-
-            <!-- Formulário compacto -->
-            <div id="formAgendamentoWrap" style="display:none;background:var(--bg-base);border:1px solid var(--border-lg);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
-              <div class="form-grid-2" style="gap:12px;margin-bottom:12px;">
-                <div>
-                  <div class="field-label">Data da Corrida</div>
-                  <input class="field-input" id="agData" type="date"/>
-                </div>
-                <div>
-                  <div class="field-label">Distância (km)</div>
-                  <input class="field-input" id="agDistancia" type="text" placeholder="Ex: 21"/>
-                </div>
-                <div class="span-2">
-                  <div class="field-label">Nome da Corrida / Evento</div>
-                  <input class="field-input" id="agNome" type="text" placeholder="Ex: Maratona de Fortaleza 2026"/>
-                </div>
-                <div class="span-2">
-                  <div class="field-label">Objetivo</div>
-                  <input class="field-input" id="agObjetivo" type="text" placeholder="Ex: Completar em menos de 2h"/>
-                </div>
-              </div>
-              <div style="display:flex;gap:8px;">
-                <button class="btn btn-lime btn-sm" onclick="salvarAgendamento()">💾 Agendar Corrida</button>
-                <button class="btn btn-ghost btn-sm" onclick="toggleFormAgendamento()">Cancelar</button>
-              </div>
-            </div>
-
-            <!-- Lista de corridas -->
-            <div id="listaAgendamentos">
-              <div style="padding:20px;text-align:center;color:var(--text-3);font-size:12px;font-family:'JetBrains Mono',monospace;">Carregando…</div>
-            </div>
+            <div id="cronoLapList"><div class="crono-empty">Nenhuma volta marcada</div></div>
           </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <!-- ── Seção: Evolução de Peso ───────────────────────── -->
+      <section class="aluno-section" id="aluSecPeso">
+        <!-- Stats peso -->
+        <div id="wsPesoStats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;"></div>
+        <!-- Gráfico peso -->
+        <div class="card" style="margin-bottom:16px;">
+          <div class="peso-chart-wrap"><canvas id="wsPesoChart"></canvas></div>
+        </div>
+        <!-- Registro de peso -->
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px;">➕ Registrar Peso</div>
+          <div class="form-grid-2" style="gap:10px;margin-bottom:12px;">
+            <div>
+              <div class="field-label">Peso (kg)</div>
+              <input class="field-input" id="wsPesoVal" type="number" step="0.1" min="30" max="300" placeholder="75.5"
+                style="font-family:'JetBrains Mono',monospace;"/>
+            </div>
+            <div>
+              <div class="field-label">Data</div>
+              <input class="field-input" id="wsPesoData" type="date"/>
+            </div>
+          </div>
+          <button class="btn btn-lime btn-sm" onclick="wsRegistrarPeso()">💾 Salvar</button>
+        </div>
+      </section>
+
+      <!-- ── Seção: Testes 3km ──────────────────────────────── -->
+      <section class="aluno-section" id="aluSecTestes">
+        <div class="card">
+          <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <span>📈 Meus Testes 3km</span>
+            <button class="btn btn-ghost btn-sm" onclick="alunoCarregarTestes()">↺</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
+            <div class="aluno-stat"><div class="aluno-stat-val" id="alunoTesteUltPace">—</div><div class="aluno-stat-lbl">Último Pace</div></div>
+            <div class="aluno-stat"><div class="aluno-stat-val" id="alunoTesteUltVo2">—</div><div class="aluno-stat-lbl">Último VO₂max</div></div>
+            <div class="aluno-stat"><div class="aluno-stat-val" id="alunoTesteTotal">—</div><div class="aluno-stat-lbl">Testes</div></div>
+          </div>
+          <div class="peso-chart-wrap" style="margin-bottom:16px;">
+            <canvas id="alunoTesteChart"></canvas>
+          </div>
+          <div id="alunoTesteLista" style="font-size:12px;color:var(--text-3);font-family:'JetBrains Mono',monospace;">
+            <div style="padding:12px 0;">Carregando…</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Seção: Agendamentos ───────────────────────────── -->
+      <section class="aluno-section" id="aluSecAgenda">
+        <div class="card">
+          <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <span>🏁 Meus Agendamentos de Corrida</span>
+            <button class="btn btn-ghost btn-sm" onclick="toggleFormAgendamento()" id="btnToggleFormAg">＋ Nova Corrida</button>
+          </div>
+          <div id="formAgendamentoWrap" style="display:none;background:var(--bg-base);border:1px solid var(--border-lg);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
+            <div class="form-grid-2" style="gap:12px;margin-bottom:12px;">
+              <div>
+                <div class="field-label">Data da Corrida</div>
+                <input class="field-input" id="agData" type="date"/>
+              </div>
+              <div>
+                <div class="field-label">Distância (km)</div>
+                <input class="field-input" id="agDistancia" type="text" placeholder="Ex: 21"/>
+              </div>
+              <div class="span-2">
+                <div class="field-label">Nome da Corrida / Evento</div>
+                <input class="field-input" id="agNome" type="text" placeholder="Ex: Maratona de Fortaleza 2026"/>
+              </div>
+              <div class="span-2">
+                <div class="field-label">Objetivo</div>
+                <input class="field-input" id="agObjetivo" type="text" placeholder="Ex: Completar em menos de 2h"/>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-lime btn-sm" onclick="salvarAgendamento()">💾 Agendar Corrida</button>
+              <button class="btn btn-ghost btn-sm" onclick="toggleFormAgendamento()">Cancelar</button>
+            </div>
+          </div>
+          <div id="listaAgendamentos">
+            <div style="padding:20px;text-align:center;color:var(--text-3);font-size:12px;font-family:'JetBrains Mono',monospace;">Carregando…</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Seção: Minha Ficha ────────────────────────────── -->
+      <section class="aluno-section" id="aluSecFicha">
+        <div id="alunoFichaArea"></div>
+      </section>
+
+      <!-- ── Seção: Calculadora de Pace ────────────────────── -->
+      <section class="aluno-section" id="aluSecPace">
+        <div class="card" style="max-width:480px;">
+          <div class="card-title">🧮 Calculadora de Pace</div>
+          <div class="form-grid-2" style="gap:12px;margin-bottom:12px;">
+            <div>
+              <div class="field-label">Distância</div>
+              <input class="field-input" id="paceDistancia" type="number" placeholder="10" min=".1" step=".1"
+                oninput="calcularPace()" style="font-family:'JetBrains Mono',monospace;"/>
+            </div>
+            <div>
+              <div class="field-label">Unidade</div>
+              <select class="field-input" id="paceUnidade" onchange="calcularPace()">
+                <option value="km">km</option>
+                <option value="m">m</option>
+              </select>
+            </div>
+            <div class="span-2">
+              <div class="field-label">Tempo (hh:mm:ss)</div>
+              <input class="field-input" id="paceTempo" type="text" placeholder="00:42:00"
+                oninput="calcularPace()" maxlength="8"
+                style="font-family:'JetBrains Mono',monospace;letter-spacing:.08em;"/>
+            </div>
+          </div>
+          <div id="paceResultado" class="pace-result hidden">
+            <span class="pace-val" id="paceValor">—</span>
+            <span class="pace-extra" id="paceExtra"></span>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /aluno-layout -->
   </div><!-- /panelAluno -->
 
 </div><!-- /screenApp -->
@@ -5163,7 +5300,7 @@ function wsTab(tab) {
   if (tab === "prescricao") renderWsHistorico(aluno);
   if (tab === "evolucao")   wsCarregarPeso(aluno.id_aluno);
   if (tab === "ficha")      renderWsFicha(aluno);
-  if (tab === "teste3km")   alunoCarregarTestes();
+  if (tab === "teste3km")   wsCarregarTestes3km(aluno.id_aluno);
 }
 
 // ── Workspace: Histórico de treinos ──────────────────────
@@ -6679,6 +6816,52 @@ async function salvarFichaAdmin() {
 // ════════════════════════════════════════════════════════════
 //  PAINEL DO ALUNO — desktop
 // ════════════════════════════════════════════════════════════
+
+// ════════════════════════════════════════════════════════════
+//  NAVEGAÇÃO SIDEBAR ALUNO (desktop)
+// ════════════════════════════════════════════════════════════
+const _ALU_SECTIONS = {
+  treinos: { sec: "aluSecTreinos", btn: "aluBtnTreinos",  onEnter: null },
+  crono:   { sec: "aluSecCrono",   btn: "aluBtnCrono",    onEnter: null },
+  peso:    { sec: "aluSecPeso",    btn: "aluBtnPeso",     onEnter: () => wsCarregarPeso(state.usuario?.id_aluno) },
+  testes:  { sec: "aluSecTestes",  btn: "aluBtnTeste",    onEnter: () => alunoCarregarTestes() },
+  agenda:  { sec: "aluSecAgenda",  btn: "aluBtnAgenda",   onEnter: () => carregarAgendamentosAluno() },
+  ficha:   { sec: "aluSecFicha",   btn: "aluBtnFicha",    onEnter: () => renderAlunoFicha() },
+  pace:    { sec: "aluSecPace",    btn: "aluBtnPace",     onEnter: null },
+};
+
+function alunoNav(view) {
+  // Remove active de todos os botões e seções
+  Object.values(_ALU_SECTIONS).forEach(({ sec, btn }) => {
+    const s = $(sec), b = $(btn);
+    if (s) s.classList.remove("active");
+    if (b) b.classList.remove("active");
+  });
+
+  const item = _ALU_SECTIONS[view];
+  if (!item) return;
+
+  const sec = $(item.sec), btn = $(item.btn);
+  if (sec) sec.classList.add("active");
+  if (btn) btn.classList.add("active");
+
+  if (item.onEnter) item.onEnter();
+}
+
+// Compatibilidade: alunoFichaArea ainda existe dentro de aluSecFicha
+// wsCarregarPeso espera canvas "pesoCanvas" (já está em aluSecPeso)
+async function wsRegistrarPeso() {
+  const id_aluno = state.usuario?.id_aluno;
+  const peso     = getVal("wsPesoVal");
+  const data     = getVal("wsPesoData");
+  if (!peso || !data) { showToast("Preencha peso e data."); return; }
+  const res = await callAPI({ action: "registrarPeso", id_aluno, peso_kg: peso, data });
+  if (!res || !res.ok) { showToast("⚠ " + (res?.erro || "Erro ao salvar.")); return; }
+  showToast("✓ Peso registrado!");
+  setVal("wsPesoVal", "");
+  wsCarregarPeso(id_aluno);
+}
+
 async function iniciarAluno() {
   showScreen("aluno");
   aplicarMarca(getMarca());
@@ -6711,6 +6894,8 @@ async function iniciarAluno() {
   const u = state.usuario;
   setText("alunoSidebarName", f.nome || u.nome || u.usuario || "—");
   setText("alunoSidebarUser", "@" + (u.usuario || ""));
+  const _sav = $("alunoSidebarAvatar");
+  if (_sav) _sav.textContent = (f.nome || u.nome || u.usuario || "?").charAt(0).toUpperCase();
   setText("alunoStatPeso",    f.peso   ? f.peso   + " kg" : "—");
   setText("alunoStatAltura",  f.altura ? f.altura + " m"  : "—");
   setText("alunoStatNivel",   f.nivel_condicionamento || "—");
@@ -6735,8 +6920,8 @@ async function iniciarAluno() {
   // Renderiza ficha do aluno abaixo da área de treino
   renderAlunoFicha();
 
-  // Carrega agendamentos de corrida do aluno
-  carregarAgendamentosAluno();
+  // Inicializa a seção de treinos como ativa
+  alunoNav("treinos");
 
   // ── Vencimento: badge na sidebar + popup ──────────────────
   const vd = u.data_vencimento ? String(u.data_vencimento).substring(0,10) : "";
@@ -7927,6 +8112,88 @@ async function t3kExcluir(id_teste, nome) {
   _t3kTodos = _t3kTodos.filter(t => t.id_teste !== id_teste);
   t3kFiltrar();
 }
+
+// ── Admin Workspace: Testes 3km do atleta selecionado ────────
+async function wsCarregarTestes3km(id_aluno) {
+  const listaEl = $("wsTesteLista");
+  if (listaEl) listaEl.innerHTML = `<div style="color:var(--text-3);font-size:12px;padding:12px 0;font-family:'JetBrains Mono',monospace;">Carregando…</div>`;
+
+  const res = await callAPI({ action: "buscarTestesAluno", id_aluno });
+  if (!res || !res.ok) { showToast("⚠ Erro ao carregar testes."); return; }
+
+  const testes = res.testes || [];
+  const cron   = testes.slice().reverse();
+  const ult    = testes[0] || null;
+
+  setText("wsTesteUltPace", ult?.pace_medio || "—");
+  setText("wsTesteUltVo2",  ult ? parseFloat(ult.vo2max||0).toFixed(1) : "—");
+  setText("wsTesteTotal",   testes.length);
+
+  // Gráfico
+  const canvas = $("wsTesteChart");
+  if (canvas) {
+    if (window._wsTesteChart) { window._wsTesteChart.destroy(); window._wsTesteChart = null; }
+    if (cron.length) {
+      window._wsTesteChart = new Chart(canvas, {
+        type: "line",
+        data: {
+          labels: cron.map(t => formatDate(t.data_teste)),
+          datasets: [
+            {
+              label: "VO₂max", data: cron.map(t => parseFloat(t.vo2max)||0),
+              borderColor: "#38d9f5", backgroundColor: "rgba(56,217,245,.07)",
+              borderWidth: 2, pointRadius: 4, pointBackgroundColor: "#38d9f5",
+              tension: .35, fill: true, yAxisID: "y",
+            },
+            {
+              label: "Pace (s/km)", data: cron.map(t => {
+                const p = String(t.pace_medio||"").replace("/km","");
+                const pp = p.split(":"); if(pp.length<2) return null;
+                return parseInt(pp[0])*60 + parseInt(pp[1]);
+              }),
+              borderColor: "#c8f135", backgroundColor: "rgba(200,241,53,.06)",
+              borderWidth: 2, pointRadius: 4, pointBackgroundColor: "#c8f135",
+              tension: .35, fill: false, yAxisID: "y2",
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: "#8888aa", font: { family: "JetBrains Mono", size: 10 } } } },
+          scales: {
+            x:  { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "#4a4a6a", font: { size: 9, family: "JetBrains Mono" }, maxTicksLimit: 6 } },
+            y:  { position: "left",  grid: { color: "rgba(56,217,245,.08)" }, ticks: { color: "#38d9f5", font: { size: 9, family: "JetBrains Mono" } } },
+            y2: { position: "right", grid: { drawOnChartArea: false },        ticks: { color: "#c8f135", font: { size: 9, family: "JetBrains Mono" } } },
+          }
+        }
+      });
+    }
+  }
+
+  // Lista
+  if (listaEl) {
+    listaEl.innerHTML = !testes.length
+      ? `<div style="color:var(--text-3);font-size:12px;padding:12px 0;font-family:'JetBrains Mono',monospace;">Nenhum teste registrado para este atleta.</div>`
+      : `<table style="width:100%;border-collapse:collapse;font-size:11px;font-family:'JetBrains Mono',monospace;">
+          <thead><tr style="background:var(--bg-card2);">
+            <th style="padding:6px 10px;text-align:left;color:var(--text-3);font-size:9px;text-transform:uppercase;">Data</th>
+            <th style="padding:6px 10px;text-align:left;color:var(--text-3);font-size:9px;text-transform:uppercase;">Tempo</th>
+            <th style="padding:6px 10px;text-align:left;color:var(--text-3);font-size:9px;text-transform:uppercase;">Pace</th>
+            <th style="padding:6px 10px;text-align:left;color:var(--text-3);font-size:9px;text-transform:uppercase;">VO₂max</th>
+            <th style="padding:6px 10px;text-align:left;color:var(--text-3);font-size:9px;text-transform:uppercase;">Obs.</th>
+          </tr></thead>
+          <tbody>${testes.map((t,i) => `
+            <tr style="border-bottom:1px solid var(--border);${i===0?"background:rgba(200,241,53,.04);":""}">
+              <td style="padding:7px 10px;color:var(--lime);font-weight:700;">${escHtml(formatDate(t.data_teste))}</td>
+              <td style="padding:7px 10px;color:var(--text-1);font-weight:700;">${escHtml(t.tempo||"—")}</td>
+              <td style="padding:7px 10px;color:var(--cyan);font-weight:700;">${escHtml(t.pace_medio||"—")}</td>
+              <td style="padding:7px 10px;">${t3kVo2Badge(t.vo2max)}</td>
+              <td style="padding:7px 10px;color:var(--text-3);max-width:140px;word-break:break-word;">${escHtml(t.observacao||"—")}</td>
+            </tr>`).join("")}</tbody>
+        </table>`;
+  }
+}
+
 
 // ── Aluno Desktop ─────────────────────────────────────────────
 let _alunoTesteChart = null;
