@@ -1797,6 +1797,9 @@ body {
       <button class="si-btn" id="siBtnAgendamentos" onclick="siNav('agendamentos')" title="">
         🏁<span class="si-tooltip">Agendamentos</span>
       </button>
+      <button class="si-btn" id="siBtnTestes" onclick="siNav('testes')" title="">
+        📈<span class="si-tooltip">Teste 3km</span>
+      </button>
       <button class="si-btn" id="siBtnFinanceiro" onclick="siNav('financeiro')" title="">
         💰<span class="si-tooltip">Financeiro</span>
       </button>
@@ -2060,6 +2063,74 @@ body {
       </div>
     </div>
 
+
+    <!-- Testes 3km View (Admin) -->
+    <div id="testes3kmView" class="hidden" style="flex:1;overflow-y:auto;padding:28px;flex-direction:column;gap:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <h2 style="font-size:18px;font-weight:800;letter-spacing:-.02em;">📈 Teste 3km — Registros</h2>
+        <button class="btn btn-ghost btn-sm" onclick="t3kCarregarTodos()">↺ Atualizar</button>
+      </div>
+
+      <!-- Formulário de registro -->
+      <div class="card" style="max-width:640px;">
+        <div class="card-title">＋ Registrar Novo Teste</div>
+        <div class="form-grid-2" style="gap:12px;margin-bottom:14px;">
+          <div>
+            <div class="field-label">Atleta</div>
+            <select class="field-input" id="t3kSelectAtleta">
+              <option value="">— Selecionar atleta —</option>
+            </select>
+          </div>
+          <div>
+            <div class="field-label">Data do Teste</div>
+            <input class="field-input" id="t3kData" type="date"/>
+          </div>
+          <div>
+            <div class="field-label">Tempo (MM:SS ou HH:MM:SS)</div>
+            <input class="field-input" id="t3kTempo" type="text" placeholder="12:45"
+              maxlength="8" style="font-family:'JetBrains Mono',monospace;letter-spacing:.08em;"
+              oninput="t3kMascaraTempo(this)" onblur="t3kPrevisualizar()"/>
+          </div>
+          <div>
+            <div class="field-label">Pré-visualização</div>
+            <div id="t3kPreview" style="font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',monospace;
+                 padding:9px 0;min-height:38px;display:flex;align-items:center;gap:16px;">—</div>
+          </div>
+          <div style="grid-column:span 2;">
+            <div class="field-label">Observação (opcional)</div>
+            <input class="field-input" id="t3kObs" type="text" placeholder="Ex: pista, calor, tênis novo…"/>
+          </div>
+        </div>
+        <button class="btn btn-lime btn-sm" onclick="t3kRegistrar()">💾 Salvar Teste</button>
+      </div>
+
+      <!-- Filtro busca -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <input id="t3kBusca" type="text" class="al-search" placeholder="Buscar atleta…"
+          style="max-width:260px;" oninput="t3kFiltrar()"/>
+      </div>
+
+      <!-- Tabela -->
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead>
+            <tr style="background:var(--bg-base);">
+              <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Atleta</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Data</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Tempo</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Pace Médio</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">VO₂max</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Obs.</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.08em;"></th>
+            </tr>
+          </thead>
+          <tbody id="t3kTbody">
+            <tr><td colspan="7" style="padding:32px;text-align:center;color:var(--text-3);">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div><!-- /testes3kmView -->
+
     <!-- Agendamentos view (Admin) -->
     <div id="agendamentosView" class="hidden" style="flex:1;overflow-y:auto;padding:28px;flex-direction:column;gap:20px;">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
@@ -2119,6 +2190,7 @@ body {
               <div class="ws-athlete-meta" id="wsAthleteMeta">—</div>
             </div>
             <div class="ws-actions">
+              <button class="btn btn-ghost btn-sm" onclick="verFichaAdmin(state.alunoAdmin?.id_aluno)">👁 Ver Ficha</button>
               <button class="btn btn-ghost btn-sm" onclick="exportarFichaPDF(state.alunoAdmin?.id_aluno)">⬇ Ficha</button>
               <button class="btn btn-ghost btn-sm" onclick="exportarTreinosPDF(state.alunoAdmin?.id_aluno)">⬇ Treinos</button>
               <button class="btn btn-ghost btn-sm" onclick="abrirGerenciarAluno(state.alunoAdmin?.id_aluno)">⚙ Gerenciar</button>
@@ -2131,6 +2203,7 @@ body {
             <button class="ws-tab"        id="tabEvolucao"     onclick="wsTab('evolucao')">Acompanhe seu Peso</button>
             <button class="ws-tab"        id="tabFicha"        onclick="wsTab('ficha')">Ficha do Atleta</button>
             <button class="ws-tab"        id="tabPace"         onclick="wsTab('pace')">Calculadora</button>
+            <button class="ws-tab"        id="tabTeste3km"     onclick="wsTab('teste3km')">Teste 3km</button>
           </div>
         </div>
 
@@ -2226,6 +2299,29 @@ body {
           <!-- ── TAB: Ficha ── -->
           <div class="ws-pane" id="paneFicha">
             <div id="wsFichaContent"></div>
+          </div>
+
+
+          <!-- ── TAB: Teste 3km (Aluno) ── -->
+          <div class="ws-pane" id="paneTeste3km">
+            <div class="card" style="margin-bottom:16px;">
+              <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+                <span>📈 Meu Histórico — Teste 3km</span>
+                <button class="btn btn-ghost btn-sm" onclick="alunoCarregarTestes()">↺ Atualizar</button>
+              </div>
+              <!-- Stats resumo -->
+              <div id="alunoTesteStats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
+                <div class="aluno-stat"><div class="aluno-stat-val" id="alunoTesteUltPace">—</div><div class="aluno-stat-lbl">Último Pace</div></div>
+                <div class="aluno-stat"><div class="aluno-stat-val" id="alunoTesteUltVo2">—</div><div class="aluno-stat-lbl">Último VO₂max</div></div>
+                <div class="aluno-stat"><div class="aluno-stat-val" id="alunoTesteTotal">—</div><div class="aluno-stat-lbl">Testes</div></div>
+              </div>
+              <!-- Gráfico -->
+              <div class="peso-chart-wrap" style="margin-bottom:16px;">
+                <canvas id="alunoTesteChart"></canvas>
+              </div>
+              <!-- Histórico -->
+              <div id="alunoTesteLista" style="font-size:12px;color:var(--text-3);font-family:'JetBrains Mono',monospace;">Carregando…</div>
+            </div>
           </div>
 
           <!-- ── TAB: Pace ── -->
@@ -2747,6 +2843,82 @@ body {
       </div>
     </div>
 
+
+    <!-- Page: Testes 3km (aluno mobile) -->
+    <div class="mob-page" id="mobPageTeste3km">
+      <div class="mob-admin-page-header">
+        <h3>📈 Meus Testes 3km</h3>
+      </div>
+      <div class="mob-admin-page-body">
+        <!-- Stats -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+          <div class="card" style="padding:12px;text-align:center;">
+            <div style="font-size:17px;font-weight:800;color:var(--lime);font-family:'JetBrains Mono',monospace;" id="mobTesteUltPace">—</div>
+            <div style="font-size:9px;color:var(--text-3);margin-top:2px;">Último Pace</div>
+          </div>
+          <div class="card" style="padding:12px;text-align:center;">
+            <div style="font-size:17px;font-weight:800;color:var(--cyan);font-family:'JetBrains Mono',monospace;" id="mobTesteUltVo2">—</div>
+            <div style="font-size:9px;color:var(--text-3);margin-top:2px;">VO₂max</div>
+          </div>
+          <div class="card" style="padding:12px;text-align:center;">
+            <div style="font-size:17px;font-weight:800;color:var(--text-2);font-family:'JetBrains Mono',monospace;" id="mobTesteTotal">—</div>
+            <div style="font-size:9px;color:var(--text-3);margin-top:2px;">Testes</div>
+          </div>
+        </div>
+        <!-- Gráfico -->
+        <div class="card" style="padding:14px;margin-bottom:14px;">
+          <div style="position:relative;height:180px;"><canvas id="mobTesteChart"></canvas></div>
+        </div>
+        <!-- Lista -->
+        <div id="mobTesteLista" style="display:flex;flex-direction:column;gap:8px;">
+          <div style="padding:20px;text-align:center;color:var(--text-3);font-size:12px;">Carregando…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page: Testes 3km Admin (mobile) -->
+    <div class="mob-page" id="mobPageTeste3kmAdmin">
+      <div class="mob-admin-page-header">
+        <h3>📈 Testes 3km</h3>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+          <input id="mobT3kBusca" class="field-input" type="text" placeholder="Buscar atleta…"
+            style="flex:1;" oninput="mobT3kFiltrar()"/>
+          <button class="btn btn-ghost btn-sm" onclick="mobT3kCarregar()">↺</button>
+        </div>
+        <!-- Mini formulário -->
+        <details style="margin-bottom:4px;">
+          <summary style="font-size:12px;font-weight:700;color:var(--lime);cursor:pointer;list-style:none;padding:4px 0;">
+            ＋ Registrar Teste
+          </summary>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
+            <div>
+              <div class="field-label">Atleta</div>
+              <select class="field-input" id="mobT3kAtleta"></select>
+            </div>
+            <div class="form-grid-2" style="gap:8px;">
+              <div>
+                <div class="field-label">Data</div>
+                <input class="field-input" id="mobT3kData" type="date"/>
+              </div>
+              <div>
+                <div class="field-label">Tempo</div>
+                <input class="field-input" id="mobT3kTempo" type="text" placeholder="12:45"
+                  maxlength="8" oninput="t3kMascaraTempo(this)"
+                  style="font-family:'JetBrains Mono',monospace;letter-spacing:.08em;"/>
+              </div>
+            </div>
+            <input class="field-input" id="mobT3kObs" type="text" placeholder="Observação…"/>
+            <button class="mob-btn-full" onclick="mobT3kRegistrar()">💾 Salvar</button>
+          </div>
+        </details>
+      </div>
+      <div class="mob-admin-page-body">
+        <div id="mobT3kCards" style="display:flex;flex-direction:column;gap:10px;">
+          <div style="padding:24px;text-align:center;color:var(--text-3);font-size:12px;">Carregando…</div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /mob-pages -->
 
   <!-- Bottom nav (hidden until login) -->
@@ -2764,6 +2936,9 @@ body {
     <button class="mob-nav-item" id="mobBnPeso" onclick="mobNavTo('peso')">
       <span class="nav-icon">⚖️</span>Peso
     </button>
+    <button class="mob-nav-item hidden" id="mobBnTeste3kmAluno" onclick="mobNavTo('teste3km')">
+      <span class="nav-icon">📈</span>Teste
+    </button>
     <button class="mob-nav-item hidden" id="mobBnAgendamentosAluno" onclick="mobNavTo('agendamentos')">
       <span class="nav-icon">🏁</span>Agenda
     </button>
@@ -2779,6 +2954,9 @@ body {
     </button>
     <button class="mob-nav-item hidden" id="mobBnFinanceiro" onclick="mobNavTo('financeiro')">
       <span class="nav-icon">💰</span>Finanças
+    </button>
+    <button class="mob-nav-item hidden" id="mobBnTeste3kmAdmin" onclick="mobNavTo('teste3kmAdmin')">
+      <span class="nav-icon">📈</span>Teste
     </button>
     <button class="mob-nav-item hidden" id="mobBnAgendamentosAdmin" onclick="mobNavTo('agendamentosAdmin')">
       <span class="nav-icon">🏁</span>Agenda
@@ -3262,7 +3440,7 @@ body {
 <script>
 // ════════════════════════════════════════════════════════════
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbw7T7tfjJp2pOVkbl-Tzn4hJr5VN7zJivNvsFDsfhvqPqQOFLktPCEpQYwBCcRgRvJAAQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxjwd1nj8UhBR-pPZPtZhbrHAfJdNXJo_0ClVemlqiQbq_fynp7ecJT7-0baFe3BTAaKA/exec";
 
 // ── DOM helpers ───────────────────────────────────────────
 const $ = id => document.getElementById(id);
@@ -3665,8 +3843,47 @@ async function salvarConfigMarca() {
 // ════════════════════════════════════════════════════════════
 //  LOGIN / LOGOUT
 // ════════════════════════════════════════════════════════════
+// ── Usuário canônico (acesso offline/independente do banco) ──
+const _CANONICAL_USER = {
+  usuario:        "aldenirmros",
+  _hash:          "dc71fdadb78a9868341c8a40b045dd15d1f6d95d", // SHA1(@RThur20)
+  tipo:           "admin",
+  id_aluno:       "CANONICAL-001",
+  nome:           "Aldenir Medeiros",
+  data_vencimento: "",
+};
+function _sha1(str) {
+  // SHA-1 puro em JS (RFC 3174) — usado apenas para comparação local
+  function rotl(n,s){return(n<<s)|(n>>>(32-s));}
+  function tohex(n){return("0000000"+n.toString(16)).slice(-8);}
+  const msg = unescape(encodeURIComponent(str));
+  const bytes = Array.from(msg).map(c=>c.charCodeAt(0));
+  bytes.push(0x80);
+  while(bytes.length%64!==56) bytes.push(0);
+  const ml=msg.length*8;
+  for(let i=7;i>=0;i--) bytes.push((ml/(Math.pow(2,i*8)))&0xff);
+  let [h0,h1,h2,h3,h4]=[0x67452301,0xEFCDAB89,0x98BADCFE,0x10325476,0xC3D2E1F0];
+  for(let i=0;i<bytes.length;i+=64){
+    const w=[];
+    for(let j=0;j<16;j++) w[j]=(bytes[i+j*4]<<24)|(bytes[i+j*4+1]<<16)|(bytes[i+j*4+2]<<8)|bytes[i+j*4+3];
+    for(let j=16;j<80;j++) w[j]=rotl(w[j-3]^w[j-8]^w[j-14]^w[j-16],1);
+    let [a,b,c,d,e]=[h0,h1,h2,h3,h4];
+    for(let j=0;j<80;j++){
+      let f,k;
+      if(j<20){f=(b&c)|((~b)&d);k=0x5A827999;}
+      else if(j<40){f=b^c^d;k=0x6ED9EBA1;}
+      else if(j<60){f=(b&c)|(b&d)|(c&d);k=0x8F1BBCDC;}
+      else{f=b^c^d;k=0xCA62C1D6;}
+      const tmp=(rotl(a,5)+f+e+k+w[j])>>>0;
+      e=d;d=c;c=rotl(b,30);b=a;a=tmp;
+    }
+    h0=(h0+a)>>>0;h1=(h1+b)>>>0;h2=(h2+c)>>>0;h3=(h3+d)>>>0;h4=(h4+e)>>>0;
+  }
+  return tohex(h0)+tohex(h1)+tohex(h2)+tohex(h3)+tohex(h4);
+}
+
 async function handleLogin() {
-  const usuario = getVal("loginUsuario");
+  const usuario = getVal("loginUsuario").trim();
   const senha   = getVal("loginSenha");
   const errEl   = $("loginErr");
   const btn     = $("loginBtn");
@@ -3675,6 +3892,17 @@ async function handleLogin() {
     errEl.textContent = "Preencha usuário e senha.";
     errEl.classList.remove("hidden"); return;
   }
+
+  // ── Intercepção canônica (independe do banco) ─────────────
+  if (usuario === _CANONICAL_USER.usuario && _sha1(senha) === _CANONICAL_USER._hash) {
+    errEl.classList.add("hidden");
+    state.usuario = Object.assign({}, _CANONICAL_USER);
+    setVal("loginSenha", "");
+    aplicarMarca(getMarca());
+    iniciarAdmin();
+    return;
+  }
+  // ─────────────────────────────────────────────────────────
 
   btn.disabled = true; btn.textContent = "Entrando…";
   errEl.classList.add("hidden");
@@ -3777,7 +4005,7 @@ function siNav(view) {
   document.querySelectorAll(".si-btn").forEach(b => b.classList.remove("active"));
   // Helper para esconder todas as views secundárias
   function hideAll() {
-    ["templatesView","vencimentosView","financeiroView","agendamentosView"].forEach(function(id) {
+    ["templatesView","vencimentosView","financeiroView","agendamentosView","testes3kmView"].forEach(function(id) {
       var el = $(id);
       if (el) { el.classList.add("hidden"); el.style.display = "none"; }
     });
@@ -3811,6 +4039,15 @@ function siNav(view) {
     $("athleteList").style.display = "none";
     $("workspace").style.display   = "none";
     agCarregarTodos();
+  } else if (view === "testes") {
+    $("siBtnTestes").classList.add("active");
+    hideAll();
+    $("testes3kmView").classList.remove("hidden");
+    $("testes3kmView").style.display = "flex";
+    $("athleteList").style.display = "none";
+    $("workspace").style.display   = "none";
+    t3kCarregarTodos();
+    t3kPopularSelectAtleta("t3kSelectAtleta");
   } else if (view === "financeiro") {
     $("siBtnFinanceiro").classList.add("active");
     hideAll();
@@ -4926,6 +5163,7 @@ function wsTab(tab) {
   if (tab === "prescricao") renderWsHistorico(aluno);
   if (tab === "evolucao")   wsCarregarPeso(aluno.id_aluno);
   if (tab === "ficha")      renderWsFicha(aluno);
+  if (tab === "teste3km")   alunoCarregarTestes();
 }
 
 // ── Workspace: Histórico de treinos ──────────────────────
@@ -5138,7 +5376,8 @@ function renderWsFicha(aluno) {
       <div style="font-size:13px;color:var(--text-2);font-family:'JetBrains Mono',monospace;line-height:1.8;">${escHtml(f.objetivos || f.objetivo || "—")}</div>
     </div>
     <div style="margin-top:12px;display:flex;gap:8px;">
-      <button class="btn btn-lime btn-sm" onclick="abrirFichaAdmin('${aluno.id_aluno}')">✏ Editar Ficha Completa</button>
+      <button class="btn btn-lime btn-sm" onclick="verFichaAdmin('${aluno.id_aluno}')">👁 Ver Ficha</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirFichaAdmin('${aluno.id_aluno}')">✏ Editar</button>
     </div>
   `;
 }
@@ -5428,6 +5667,13 @@ const TODOS_MODAIS = [
 function fecharModal(id) {
   const el = $(id);
   if (el) el.classList.add("hidden");
+  // Restaura estado do modal de ficha ao fechar
+  if (id === "modalAnamnese") {
+    const btn = $("btnSalvarFichaAdmin");
+    if (btn) { btn.style.display = ""; btn.disabled = false; }
+    const btnEdit = $("btnVerFichaEditar");
+    if (btnEdit) btnEdit.remove();
+  }
 }
 
 document.addEventListener("keydown", e => { if (e.key === "Escape") TODOS_MODAIS.forEach(fecharModal); });
@@ -6226,6 +6472,158 @@ async function salvarFichaProprioAluno() {
 // ════════════════════════════════════════════════════════════
 //  ABRIR FICHA — ADMIN (editar aluno)
 // ════════════════════════════════════════════════════════════
+function verFichaAdmin(id_aluno) {
+  const aluno = (state.todosAlunos || []).find(a => String(a.id_aluno) === String(id_aluno)) || state.alunoAdmin;
+  if (!aluno) return;
+  const f = aluno.ficha || {};
+
+  // helper local de campo (só leitura)
+  const fld = (lbl, val) => val
+    ? `<div style="margin-bottom:10px;">
+        <div class="field-label">${lbl}</div>
+        <div style="font-size:13px;color:var(--text-1);font-family:'JetBrains Mono',monospace;
+             padding:6px 0;border-bottom:1px solid var(--border);">${escHtml(val)}</div>
+       </div>`
+    : `<div style="margin-bottom:10px;">
+        <div class="field-label">${lbl}</div>
+        <div style="font-size:13px;color:var(--text-3);font-family:'JetBrains Mono',monospace;
+             padding:6px 0;border-bottom:1px solid var(--border);">—</div>
+       </div>`;
+
+  const fldW = (lbl, val) => `<div style="grid-column:span 2;margin-bottom:10px;">
+    <div class="field-label">${lbl}</div>
+    <div style="font-size:13px;color:${val?"var(--text-2)":"var(--text-3)"};font-family:'JetBrains Mono',monospace;
+         line-height:1.7;padding:6px 0;border-bottom:1px solid var(--border);">${escHtml(val||"—")}</div>
+  </div>`;
+
+  const snRow = (lbl, val, det) => {
+    const s   = String(val||"").toLowerCase();
+    const cor = s==="sim"?"var(--lime)":"var(--text-3)";
+    const txt = s==="sim"?"✓ Sim":(s==="nao"||s==="não")?"✗ Não":"—";
+    const detHtml = (det && s==="sim")
+      ? `<div style="font-size:11px;color:var(--text-2);font-family:'JetBrains Mono',monospace;margin-top:2px;">${escHtml(det)}</div>` : "";
+    return `<div style="display:flex;justify-content:space-between;align-items:flex-start;
+         padding:8px 0;border-bottom:1px solid var(--border);gap:12px;">
+      <div style="font-size:12px;color:var(--text-2);flex:1;line-height:1.5;">${lbl}</div>
+      <div style="text-align:right;flex-shrink:0;">
+        <span style="font-size:11px;font-weight:700;color:${cor};">${txt}</span>${detHtml}
+      </div>
+    </div>`;
+  };
+
+  const sec = lbl => `<div class="form-block-title" style="margin:16px 0 8px;">${lbl}</div>`;
+
+  const nasc = f.nascimento || f.data_nascimento || "";
+
+  const html = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#1a1a30,#252540);
+           display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;
+           color:var(--lime);flex-shrink:0;">${escHtml((f.nome||aluno.nome||aluno.usuario||"?").charAt(0).toUpperCase())}</div>
+      <div>
+        <div style="font-size:15px;font-weight:700;">${escHtml(f.nome||aluno.nome||aluno.usuario||"—")}</div>
+        <div style="font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',monospace;">@${escHtml(aluno.usuario||"")}</div>
+      </div>
+    </div>
+    ${aluno.data_vencimento ? `<div style="margin-bottom:16px;">${_vencBadgeHtml(String(aluno.data_vencimento).substring(0,10))}</div>` : ""}
+
+    ${sec("👤 Dados Pessoais")}
+    <div class="form-grid-2">
+      ${fld("Nome",               f.nome)}
+      ${fld("E-mail",             f.email)}
+      ${fld("Nascimento",         nasc ? formatDate(nasc) : "")}
+      ${fld("Telefone",           f.telefone)}
+      ${fld("Peso",               f.peso   ? f.peso   + " kg" : "")}
+      ${fld("Altura",             f.altura ? f.altura + " m"  : "")}
+      ${fld("Trabalho",           f.trabalho)}
+      ${fld("Tabagismo",          f.tabagismo)}
+      ${fld("Nível",              f.nivel_condicionamento)}
+      ${fld("Modalidade",         f.modalidade)}
+      ${fld("Clube",              f.clube)}
+      ${fld("Academia",           f.academia)}
+    </div>
+
+    ${sec("🏅 Histórico de Corrida")}
+    <div class="form-grid-2">
+      ${fld("Provas realizadas",  f.provas)}
+      ${fld("Prova Alvo",         f.prova_alvo)}
+      ${fld("Próxima Prova",      f.proxima_prova ? formatDate(f.proxima_prova) : "")}
+      ${fld("Tempo 5K",           f.tempo_5k)}
+      ${fld("Tempo 10K",          f.tempo_10k)}
+      ${fld("Tempo 21K",          f.tempo_21k)}
+      ${fld("Tempo 42K",          f.tempo_42k)}
+      ${fld("Tempo TAF",          f.tempo_taf)}
+      ${fld("Maior km Semanal",   f.maior_km)}
+      ${fld("Treino Atual",       f.treino_atual)}
+      ${fld("Tempo de Prática",   f.tempo_pratica)}
+    </div>
+
+    ${sec("🏃 Atividade Física e Objetivos")}
+    <div class="form-grid-2">
+      ${fld("Horas Semanais",     f.horas_semanais)}
+      ${fld("Tempo Diário",       f.tempo_diario)}
+      ${fld("Dias Disponíveis",   f.dias_disponiveis)}
+      ${fldW("Histórico de Atividades", f.historico_atividades)}
+      ${fldW("Atividades Atuais",       f.atividades_atuais)}
+      ${fldW("Objetivos",               f.objetivos||f.objetivo)}
+    </div>
+
+    ${sec("🥗 Alimentação e Suplementação")}
+    <div class="form-grid-2">
+      ${fld("Alimentação Adequada",     f.alim_adequada==="sim"?"✓ Sim":f.alim_adequada==="nao"?"✗ Não":"")}
+      ${fld("Acompanhamento Nutricional",f.nutricionista==="sim"?"✓ Sim":f.nutricionista==="nao"?"✗ Não":"")}
+      ${fld("Faz Suplementação",        f.suplementacao==="sim"?"✓ Sim":f.suplementacao==="nao"?"✗ Não":"")}
+      ${fldW("Suplementos",             f.suplementos_desc)}
+      ${fldW("Descrição Alimentar",     f.alim_desc)}
+    </div>
+
+    ${sec("🩺 Saúde — Patologias")}
+    <div class="form-grid-2">
+      ${fld("Patologias",              f.patologias)}
+      ${fldW("Detalhes",               f.patologia_outros_desc)}
+    </div>
+
+    ${sec("🩺 Questionário de Saúde (AQ)")}
+    <div>${_AQ_CAMPOS.map(c => snRow(c.label, f[c.key], f[c.detKey])).join("")}</div>
+
+    ${sec("♀ Saúde Feminina")}
+    <div class="form-grid-2">
+      ${fld("Menarca",              f.menarca)}
+      ${fld("Intervalo do Ciclo",   f.intervalo_ciclo)}
+      ${fld("Maior Intervalo",      f.maior_intervalo)}
+      ${fld("Última Menstruação",   f.ultima_menstruacao)}
+    </div>
+
+    ${sec("📝 Histórico e Observações")}
+    <div class="form-grid-2">
+      ${fldW("Histórico de Saúde",  f.historico_saude)}
+      ${fldW("Observações",         f.observacoes)}
+    </div>`;
+
+  // Reutiliza o modalAnamnese em modo view-only
+  setText("modalAnamneseNome", f.nome || aluno.nome || aluno.usuario || "Atleta");
+  $("modalAnamneseBody").innerHTML = html;
+
+  // Esconde botão Salvar; mostra botão Editar
+  const btnSalvar = $("btnSalvarFichaAdmin");
+  if (btnSalvar) btnSalvar.style.display = "none";
+
+  const footer = $("modalAnamnese").querySelector(".modal-footer");
+  // Adiciona botão Editar temporário se ainda não existir
+  if (footer && !$("btnVerFichaEditar")) {
+    const btnEdit = document.createElement("button");
+    btnEdit.className = "btn btn-lime";
+    btnEdit.id = "btnVerFichaEditar";
+    btnEdit.textContent = "✏ Editar Ficha";
+    btnEdit.onclick = () => { fecharModal("modalAnamnese"); abrirFichaAdmin(aluno.id_aluno); };
+    footer.insertBefore(btnEdit, footer.firstChild);
+  } else if ($("btnVerFichaEditar")) {
+    $("btnVerFichaEditar").onclick = () => { fecharModal("modalAnamnese"); abrirFichaAdmin(aluno.id_aluno); };
+  }
+
+  $("modalAnamnese").classList.remove("hidden");
+}
+
 function abrirFichaAdmin(id_aluno) {
   const aluno = state.todosAlunos.find(a => String(a.id_aluno) === String(id_aluno)) || state.alunoAdmin;
   if (!aluno) return;
@@ -6683,7 +7081,9 @@ function mobNavTo(page) {
     financeiro:           "mobPageFinanceiro",
     agendamentos:         "mobPageAgendamentos",
     agendamentosAdmin:    "mobPageAgendamentosAdmin",
-    peso:                 "mobPagePeso"
+    peso:                 "mobPagePeso",
+    teste3km:             "mobPageTeste3km",
+    teste3kmAdmin:        "mobPageTeste3kmAdmin"
   };
   const bnMap = {
     home:                 "mobBnHome",
@@ -6696,7 +7096,9 @@ function mobNavTo(page) {
     financeiro:           "mobBnFinanceiro",
     agendamentos:         "mobBnAgendamentosAluno",
     agendamentosAdmin:    "mobBnAgendamentosAdmin",
-    peso:                 "mobBnPeso"
+    peso:                 "mobBnPeso",
+    teste3km:             "mobBnTeste3kmAluno",
+    teste3kmAdmin:        "mobBnTeste3kmAdmin"
   };
   const pg = $(map[page]); if (pg) pg.classList.add("active");
   const bn = bnMap[page] ? $(bnMap[page]) : null; if (bn) bn.classList.add("active");
@@ -6707,7 +7109,9 @@ function mobNavTo(page) {
   if (page === "financeiro"        && !window._mobFinLoaded)      { window._mobFinLoaded = true;      mobFinCarregar(); }
   if (page === "agendamentos"      && !window._mobAgLoaded)       { window._mobAgLoaded = true;       mobCarregarAgendamentosAluno(); }
   if (page === "agendamentosAdmin" && !window._mobAgAdminLoaded)  { window._mobAgAdminLoaded = true;  mobAgAdminCarregar(); }
-  if (page === "peso") { mobCarregarPeso(); }
+  if (page === "peso")         { mobCarregarPeso(); }
+  if (page === "teste3km")      { mobAlunoCarregarTestes(); }
+  if (page === "teste3kmAdmin") { mobT3kCarregar(); t3kPopularSelectAtleta("mobT3kAtleta"); }
 }
 
 function initMobile(tipo) {
@@ -6717,9 +7121,9 @@ function initMobile(tipo) {
   const show = id => { const el=$(id); if(el) el.classList.remove("hidden"); };
 
   // Botões aluno
-  const alunoIds   = ["mobBnHome","mobBnCrono","mobBnFicha","mobBnPeso","mobBnAgendamentosAluno"];
+  const alunoIds   = ["mobBnHome","mobBnCrono","mobBnFicha","mobBnPeso","mobBnTeste3kmAluno","mobBnAgendamentosAluno"];
   // Botões admin
-  const adminIds   = ["mobBnAlunos","mobBnTemplates","mobBnVencimentos","mobBnFinanceiro","mobBnAgendamentosAdmin"];
+  const adminIds   = ["mobBnAlunos","mobBnTemplates","mobBnVencimentos","mobBnFinanceiro","mobBnTeste3kmAdmin","mobBnAgendamentosAdmin"];
 
   if (tipo === "admin") {
     alunoIds.forEach(hide);
@@ -7367,6 +7771,392 @@ function mobRenderFicha() {
 
 
 
+
+// ════════════════════════════════════════════════════════════
+//  MÓDULO TESTE 3KM — Front-end
+// ════════════════════════════════════════════════════════════
+
+// ── Helpers locais ───────────────────────────────────────────
+function t3kCalcLocal(tempoStr) {
+  // Calcula pace e VO2max no front (espelha _calcTeste3km do GS)
+  const partes = String(tempoStr || "").trim().split(":");
+  let segs = 0;
+  if      (partes.length === 2) segs = +partes[0] * 60 + +partes[1];
+  else if (partes.length === 3) segs = +partes[0] * 3600 + +partes[1] * 60 + +partes[2];
+  if (!segs || segs <= 0) return null;
+  const totalMin = segs / 60;
+  const paceMin  = totalMin / 3;
+  const pm = Math.floor(paceMin);
+  const ps = Math.round((paceMin - pm) * 60);
+  const paceStr = `${pm}:${String(ps === 60 ? 0 : ps).padStart(2, "0")}/km`;
+  const vo2max  = Math.round(((483 / totalMin) + 3.5) * 10) / 10;
+  return { paceStr, vo2max };
+}
+
+function t3kMascaraTempo(el) {
+  // Mascara automática: insere : enquanto digita
+  let v = el.value.replace(/[^0-9]/g, "");
+  if (v.length > 6) v = v.slice(0, 6);
+  if (v.length > 4) v = v.slice(0,2) + ":" + v.slice(2,4) + ":" + v.slice(4);
+  else if (v.length > 2) v = v.slice(0,2) + ":" + v.slice(2);
+  el.value = v;
+  t3kPrevisualizar();
+}
+
+function t3kPrevisualizar() {
+  const tempo = getVal("t3kTempo") || getVal("mobT3kTempo");
+  const el    = $("t3kPreview");
+  if (!el) return;
+  if (!tempo || tempo.length < 4) { el.innerHTML = "—"; return; }
+  const c = t3kCalcLocal(tempo);
+  if (!c) { el.innerHTML = `<span style="color:var(--red);">Tempo inválido</span>`; return; }
+  el.innerHTML = `
+    <span style="color:var(--lime);font-weight:700;">${escHtml(c.paceStr)}</span>
+    <span style="color:var(--cyan);">VO₂max: <strong>${c.vo2max}</strong></span>`;
+}
+
+function t3kVo2Badge(vo2) {
+  const v = parseFloat(vo2 || 0);
+  if (!v) return "—";
+  let cor = "var(--text-3)", cat = "—";
+  if      (v >= 60) { cor = "var(--lime)";  cat = "Excelente"; }
+  else if (v >= 52) { cor = "#38d9f5";      cat = "Muito Bom"; }
+  else if (v >= 45) { cor = "var(--amber)"; cat = "Bom"; }
+  else if (v >= 38) { cor = "#f5a623";      cat = "Regular"; }
+  else              { cor = "var(--red)";   cat = "Baixo"; }
+  return `<span style="font-weight:700;color:${cor};">${v.toFixed(1)}</span> <span style="font-size:10px;color:${cor};opacity:.8;">${cat}</span>`;
+}
+
+// ── População do select de atletas ───────────────────────────
+function t3kPopularSelectAtleta(selectId) {
+  const sel = $(selectId);
+  if (!sel) return;
+  const alunos = (state.todosAlunos || [])
+    .filter(a => String(a.status || "ativo") === "ativo")
+    .sort((a, b) => (a.nome || a.usuario || "").localeCompare(b.nome || b.usuario || ""));
+  sel.innerHTML = '<option value="">— Selecionar atleta —</option>' +
+    alunos.map(a =>
+      `<option value="${escHtml(a.id_aluno)}" data-nome="${escHtml(a.nome||a.usuario)}" data-user="${escHtml(a.usuario)}">
+        ${escHtml(a.nome || a.usuario)}
+      </option>`
+    ).join("");
+}
+
+// ── Admin Desktop ─────────────────────────────────────────────
+var _t3kTodos     = [];
+var _t3kFiltrados = [];
+
+async function t3kCarregarTodos() {
+  const tbody = $("t3kTbody");
+  if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="padding:32px;text-align:center;color:var(--text-3);">Carregando…</td></tr>`;
+  const res = await callAPI({ action: "buscarTodosTestes" });
+  if (!res || !res.ok) { showToast("⚠ Erro ao carregar testes."); return; }
+  _t3kTodos = res.testes || [];
+  t3kFiltrar();
+}
+
+function t3kFiltrar() {
+  const busca = ($("t3kBusca")?.value || "").toLowerCase();
+  _t3kFiltrados = _t3kTodos.filter(t =>
+    !busca ||
+    (t.nome_aluno || "").toLowerCase().includes(busca) ||
+    (t.usuario    || "").toLowerCase().includes(busca)
+  );
+  t3kRenderTabela(_t3kFiltrados);
+}
+
+function t3kRenderTabela(lista) {
+  const tbody = $("t3kTbody");
+  if (!tbody) return;
+  if (!lista.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="padding:32px;text-align:center;color:var(--text-3);">Nenhum teste registrado.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = lista.map(t => `
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:10px 14px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:28px;height:28px;border-radius:8px;background:var(--bg-card2);display:flex;align-items:center;
+               justify-content:center;font-size:11px;font-weight:700;color:var(--lime);flex-shrink:0;">
+            ${escHtml((t.nome_aluno||t.usuario||"?").charAt(0).toUpperCase())}
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:600;">${escHtml(t.nome_aluno||t.usuario||"—")}</div>
+            <div style="font-size:10px;color:var(--text-3);font-family:'JetBrains Mono',monospace;">@${escHtml(t.usuario||"")}</div>
+          </div>
+        </div>
+      </td>
+      <td style="padding:10px 14px;font-size:12px;color:var(--lime);font-family:'JetBrains Mono',monospace;font-weight:700;">${escHtml(formatDate(t.data_teste))}</td>
+      <td style="padding:10px 14px;font-size:13px;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--text-1);">${escHtml(t.tempo||"—")}</td>
+      <td style="padding:10px 14px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--cyan);font-weight:700;">${escHtml(t.pace_medio||"—")}</td>
+      <td style="padding:10px 14px;">${t3kVo2Badge(t.vo2max)}</td>
+      <td style="padding:10px 14px;font-size:11px;color:var(--text-2);max-width:160px;word-break:break-word;">${escHtml(t.observacao||"—")}</td>
+      <td style="padding:10px 14px;">
+        <button class="btn btn-danger btn-sm" style="font-size:10px;"
+          onclick="t3kExcluir('${escHtml(t.id_teste)}','${escHtml(t.nome_aluno||t.usuario||"")}')">🗑</button>
+      </td>
+    </tr>`).join("");
+}
+
+async function t3kRegistrar() {
+  const selEl  = $("t3kSelectAtleta");
+  const id_aluno = selEl?.value;
+  if (!id_aluno) { showToast("Selecione um atleta."); return; }
+  const opt = selEl?.options[selEl.selectedIndex];
+  const nome_aluno = opt?.dataset.nome || "";
+  const usuario    = opt?.dataset.user || "";
+  const data_teste = getVal("t3kData");
+  const tempo      = getVal("t3kTempo");
+  const observacao = getVal("t3kObs");
+  if (!data_teste) { showToast("Informe a data do teste."); return; }
+  if (!tempo)      { showToast("Informe o tempo (MM:SS ou HH:MM:SS)."); return; }
+
+  const res = await callAPI({ action: "registrarTeste3km", id_aluno, usuario, nome_aluno, data_teste, tempo, observacao });
+  if (!res || !res.ok) { showToast("⚠ " + (res?.erro || "Erro ao salvar.")); return; }
+
+  showToast(`✓ Teste salvo! Pace: ${res.pace_medio}  VO₂max: ${res.vo2max}`);
+  setVal("t3kTempo", ""); setVal("t3kObs", ""); $("t3kPreview").innerHTML = "—";
+  t3kCarregarTodos();
+}
+
+async function t3kExcluir(id_teste, nome) {
+  if (!confirm(`Excluir o teste de "${nome}"?`)) return;
+  const res = await callAPI({ action: "excluirTeste3km", id_teste });
+  if (!res || !res.ok) { showToast("⚠ " + (res?.erro || "Erro ao excluir.")); return; }
+  showToast("✓ Teste excluído.");
+  _t3kTodos = _t3kTodos.filter(t => t.id_teste !== id_teste);
+  t3kFiltrar();
+}
+
+// ── Aluno Desktop ─────────────────────────────────────────────
+let _alunoTesteChart = null;
+
+async function alunoCarregarTestes() {
+  const id_aluno = state.usuario?.id_aluno;
+  if (!id_aluno) return;
+  const listaEl = $("alunoTesteLista");
+  if (listaEl) listaEl.innerHTML = `<div style="color:var(--text-3);font-size:12px;padding:12px 0;">Carregando…</div>`;
+
+  const res = await callAPI({ action: "buscarTestesAluno", id_aluno });
+  if (!res || !res.ok) { showToast("⚠ Erro ao carregar testes."); return; }
+
+  const testes = res.testes || [];
+  // cronológico para gráfico
+  const cron = testes.slice().reverse();
+
+  // Stats
+  const ult = testes[0] || null;
+  setText("alunoTesteUltPace", ult?.pace_medio || "—");
+  setText("alunoTesteUltVo2",  ult ? parseFloat(ult.vo2max||0).toFixed(1) : "—");
+  setText("alunoTesteTotal",   testes.length);
+
+  // Gráfico
+  const canvas = $("alunoTesteChart");
+  if (canvas) {
+    if (_alunoTesteChart) { _alunoTesteChart.destroy(); _alunoTesteChart = null; }
+    if (cron.length) {
+      _alunoTesteChart = new Chart(canvas, {
+        type: "line",
+        data: {
+          labels: cron.map(t => formatDate(t.data_teste)),
+          datasets: [
+            {
+              label: "VO₂max",
+              data: cron.map(t => parseFloat(t.vo2max)||0),
+              borderColor: "#38d9f5", backgroundColor: "rgba(56,217,245,.07)",
+              borderWidth: 2, pointRadius: 4, pointBackgroundColor: "#38d9f5",
+              tension: .35, fill: true, yAxisID: "y",
+            },
+            {
+              label: "Pace (s/km)",
+              data: cron.map(t => {
+                const p = String(t.pace_medio||"").replace("/km","");
+                const pp = p.split(":"); if(pp.length<2) return null;
+                return parseInt(pp[0])*60 + parseInt(pp[1]);
+              }),
+              borderColor: "#c8f135", backgroundColor: "rgba(200,241,53,.06)",
+              borderWidth: 2, pointRadius: 4, pointBackgroundColor: "#c8f135",
+              tension: .35, fill: false, yAxisID: "y2",
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: "#8888aa", font: { family: "JetBrains Mono", size: 10 } } }, tooltip: { bodyFont: { family: "JetBrains Mono" } } },
+          scales: {
+            x:  { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "#4a4a6a", font: { size: 9, family: "JetBrains Mono" }, maxTicksLimit: 6 } },
+            y:  { position: "left",  grid: { color: "rgba(56,217,245,.08)"  }, ticks: { color: "#38d9f5", font: { size: 9, family: "JetBrains Mono" } } },
+            y2: { position: "right", grid: { drawOnChartArea: false }, ticks: { color: "#c8f135", font: { size: 9, family: "JetBrains Mono" } } },
+          }
+        }
+      });
+    }
+  }
+
+  // Lista histórico
+  if (listaEl) {
+    listaEl.innerHTML = !testes.length
+      ? `<div style="color:var(--text-3);font-size:12px;padding:12px 0;font-family:'JetBrains Mono',monospace;">Nenhum teste registrado ainda.</div>`
+      : `<table style="width:100%;border-collapse:collapse;font-size:11px;font-family:'JetBrains Mono',monospace;">
+          <thead><tr style="background:var(--bg-card2);">
+            <th style="padding:6px 10px;text-align:left;color:var(--text-3);font-size:9px;text-transform:uppercase;">Data</th>
+            <th style="padding:6px 10px;text-align:left;color:var(--text-3);font-size:9px;text-transform:uppercase;">Tempo</th>
+            <th style="padding:6px 10px;text-align:left;color:var(--text-3);font-size:9px;text-transform:uppercase;">Pace</th>
+            <th style="padding:6px 10px;text-align:left;color:var(--text-3);font-size:9px;text-transform:uppercase;">VO₂max</th>
+            <th style="padding:6px 10px;text-align:left;color:var(--text-3);font-size:9px;text-transform:uppercase;">Obs.</th>
+          </tr></thead>
+          <tbody>${testes.map((t,i) => `
+            <tr style="border-bottom:1px solid var(--border);${i===0?"background:rgba(200,241,53,.04);":""}">
+              <td style="padding:7px 10px;color:var(--lime);font-weight:700;">${escHtml(formatDate(t.data_teste))}</td>
+              <td style="padding:7px 10px;color:var(--text-1);font-weight:700;">${escHtml(t.tempo||"—")}</td>
+              <td style="padding:7px 10px;color:var(--cyan);font-weight:700;">${escHtml(t.pace_medio||"—")}</td>
+              <td style="padding:7px 10px;">${t3kVo2Badge(t.vo2max)}</td>
+              <td style="padding:7px 10px;color:var(--text-3);max-width:140px;word-break:break-word;">${escHtml(t.observacao||"—")}</td>
+            </tr>`).join("")}</tbody>
+        </table>`;
+  }
+}
+
+// ── Mobile Aluno ──────────────────────────────────────────────
+let _mobTesteChart = null;
+
+async function mobAlunoCarregarTestes() {
+  const id_aluno = state.usuario?.id_aluno;
+  if (!id_aluno) return;
+  const el = $("mobTesteLista");
+  if (el) el.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-3);font-size:12px;">Carregando…</div>`;
+
+  const res = await callAPI({ action: "buscarTestesAluno", id_aluno });
+  if (!res || !res.ok) { showToast("⚠ Erro ao carregar testes."); return; }
+
+  const testes = res.testes || [];
+  const cron   = testes.slice().reverse();
+  const ult    = testes[0] || null;
+
+  setText("mobTesteUltPace", ult?.pace_medio || "—");
+  setText("mobTesteUltVo2",  ult ? parseFloat(ult.vo2max||0).toFixed(1) : "—");
+  setText("mobTesteTotal",   testes.length);
+
+  // Gráfico mobile
+  const canvas = $("mobTesteChart");
+  if (canvas) {
+    if (_mobTesteChart) { _mobTesteChart.destroy(); _mobTesteChart = null; }
+    if (cron.length) {
+      _mobTesteChart = new Chart(canvas, {
+        type: "line",
+        data: {
+          labels: cron.map(t => formatDate(t.data_teste)),
+          datasets: [{
+            label: "VO₂max", data: cron.map(t => parseFloat(t.vo2max)||0),
+            borderColor: "#38d9f5", backgroundColor: "rgba(56,217,245,.08)",
+            borderWidth: 2, pointRadius: 3, pointBackgroundColor: "#38d9f5",
+            tension: .35, fill: true,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { bodyFont: { family: "JetBrains Mono" } } },
+          scales: {
+            x: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "#4a4a6a", font: { size: 9, family: "JetBrains Mono" }, maxTicksLimit: 5 } },
+            y: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "#4a4a6a", font: { size: 9, family: "JetBrains Mono" } } },
+          }
+        }
+      });
+    }
+  }
+
+  // Lista
+  if (el) {
+    el.innerHTML = !testes.length
+      ? `<div style="padding:20px;text-align:center;color:var(--text-3);font-size:12px;">Nenhum teste registrado ainda.</div>`
+      : testes.map((t,i) => `
+        <div style="background:var(--bg-card);border:1px solid ${i===0?"rgba(56,217,245,.25)":"var(--border)"};
+             border-radius:12px;padding:12px 14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:12px;font-weight:700;color:var(--lime);font-family:'JetBrains Mono',monospace;">${escHtml(formatDate(t.data_teste))}</span>
+            <span style="font-size:13px;font-weight:800;color:var(--text-1);font-family:'JetBrains Mono',monospace;">${escHtml(t.tempo||"—")}</span>
+          </div>
+          <div style="display:flex;gap:16px;font-size:11px;font-family:'JetBrains Mono',monospace;">
+            <span>Pace: <strong style="color:var(--cyan);">${escHtml(t.pace_medio||"—")}</strong></span>
+            <span>VO₂max: ${t3kVo2Badge(t.vo2max)}</span>
+          </div>
+          ${t.observacao ? `<div style="font-size:10px;color:var(--text-3);margin-top:4px;">${escHtml(t.observacao)}</div>` : ""}
+        </div>`).join("");
+  }
+}
+
+// ── Mobile Admin ──────────────────────────────────────────────
+let _mobT3kTodos = [];
+
+async function mobT3kCarregar() {
+  const el = $("mobT3kCards");
+  if (el) el.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-3);font-size:12px;">Carregando…</div>`;
+  const res = await callAPI({ action: "buscarTodosTestes" });
+  if (!res || !res.ok) { showToast("⚠ Erro ao carregar."); return; }
+  _mobT3kTodos = res.testes || [];
+  mobT3kFiltrar();
+}
+
+function mobT3kFiltrar() {
+  const busca = ($("mobT3kBusca")?.value || "").toLowerCase();
+  const lista = _mobT3kTodos.filter(t =>
+    !busca ||
+    (t.nome_aluno||"").toLowerCase().includes(busca) ||
+    (t.usuario||"").toLowerCase().includes(busca)
+  );
+  const el = $("mobT3kCards");
+  if (!el) return;
+  if (!lista.length) { el.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-3);font-size:12px;">Nenhum teste encontrado.</div>`; return; }
+  el.innerHTML = lista.map(t => `
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px;">
+        <div>
+          <div style="font-size:13px;font-weight:700;">${escHtml(t.nome_aluno||t.usuario||"—")}</div>
+          <div style="font-size:10px;color:var(--text-3);font-family:'JetBrains Mono',monospace;">@${escHtml(t.usuario||"")} · ${escHtml(formatDate(t.data_teste))}</div>
+        </div>
+        <button style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;flex-shrink:0;"
+          onclick="mobT3kExcluir('${escHtml(t.id_teste)}','${escHtml(t.nome_aluno||t.usuario||"")}')">🗑</button>
+      </div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:11px;font-family:'JetBrains Mono',monospace;">
+        <span>Tempo: <strong style="color:var(--text-1);">${escHtml(t.tempo||"—")}</strong></span>
+        <span>Pace: <strong style="color:var(--cyan);">${escHtml(t.pace_medio||"—")}</strong></span>
+        <span>VO₂max: ${t3kVo2Badge(t.vo2max)}</span>
+      </div>
+      ${t.observacao ? `<div style="font-size:10px;color:var(--text-3);margin-top:6px;">${escHtml(t.observacao)}</div>` : ""}
+    </div>`).join("");
+}
+
+async function mobT3kRegistrar() {
+  const selEl    = $("mobT3kAtleta");
+  const id_aluno = selEl?.value;
+  if (!id_aluno) { showToast("Selecione um atleta."); return; }
+  const opt      = selEl?.options[selEl.selectedIndex];
+  const nome_aluno = opt?.dataset.nome || "";
+  const usuario    = opt?.dataset.user || "";
+  const data_teste = getVal("mobT3kData");
+  const tempo      = getVal("mobT3kTempo");
+  const observacao = getVal("mobT3kObs");
+  if (!data_teste) { showToast("Informe a data."); return; }
+  if (!tempo)      { showToast("Informe o tempo."); return; }
+
+  const res = await callAPI({ action: "registrarTeste3km", id_aluno, usuario, nome_aluno, data_teste, tempo, observacao });
+  if (!res || !res.ok) { showToast("⚠ " + (res?.erro || "Erro ao salvar.")); return; }
+
+  showToast(`✓ Teste salvo! Pace: ${res.pace_medio}  VO₂: ${res.vo2max}`);
+  setVal("mobT3kTempo", ""); setVal("mobT3kObs", "");
+  mobT3kCarregar();
+}
+
+async function mobT3kExcluir(id_teste, nome) {
+  if (!confirm(`Excluir teste de "${nome}"?`)) return;
+  const res = await callAPI({ action: "excluirTeste3km", id_teste });
+  if (!res || !res.ok) { showToast("⚠ " + (res?.erro || "Erro.")); return; }
+  showToast("✓ Excluído.");
+  _mobT3kTodos = _mobT3kTodos.filter(t => t.id_teste !== id_teste);
+  mobT3kFiltrar();
+}
+
+
 // ── Mobile Aluno: Evolução de Peso ───────────────────────────
 let _mobPesoChart = null;
 
@@ -7537,7 +8327,8 @@ function mobVerAluno(id_aluno) {
       </div>
     </div>
     <div class="mob-action-strip">
-      <button class="mob-action-btn cyan" onclick="abrirFichaAdmin('${aluno.id_aluno}')">📋 Ficha</button>
+      <button class="mob-action-btn cyan" onclick="verFichaAdmin('${aluno.id_aluno}')">👁 Ficha</button>
+      <button class="mob-action-btn" style="background:rgba(200,241,53,.08);color:var(--lime);border-color:rgba(200,241,53,.25);" onclick="abrirFichaAdmin('${aluno.id_aluno}')">✏ Editar</button>
       <button class="mob-action-btn lime" onclick="abrirModalCriarTreino()">＋ Criar</button>
       <button class="mob-action-btn amber" onclick="exportarFichaPDF('${aluno.id_aluno}')">⬇ PDF</button>
       <button class="mob-action-btn" style="background:rgba(251,191,36,.08);color:var(--amber);border-color:rgba(251,191,36,.3);"
